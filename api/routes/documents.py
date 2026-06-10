@@ -44,6 +44,8 @@ async def upload_document(
         )
 
     # ── Step 2: Read file bytes ───────────────────────────────────────────────
+    # Guarantee the network stream pointer is at the absolute beginning
+    await file.seek(0)
     image_bytes = await file.read()  # await because file.read() is async in FastAPI
 
     if len(image_bytes) == 0:

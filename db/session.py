@@ -46,3 +46,21 @@ async def get_db():
     # FastAPI calls this automatically and passes the session into the route function
     async with AsyncSessionLocal() as session:
         yield session   # Session is automatically closed when the request finishes
+
+from sqlalchemy.ext.asyncio import create_async_engine
+from config import get_settings
+
+settings = get_settings()
+
+# Ensure the database URL contains +asyncpg
+db_url = settings.DATABASE_URL
+if "postgresql://" in db_url and "+asyncpg" not in db_url:
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://")
+
+engine = create_async_engine(
+    db_url,
+    echo=False,
+    connect_args={
+        "statement_cache_size": 0  # Crucial for Supabase transaction pooling
+    }
+)
