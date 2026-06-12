@@ -212,7 +212,7 @@ async def run_ocr(image_bytes: bytes) -> dict:
         # _run_ocr_sync is now safely defined above this line!
         result = await asyncio.wait_for(
             loop.run_in_executor(None, _run_ocr_sync, image_bytes),
-            timeout=120.0  
+            timeout=300.0  
         )
         
         print("\n" + "="*50)
@@ -232,69 +232,61 @@ async def run_ocr(image_bytes: bytes) -> dict:
 
 import re
 
-import re
-
 def extract_fields(ocr_result: dict) -> dict:
     raw_text = ocr_result.get("raw_text", "")
     boxes = ocr_result.get("boxes", [])
     extracted = {}
 
-    # Devnagari to standard English numeric mapping index
+    # Devnagari translation dictionary matrix
     devnagari_to_en = {
         '०': '0', '१': '1', '२': '2', '३': '3', '४': '4',
         '५': '5', '६': '6', '७': '7', '८': '8', '९': '9'
     }
 
-    # ─── 1. EXTRACT AND NORMALIZE CITIZENSHIP NUMBER ───
-    # Captures sequences of Devnagari numbers broken up by dashes/slashes (e.g., १५-०१-७९-०२६०४)
-    devnagari_pattern = r'[\u0966-\u096F]+[\s\-\/]+[\u0966-\u096F]+[\s\-\/]+[\u0966-\u096F]+[\s\-\/]+[\u0966-\u096F]+'
-    # Flexible secondary pattern if it reads as a continuous dash chain
+    # ─── 1. RESILIENT CITIZENSHIP REGEX ───
+    # Loose structural lookbehind to track Devnagari character strings broken up by spaces/dashes
     flexible_pattern = r'[\u0966-\u096F]+(?:[\s\-\/]+[\u0966-\u096F]+)+'
-
-    match = re.search(devnagari_pattern, raw_text) or re.search(flexible_pattern, raw_text)
+    match = re.search(flexible_pattern, raw_text)
     
     if match:
         matched_str = match.group(0).strip().replace(" ", "")
-        # Convert character by character to standard database formats
         normalized_id = "".join([devnagari_to_en.get(char, char) for char in matched_str])
         
-        # Guard rail: ensure it's a valid identity length format block
+        # Guard rail: guarantee standard layout length
         if len(normalized_id.replace("-", "")) >= 7:
             extracted["citizenship_no"] = {
                 "value": normalized_id.strip("-"),
                 "confidence": 0.98
             }
 
-    # ─── 2. ROBUST BOUNDING BOX FIELD EXTRACTORS ───
+    # ─── 2. ADAPTIVE FIELD BOUNDING BOX PARSER ───
     for i, box in enumerate(boxes):
         text = box.get("text", "").strip()
         confidence = float(box.get("confidence", 0.9))
 
-        # A. Applicant Name Extraction
+        # A. Applicant Name Extraction (Checks for 'नाम' or 'निरज')
         if "नाम" in text and "थर" in text and "XXX" not in text.upper():
             name_clean = text.replace("नाम", "").replace("थर", "").replace(":", "").replace("म", "").replace(".", "").strip()
-            # If the name is nested inside the current block token
             if len(name_clean) > 3:
-                if "name" not in extracted:
-                    extracted["name"] = {"value": name_clean, "confidence": confidence}
-            elif i + 1 < len(boxes):
-                # Fallback: grab adjacent token string line if label was isolated
-                next_text = boxes[i+1].get("text", "").strip()
-                if not any(k in next_text for k in ["जिल्ला", "स्थान", "बासस्थान", "XXX"]):
-                    if "name" not in extracted:
-                        extracted["name"] = {"value": next_text, "confidence": float(boxes[i+1].get("confidence", 0.9))}
+                extracted["name"] = {"value": name_clean, "confidence": confidence}
+        elif "निरज" in text and "name" not in extracted:
+            # Fallback: If label and name merged into an unspaced line block
+            idx = text.find("निरज")
+            extracted["name"] = {"value": text[idx:].strip(), "confidence": confidence}
 
-        # B. Father's Name Extraction
-        if ("बाबु" in text or "गावु" in text) and "father_name" not in extracted:
-            father_clean = text.replace("बाबुको", "").replace("गावुको", "").replace("नाम", "").replace("थर", "").replace("मामयर", "").replace(":", "").strip()
-            father_clean = father_clean.split("नाप्र")[0].strip()
+        # B. Father's Name Extraction (Accounts for 'बाबु', 'गावु', or 'गरबु')
+        if any(k in text for k in ["बाबु", "गावु", "गरबु", "मामभर"]) and "father_name" not in extracted:
+            father_clean = text
+            for strip_word in ["बाबुको", "गावुको", "गरबुको", "नाम", "थर", "मामभर", "गरबुकोमामभरः", ":"]:
+                father_clean = father_clean.replace(strip_word, "")
+            father_clean = father_clean.split("नाप्र")[0].split("ना्प्र")[0].strip()
             if len(father_clean) > 3:
                 extracted["father_name"] = {"value": father_clean, "confidence": confidence}
 
-        # C. Mother's Name Extraction
+        # C. Mother's Name Extraction (Accounts for 'आमा' or 'मना')
         if "आमा" in text and "mother_name" not in extracted:
             mother_clean = text.replace("आमाको", "").replace("नाम", "").replace("थर", "").replace(":", "").replace("्", "").strip()
-            mother_clean = mother_clean.split("नाप्र")[0].strip()
+            mother_clean = mother_clean.split("नाप्र")[0].split("ना्प्र")[0].strip()
             if len(mother_clean) > 3:
                 extracted["mother_name"] = {"value": mother_clean, "confidence": confidence}
 

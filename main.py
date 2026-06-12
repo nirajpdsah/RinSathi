@@ -5,11 +5,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
 from fastapi.requests import Request
 from contextlib import asynccontextmanager
 from db.session import create_tables
-from api.routes import documents
+from api.routes import documents, income
 from config import get_settings
 
 settings = get_settings()
@@ -25,13 +24,13 @@ async def lifespan(app: FastAPI):
     await create_tables()
     print("Database tables ready (Supabase)")
 
-    # Warm up PaddleOCR — loads 300MB models into memory now, not on first request.
+    # Warm up PaddleOCR — loads models into memory now, not on first request.
     # Without this, the first upload request would time out every time.
     from utils.ocr import warm_up_ocr
     await warm_up_ocr()
 
     print("ACLO API ready")
-    print("  Local:   http://127.0.0.1:8000")
+    print("  Local:    http://127.0.0.1:8000")
     print("  API docs: http://127.0.0.1:8000/docs")
 
     yield   # Server runs here — code after yield runs on shutdown
@@ -62,8 +61,9 @@ app.add_middleware(
 )
 
 # Register route modules
-# prefix="/api/v1" namespaces all routes: /api/v1/document/upload etc.
+# prefix="/api/v1" namespaces all routes inside documents.py cleanly
 app.include_router(documents.router, prefix="/api/v1")
+app.include_router(income.router,    prefix="/api/v1")
 
 # Serve HTML templates (Jinja2)
 templates = Jinja2Templates(directory="frontend/templates")
@@ -73,9 +73,9 @@ async def root(request: Request):
     # Serves login page at http://localhost:8000/
     # include_in_schema=False hides this route from the /docs page
     return templates.TemplateResponse(
-    request=request,
-    name="login.html"
-)
+        request=request,
+        name="login.html"
+    )
 
 @app.get("/health", tags=["System"])
 async def health():
@@ -88,3 +88,14 @@ async def health():
         "ocr_mode": "paddleocr" if OCR_AVAILABLE else "mock",
         "database": "supabase",
     }
+
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+
+templates = Jinja2Templates(directory="frontend/templates")
+
+@app.get("/apply", response_class=HTMLResponse)
+async def get_application_page(request: Request):
+    # Pass the request explicitly as a keyword parameter to solve Jinja2 hashing
+    return templates.TemplateResponse(request=request, name="apply.html")

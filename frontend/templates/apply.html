@@ -1,0 +1,136 @@
+<!-- frontend/templates/apply.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACLO - Income Verification</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js via CDN -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen p-8">
+
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8" 
+         x-data="{
+            applicantId: '00000000-0000-0000-0000-000000000001',
+            useMock: false,
+            esewaRawText: '',
+            incomeResponse: null,
+            loading: false,
+            errorMessage: '',
+            
+            async submitIncome() {
+                this.loading = true;
+                this.errorMessage = '';
+                this.incomeResponse = null;
+                
+                let payload = {
+                    applicant_id: this.applicantId,
+                    use_mock_data: this.useMock
+                };
+
+                // If not using mock data, parse the raw text field into the expected JSON structure
+                if (!this.useMock && this.esewaRawText.trim() !== '') {
+                    try {
+                        payload.esewa_data = JSON.parse(this.esewaRawText);
+                    } catch(e) {
+                        this.errorMessage = 'Invalid JSON structure pasted into eSewa Data field.';
+                        this.loading = false;
+                        return;
+                    }
+                }
+
+                try {
+                    let response = await fetch('/api/v1/income/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    let data = await response.json();
+                    if (response.ok) {
+                        this.incomeResponse = data;
+                    } else {
+                        this.errorMessage = data.detail || 'Analysis pipeline returned an operational error.';
+                    }
+                } catch (err) {
+                    this.errorMessage = 'Network connection to ACLO server failed.';
+                } finally {
+                    this.loading = false;
+                }
+            }
+         }">
+
+        <!-- Header -->
+        <div class="border-b pb-4 mb-6">
+            <h1 class="text-2xl font-bold text-blue-800">Income Verification Engine</h1>
+            <p class="text-slate-500 text-sm">ACLO Pipeline Step 2: Financial Signal Extraction & Normalization</p>
+        </div>
+
+        <!-- Error Handling Display -->
+        <div x-show="errorMessage" class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4 mb-6" x-text="errorMessage"></div>
+
+        <!-- Selection Form Blocks -->
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Application UUID Reference</label>
+                <input type="text" x-model="applicantId" class="w-full border rounded-lg p-2 text-sm font-mono outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+
+            <!-- Toggle between Real Processing and Mock Evaluation Mode -->
+            <div class="bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+                <div>
+                    <span class="block text-sm font-semibold text-blue-900">Demonstration Toggle</span>
+                    <span class="text-xs text-blue-700">Enable this mode to bypass file mapping and inject test distributions into the parser pipeline.</span>
+                </div>
+                <input type="checkbox" x-model="useMock" class="w-5 h-5 accent-blue-700">
+            </div>
+
+            <!-- Real Input Container Box -->
+            <div x-show="!useMock">
+                <label class="block text-sm font-semibold text-slate-700 mb-1">Paste Real eSewa Transaction Record (JSON format)</label>
+                <span class="block text-xs text-slate-400 mb-2">In production, this string block is captured programmatically by statement parser components.</span>
+                <textarea x-model="esewaRawText" rows="6" placeholder='{ "account_name": "Ram Bahadur Thapa", "transactions": [{"date": "2026-05-10", "amount": 35000, "type": "salary"}] }' 
+                          class="w-full border rounded-lg p-3 text-sm font-mono outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"></textarea>
+            </div>
+
+            <!-- Submission Action Call -->
+            <button @click="submitIncome()" :disabled="loading" 
+                    class="w-full bg-blue-700 text-white font-medium p-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50">
+                <span x-text="loading ? 'Processing Financial Records...' : 'Execute Income Analysis Pipeline'"></span>
+            </button>
+        </div>
+
+        <!-- Pipeline Execution Results Result Container -->
+        <div x-show="incomeResponse" class="mt-8 border-t pt-6" x-transition>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Pipeline Metric Summary</h3>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 rounded-lg border">
+                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block">Normalized Monthly Income</span>
+                    <span class="text-xl font-bold text-slate-800">NPR <span x-text="incomeResponse?.mean_monthly_npr.toLocaleString()"></span></span>
+                </div>
+                
+                <div class="p-4 bg-slate-50 rounded-lg border">
+                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block">Data Reliability Score</span>
+                    <span class="text-xl font-bold" :class="incomeResponse?.low_confidence ? 'text-amber-600' : 'text-emerald-600'" 
+                          x-text="(incomeResponse?.confidence * 100).toFixed(1) + '%'"></span>
+                </div>
+            </div>
+
+            <div class="mt-4 p-4 bg-slate-50 rounded-lg border">
+                <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-2">Verified Revenue Channels</span>
+                <div class="flex gap-2">
+                    <template x-for="source in incomeResponse?.sources">
+                        <span class="bg-blue-100 text-blue-800 font-semibold px-2.5 py-0.5 rounded text-xs uppercase" x-text="source"></span>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
