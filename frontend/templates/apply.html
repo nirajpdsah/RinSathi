@@ -1,136 +1,274 @@
-<!-- frontend/templates/apply.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACLO - Income Verification</title>
-    <!-- Tailwind CSS via CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Alpine.js via CDN -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RinSathi — Income Verification Console</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 min-h-screen p-8">
+<body class="bg-[#0b0f19] text-gray-200 min-h-screen p-6 sm:p-12 relative overflow-x-hidden">
+  <!-- Decorative Glow -->
+  <div class="absolute top-0 right-0 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-md p-8" 
-         x-data="{
-            applicantId: '00000000-0000-0000-0000-000000000001',
-            useMock: false,
-            esewaRawText: '',
-            incomeResponse: null,
-            loading: false,
-            errorMessage: '',
-            
-            async submitIncome() {
-                this.loading = true;
-                this.errorMessage = '';
-                this.incomeResponse = null;
-                
-                let payload = {
-                    applicant_id: this.applicantId,
-                    use_mock_data: this.useMock
-                };
+  <div class="max-w-4xl mx-auto space-y-8 relative z-10"
+       x-data="{
+          applicantId: '00000000-0000-0000-0000-000000000001',
+          useMock: false,
+          esewaRawText: '',
+          incomeResponse: null,
+          loading: false,
+          errorMessage: '',
+          
+          loadTemplate(type) {
+              const templates = {
+                  salary: JSON.stringify({
+                      account_name: 'Ram Bahadur Thapa',
+                      transactions: [
+                          { date: '2026-05-10', amount: 35000, type: 'salary' },
+                          { date: '2026-04-10', amount: 35000, type: 'salary' },
+                          { date: '2026-03-10', amount: 35000, type: 'salary' }
+                      ]
+                  }, null, 2),
+                  agri: JSON.stringify({
+                      account_name: 'Sita Kumari Dahal',
+                      transactions: [
+                          { date: '2026-05-02', amount: 48000, type: 'agriculture_sales' },
+                          { date: '2026-04-15', amount: 52000, type: 'agriculture_sales' }
+                      ]
+                  }, null, 2)
+              };
+              this.esewaRawText = templates[type];
+              this.useMock = false;
+          },
+          
+          async submitIncome() {
+              this.loading = true;
+              this.errorMessage = '';
+              this.incomeResponse = null;
+              
+              let payload = {
+                  applicant_id: this.applicantId,
+                  use_mock_data: this.useMock
+              };
 
-                // If not using mock data, parse the raw text field into the expected JSON structure
-                if (!this.useMock && this.esewaRawText.trim() !== '') {
-                    try {
-                        payload.esewa_data = JSON.parse(this.esewaRawText);
-                    } catch(e) {
-                        this.errorMessage = 'Invalid JSON structure pasted into eSewa Data field.';
-                        this.loading = false;
-                        return;
-                    }
-                }
+              if (!this.useMock && this.esewaRawText.trim() !== '') {
+                  try {
+                      payload.esewa_data = JSON.parse(this.esewaRawText);
+                  } catch(e) {
+                      this.errorMessage = 'Invalid JSON structure pasted into statement data field.';
+                      this.loading = false;
+                      return;
+                  }
+              } else if (!this.useMock && this.esewaRawText.trim() === '') {
+                  this.errorMessage = 'Please paste a valid JSON transaction record or select mock mode.';
+                  this.loading = false;
+                  return;
+              }
 
-                try {
-                    let response = await fetch('/api/v1/income/analyze', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    
-                    let data = await response.json();
-                    if (response.ok) {
-                        this.incomeResponse = data;
-                    } else {
-                        this.errorMessage = data.detail || 'Analysis pipeline returned an operational error.';
-                    }
-                } catch (err) {
-                    this.errorMessage = 'Network connection to ACLO server failed.';
-                } finally {
-                    this.loading = false;
-                }
-            }
-         }">
+              try {
+                  let response = await fetch('/api/v1/income/analyze', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify(payload)
+                  });
+                  
+                  let data = await response.json();
+                  if (response.ok) {
+                      this.incomeResponse = data;
+                  } else {
+                      this.errorMessage = data.detail || 'Analysis pipeline returned an operational error.';
+                  }
+              } catch (err) {
+                  this.errorMessage = 'Network connection to RinSathi server failed.';
+              } finally {
+                  this.loading = false;
+              }
+          }
+       }">
 
-        <!-- Header -->
-        <div class="border-b pb-4 mb-6">
-            <h1 class="text-2xl font-bold text-blue-800">Income Verification Engine</h1>
-            <p class="text-slate-500 text-sm">ACLO Pipeline Step 2: Financial Signal Extraction & Normalization</p>
+    <!-- Top Navigation Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-6 gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="inline-flex items-center justify-center p-2 bg-indigo-600/20 text-indigo-400 rounded-xl hover:bg-indigo-600/30 transition-all">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+          </svg>
+        </a>
+        <div>
+          <h1 class="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
+            RinSathi <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-semibold border border-indigo-500/30">Income Engine</span>
+          </h1>
+          <p class="text-xs text-gray-400 mt-0.5">Financial Signal Extraction & Normalization Console</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <a href="/dashboard" class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-semibold text-gray-300 hover:bg-white/10 transition-all">
+          Underwriting Dashboard →
+        </a>
+      </div>
+    </header>
+
+    <!-- Error Handling Banner -->
+    <div x-show="errorMessage" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         class="bg-rose-500/10 border border-rose-500/20 text-rose-300 text-sm rounded-xl p-4 flex items-start gap-3">
+      <svg class="w-5 h-5 text-rose-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+      </svg>
+      <span x-text="errorMessage"></span>
+    </div>
+
+    <!-- Main Content Workspace -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      
+      <!-- Input Panel -->
+      <div class="md:col-span-7 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6 shadow-xl backdrop-blur-xl">
+        <div class="border-b border-white/5 pb-4">
+          <h2 class="text-lg font-bold text-white">Application Parameters</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Ingest alternative statements or select sandbox mode.</p>
         </div>
 
-        <!-- Error Handling Display -->
-        <div x-show="errorMessage" class="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-4 mb-6" x-text="errorMessage"></div>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Applicant ID Reference</label>
+            <input type="text" x-model="applicantId" class="w-full bg-[#131926] border border-white/5 rounded-xl px-4 py-3 text-sm text-mono text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all">
+          </div>
 
-        <!-- Selection Form Blocks -->
-        <div class="space-y-6">
-            <div>
-                <label class="block text-sm font-semibold text-slate-700 mb-2">Application UUID Reference</label>
-                <input type="text" x-model="applicantId" class="w-full border rounded-lg p-2 text-sm font-mono outline-none focus:ring-2 focus:ring-blue-500">
+          <!-- Demo Checkbox Card -->
+          <div class="bg-indigo-950/20 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between">
+            <div class="pr-4">
+              <span class="block text-xs font-bold text-indigo-300">Sandbox Mock Mode</span>
+              <span class="text-[11px] text-gray-500 block mt-0.5">Generate realistic Nepali distributions without uploading actual statement files.</span>
             </div>
+            <input type="checkbox" x-model="useMock" class="w-5 h-5 rounded accent-indigo-500 bg-black/40 border-white/10">
+          </div>
 
-            <!-- Toggle between Real Processing and Mock Evaluation Mode -->
-            <div class="bg-blue-50 p-4 rounded-lg flex items-center justify-between">
-                <div>
-                    <span class="block text-sm font-semibold text-blue-900">Demonstration Toggle</span>
-                    <span class="text-xs text-blue-700">Enable this mode to bypass file mapping and inject test distributions into the parser pipeline.</span>
-                </div>
-                <input type="checkbox" x-model="useMock" class="w-5 h-5 accent-blue-700">
+          <!-- JSON Input Area -->
+          <div x-show="!useMock" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" class="space-y-2">
+            <div class="flex justify-between items-center">
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Statement JSON Record</label>
+              <div class="flex gap-2">
+                <button @click="loadTemplate('salary')" class="text-[10px] bg-white/5 hover:bg-white/10 text-indigo-300 border border-white/5 px-2 py-1 rounded transition-all">
+                  + Salary Presets
+                </button>
+                <button @click="loadTemplate('agri')" class="text-[10px] bg-white/5 hover:bg-white/10 text-indigo-300 border border-white/5 px-2 py-1 rounded transition-all">
+                  + Agri Presets
+                </button>
+              </div>
             </div>
-
-            <!-- Real Input Container Box -->
-            <div x-show="!useMock">
-                <label class="block text-sm font-semibold text-slate-700 mb-1">Paste Real eSewa Transaction Record (JSON format)</label>
-                <span class="block text-xs text-slate-400 mb-2">In production, this string block is captured programmatically by statement parser components.</span>
-                <textarea x-model="esewaRawText" rows="6" placeholder='{ "account_name": "Ram Bahadur Thapa", "transactions": [{"date": "2026-05-10", "amount": 35000, "type": "salary"}] }' 
-                          class="w-full border rounded-lg p-3 text-sm font-mono outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50"></textarea>
+            <div class="relative rounded-xl overflow-hidden border border-white/5">
+              <textarea x-model="esewaRawText" rows="9" 
+                        placeholder='{
+  "account_name": "Ram Bahadur Thapa",
+  "transactions": [
+    { "date": "2026-05-10", "amount": 35000, "type": "salary" }
+  ]
+}'
+                        class="w-full bg-[#131926] p-4 text-xs font-mono text-emerald-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all placeholder:text-gray-600 block"></textarea>
             </div>
+          </div>
 
-            <!-- Submission Action Call -->
-            <button @click="submitIncome()" :disabled="loading" 
-                    class="w-full bg-blue-700 text-white font-medium p-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50">
-                <span x-text="loading ? 'Processing Financial Records...' : 'Execute Income Analysis Pipeline'"></span>
-            </button>
+          <!-- Submission Action -->
+          <button @click="submitIncome()" :disabled="loading" 
+                  class="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 transform active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2 text-sm tracking-wide">
+            <svg x-show="loading" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span x-text="loading ? 'Parsing Financial Records...' : 'Execute Income Analysis'"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Output / Results Display -->
+      <div class="md:col-span-5 flex flex-col justify-between">
+        <div x-show="!incomeResponse && !loading" class="h-full flex flex-col items-center justify-center p-8 bg-white/5 border border-white/10 border-dashed rounded-2xl text-center min-h-[300px]">
+          <svg class="w-12 h-12 text-gray-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/>
+          </svg>
+          <h3 class="text-sm font-semibold text-white">Results Pending</h3>
+          <p class="text-xs text-gray-500 mt-1 max-w-[200px]">Configure your inputs and run analysis to populate real-time metrics.</p>
         </div>
 
-        <!-- Pipeline Execution Results Result Container -->
-        <div x-show="incomeResponse" class="mt-8 border-t pt-6" x-transition>
-            <h3 class="text-lg font-bold text-slate-800 mb-4">Pipeline Metric Summary</h3>
+        <!-- Scanning Loader Mock State -->
+        <div x-show="loading" class="h-full flex flex-col items-center justify-center p-8 bg-white/5 border border-white/10 rounded-2xl min-h-[300px]">
+          <div class="relative w-16 h-16 mb-4">
+            <div class="absolute inset-0 rounded-full border-4 border-indigo-500/20"></div>
+            <div class="absolute inset-0 rounded-full border-4 border-t-indigo-500 animate-spin"></div>
+          </div>
+          <span class="text-xs text-indigo-400 font-bold uppercase tracking-wider animate-pulse">Running Ledger AI...</span>
+        </div>
+
+        <!-- Rendered Metrics -->
+        <div x-show="incomeResponse" 
+             x-transition:enter="transition ease-out duration-500" 
+             x-transition:enter-start="opacity-0 translate-y-4"
+             class="space-y-6">
+          
+          <div class="bg-gradient-to-br from-indigo-500/10 to-indigo-600/5 border border-indigo-500/20 rounded-2xl p-6 shadow-xl">
+            <h3 class="text-xs font-bold text-indigo-300 uppercase tracking-wider mb-4 border-b border-indigo-500/10 pb-2">Normalized Analysis</h3>
             
             <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-slate-50 rounded-lg border">
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block">Normalized Monthly Income</span>
-                    <span class="text-xl font-bold text-slate-800">NPR <span x-text="incomeResponse?.mean_monthly_npr.toLocaleString()"></span></span>
-                </div>
-                
-                <div class="p-4 bg-slate-50 rounded-lg border">
-                    <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block">Data Reliability Score</span>
-                    <span class="text-xl font-bold" :class="incomeResponse?.low_confidence ? 'text-amber-600' : 'text-emerald-600'" 
-                          x-text="(incomeResponse?.confidence * 100).toFixed(1) + '%'"></span>
-                </div>
+              <div class="bg-[#131926] p-4 rounded-xl border border-white/5">
+                <span class="text-[10px] text-gray-500 font-bold uppercase block tracking-wider">Monthly Income</span>
+                <span class="text-lg font-bold text-white block mt-1">NPR <span x-text="incomeResponse?.mean_monthly_npr.toLocaleString()"></span></span>
+              </div>
+              
+              <div class="bg-[#131926] p-4 rounded-xl border border-white/5">
+                <span class="text-[10px] text-gray-500 font-bold uppercase block tracking-wider">Reliability Score</span>
+                <span class="text-lg font-bold block mt-1" :class="incomeResponse?.low_confidence ? 'text-amber-400' : 'text-emerald-400'" 
+                      x-text="(incomeResponse?.confidence * 100).toFixed(1) + '%'"></span>
+              </div>
             </div>
 
-            <div class="mt-4 p-4 bg-slate-50 rounded-lg border">
-                <span class="text-xs text-slate-400 font-medium uppercase tracking-wider block mb-2">Verified Revenue Channels</span>
-                <div class="flex gap-2">
-                    <template x-for="source in incomeResponse?.sources">
-                        <span class="bg-blue-100 text-blue-800 font-semibold px-2.5 py-0.5 rounded text-xs uppercase" x-text="source"></span>
-                    </template>
-                </div>
+            <!-- Standard Deviation/Volatility -->
+            <div class="mt-4 bg-[#131926] p-4 rounded-xl border border-white/5">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Income Volatility (Std Dev)</span>
+                <span class="text-xs font-semibold text-gray-300">NPR <span x-text="incomeResponse?.std_dev_npr.toLocaleString()"></span></span>
+              </div>
+              <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden mt-2">
+                <!-- Visual estimation representation -->
+                <div class="bg-indigo-500 h-full" :style="'width: ' + Math.min((incomeResponse?.std_dev_npr / (incomeResponse?.mean_monthly_npr || 1)) * 100, 100) + '%'"></div>
+              </div>
             </div>
+          </div>
+
+          <!-- Revenue Channels Card -->
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl space-y-4">
+            <div>
+              <span class="text-xs font-bold text-white uppercase tracking-wider block">Verified Channels</span>
+              <span class="text-[10px] text-gray-500 block mt-0.5">Active cash flows identified in parsing.</span>
+            </div>
+            
+            <div class="flex flex-wrap gap-2">
+              <template x-for="source in incomeResponse?.sources">
+                <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold px-3 py-1 rounded-lg text-xs uppercase tracking-wide" x-text="source"></span>
+              </template>
+              <template x-if="!incomeResponse?.sources || incomeResponse?.sources.length === 0">
+                <span class="text-xs text-gray-500 italic">No transactional streams identified.</span>
+              </template>
+            </div>
+          </div>
+
         </div>
+      </div>
 
     </div>
 
+  </div>
 </body>
 </html>

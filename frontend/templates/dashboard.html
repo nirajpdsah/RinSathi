@@ -1,296 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RinSathi — Multi-Agent Underwriting & B2B Bank Routing Engine</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RinSathi — Multi-Agent Underwriting Engine</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Outfit', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans min-h-screen p-6 sm:p-12">
+<body class="bg-[#0b0f19] text-gray-200 min-h-screen p-6 sm:p-12 relative overflow-x-hidden">
+  
+  <!-- Decorative Glow Orbs -->
+  <div class="absolute top-0 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
 
-    <div class="max-w-6xl mx-auto space-y-8">
-        
-        <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-6 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold tracking-tight text-black">RinSathi</h1>
-                <p class="text-sm text-gray-500 mt-1">AI-Driven Loan Underwriting Middleware for Commercial Banks</p>
-            </div>
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-xs text-xs font-medium text-gray-600">
-                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                Bank Routing API Active
-            </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            
-            <section class="lg:col-span-5 bg-white p-6 rounded-xl border border-gray-100 shadow-xs space-y-6">
-                <div>
-                    <h2 class="text-lg font-bold text-gray-800">Application Intake Console</h2>
-                    <p class="text-xs text-gray-400">Ingest applicant parameters & identity documentation for automated bank triage.</p>
-                </div>
-
-                <form id="loanPipelineForm" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Requested Amount (NPR) *</label>
-                        <input type="number" id="loan_amount_npr" value="150000" required class="w-full p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:outline-none bg-gray-50/50">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">Economic Sector Designation *</label>
-                        <select id="sector" class="w-full p-3 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black focus:outline-none bg-gray-50/50">
-                            <option value="agriculture">Agriculture & Farming Exposure</option>
-                            <option value="retail">Retail Trade & Micro-Enterprise</option>
-                            <option value="tourism">Tourism & Hospitality Services</option>
-                            <option value="technology">Information Technology & Freelance</option>
-                        </select>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-100">
-                        <div class="pr-4">
-                            <label class="block text-xs font-bold text-gray-700">Sprint Demo Mode</label>
-                            <p class="text-[11px] text-gray-400">Loads mock alternative records for sandbox verification.</p>
-                        </div>
-                        <input type="checkbox" id="use_mock_income" checked class="w-4 h-4 accent-black rounded">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1">KYC / Asset Documentation *</label>
-                        <div class="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center bg-gray-50/30 hover:bg-gray-50 transition cursor-pointer relative">
-                            <input type="file" id="document" accept="image/jpeg,image/jpg,image/png" required class="absolute inset-0 opacity-0 cursor-pointer">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mx-auto text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <span class="text-xs font-medium text-gray-600 block" id="fileNamePlaceholder">Upload Citizenship or Lalpurja Card (PNG/JPG)</span>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="w-full bg-black text-white py-3.5 rounded-lg font-medium text-sm hover:bg-gray-800 transition duration-150 shadow-xs mt-2 cursor-pointer flex items-center justify-center gap-2">
-                        <span>Process & Evaluate Application</span>
-                    </button>
-                </form>
-            </section>
-
-            <main class="lg:col-span-7 space-y-6">
-                
-                <section id="agentTrackerBlock" class="hidden bg-white p-6 rounded-xl border border-gray-100 shadow-xs space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400">Document Agent OCR & Processing Pipeline</h3>
-                        <span id="progressBarPercentage" class="text-xs font-bold text-gray-700">0%</span>
-                    </div>
-                    
-                    <div class="w-full bg-gray-100 h-3 rounded-full overflow-hidden border border-gray-200/50">
-                        <div id="documentProgressBar" class="bg-black h-full w-0 transition-all duration-300 ease-out"></div>
-                    </div>
-                    <p id="progressStatusText" class="text-xs text-gray-500 italic">Initializing high-accuracy computer vision pipeline...</p>
-
-                    <div class="pt-2 border-t border-gray-100 space-y-2">
-                        <div id="chkParallel" class="flex items-center justify-between text-xs font-medium text-gray-400">
-                            <span>⚡ Agents [1 & 2]: Alternative Transactions & OCR Extraction</span>
-                            <span class="chk-status">Pending...</span>
-                        </div>
-                        <div id="chkSequential" class="flex items-center justify-between text-xs font-medium text-gray-400">
-                            <span>🧠 Agents [3, 4 & 5]: Risk Scoring, Compliance Verification & Triage Decision</span>
-                            <span class="chk-status">Pending...</span>
-                        </div>
-                    </div>
-                </section>
-
-                <section id="verdictWrapper" class="hidden space-y-6">
-                    
-                    <div id="decisionBanner" class="p-6 rounded-xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div class="space-y-1">
-                            <h3 class="text-xs font-bold uppercase tracking-wider opacity-70">Automated Middleware Assessment</h3>
-                            <p id="txtFinalDecision" class="text-3xl font-extrabold tracking-tight">VERDICT</p>
-                        </div>
-                        <div class="bg-white/20 px-4 py-2.5 rounded-lg backdrop-blur-xs text-right border border-white/10">
-                            <div class="text-[10px] font-bold uppercase tracking-wide opacity-80">Orchestrator Time</div>
-                            <div id="txtPipelineTime" class="text-lg font-black mt-0.5">0 ms</div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-xs space-y-2">
-                        <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">AI Recommendation Context (Forwarded to Bank Loan Officer)</h4>
-                        <p id="txtDecisionReason" class="text-sm text-gray-700 leading-relaxed font-medium">N/A</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-xs">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide block">XGBoost Scoring Index</span>
-                            <span id="txtCreditScore" class="text-2xl font-black text-gray-900 block mt-1">N/A</span>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-xs">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide block">Aggregated Monthly Cashflow</span>
-                            <span id="txtMonthlyIncome" class="text-2xl font-black text-gray-900 block mt-1">N/A</span>
-                        </div>
-                        <div class="bg-white p-4 rounded-xl border border-gray-100 shadow-xs">
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wide block">OCR Confidence Bound</span>
-                            <span id="txtDocConfidence" class="text-2xl font-black text-gray-900 block mt-1">N/A</span>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-xs space-y-3">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Mapped Financial Anchors</h4>
-                            <div id="incomeSourcesBox" class="flex flex-wrap gap-2 pt-1"></div>
-                        </div>
-
-                        <div class="bg-white p-5 rounded-xl border border-gray-100 shadow-xs space-y-3">
-                            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">NRB Compliance Flags Guard</h4>
-                            <div id="complianceFlagsBox" class="space-y-2 pt-1"></div>
-                        </div>
-                    </div>
-                </section>
-            </main>
+  <div class="max-w-6xl mx-auto space-y-8 relative z-10">
+    
+    <!-- Header Area -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-6 gap-4">
+      <div>
+        <h1 class="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
+          RinSathi 
+          <span class="text-xs bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full font-bold border border-indigo-500/30 tracking-wide uppercase">ACLO v1.0</span>
+        </h1>
+        <p class="text-xs text-gray-400 mt-1.5">Autonomous Credit & Lending Underwriting Middleware for Microfinance Routing</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="/apply" class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-semibold text-gray-300 hover:bg-white/10 transition-all">
+          Income Verification Console
+        </a>
+        <div class="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-2 rounded-full text-xs font-medium text-emerald-400 shadow-lg shadow-emerald-500/5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          Gateway Online
         </div>
+      </div>
+    </header>
+
+    <!-- Main Workspace Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Left Column: Form Intake -->
+      <section class="lg:col-span-5 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6 shadow-xl backdrop-blur-xl">
+        <div class="border-b border-white/5 pb-4">
+          <h2 class="text-lg font-bold text-white">Application Intake</h2>
+          <p class="text-xs text-gray-400 mt-0.5">Capture parameters and identity metrics to route automatically.</p>
+        </div>
+
+        <form id="loanPipelineForm" class="space-y-5">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Requested Amount (NPR) *</label>
+            <div class="relative">
+              <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-500 text-sm font-semibold">NPR</span>
+              <input type="number" id="loan_amount_npr" value="150000" required class="w-full bg-[#131926] border border-white/5 rounded-xl pl-14 pr-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all font-semibold">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Economic Sector Designation *</label>
+            <div class="relative">
+              <select id="sector" class="w-full bg-[#131926] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all appearance-none cursor-pointer">
+                <option value="agriculture">Agriculture & Farming Exposure</option>
+                <option value="retail">Retail Trade & Micro-Enterprise</option>
+                <option value="tourism">Tourism & Hospitality Services</option>
+                <option value="technology">Information Technology & Freelance</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3.5 pointer-events-none text-gray-500">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Demo Toggle -->
+          <div class="bg-indigo-950/20 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between">
+            <div class="pr-4">
+              <span class="block text-xs font-bold text-indigo-300">Alternative Cashflow Preset</span>
+              <span class="text-[11px] text-gray-500 block mt-0.5">Loads mock digital transaction ledger models to speed up assessment.</span>
+            </div>
+            <input type="checkbox" id="use_mock_income" checked class="w-5 h-5 rounded accent-indigo-500 bg-black/40 border-white/10">
+          </div>
+
+          <!-- Drag & Drop Upload Zone -->
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Citizenship Card or Landlalpurja deed *</label>
+            <div id="dropZone" class="border-2 border-dashed border-white/10 hover:border-indigo-500/40 rounded-xl p-6 text-center bg-[#131926]/40 hover:bg-[#131926]/60 transition-all cursor-pointer relative group">
+              <input type="file" id="document" accept="image/jpeg,image/jpg,image/png" required class="absolute inset-0 opacity-0 cursor-pointer">
+              <!-- Animated SVG Doc Icon -->
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mx-auto text-gray-500 mb-3 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span class="text-xs font-bold text-gray-300 block group-hover:text-white transition-colors" id="fileNamePlaceholder">Drag & drop image file or browse</span>
+              <span class="text-[10px] text-gray-600 block mt-1">Accepts PNG, JPG, or JPEG</span>
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-500/10 hover:shadow-indigo-500/20 transform active:scale-[0.98] transition-all cursor-pointer text-sm tracking-wide flex items-center justify-center gap-2">
+            Execute Multi-Agent Assessment
+          </button>
+        </form>
+      </section>
+
+      <!-- Right Column: Process/Results -->
+      <main class="lg:col-span-7 space-y-6">
+        
+        <!-- Welcome Screen before submitting -->
+        <section id="welcomeBlock" class="bg-white/5 border border-white/10 rounded-2xl p-10 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
+          <div class="p-4 bg-indigo-600/10 rounded-full border border-indigo-500/20 animate-pulse">
+            <svg class="w-12 h-12 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <h3 class="text-lg font-bold text-white">Awaiting Underwriting Ingestion</h3>
+          <p class="text-xs text-gray-400 max-w-sm leading-relaxed">Fill out the loan application details on the intake console and submit to launch the autonomous credit pipeline.</p>
+        </section>
+
+        <!-- Pipeline Progress Console (Terminal Style) -->
+        <section id="agentTrackerBlock" class="hidden bg-white/5 border border-white/10 rounded-2xl p-6 space-y-5 shadow-xl backdrop-blur-xl">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+              Orchestrator Activity Pipeline
+            </h3>
+            <span id="progressBarPercentage" class="text-xs font-bold text-indigo-400">0%</span>
+          </div>
+          
+          <div class="w-full bg-[#131926] h-2 rounded-full overflow-hidden border border-white/5">
+            <div id="documentProgressBar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-0 transition-all duration-300 ease-out"></div>
+          </div>
+          
+          <!-- Terminal Logs -->
+          <div class="bg-[#0b0f19]/80 border border-white/5 rounded-xl p-4 font-mono text-[11px] text-emerald-400 space-y-1.5 h-36 overflow-y-auto custom-scrollbar" id="consoleLogs">
+            <div>&gt; RIN-ACLO [SYS]: Pipeline initialised. Waiting for file streams...</div>
+          </div>
+
+          <div class="pt-3 border-t border-white/5 space-y-2.5">
+            <div id="chkParallel" class="flex items-center justify-between text-xs font-medium text-gray-500">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Document & Income Verification Agents (Concurrent)
+              </span>
+              <span class="chk-status text-[10px] font-bold uppercase tracking-wider">Pending</span>
+            </div>
+            <div id="chkSequential" class="flex items-center justify-between text-xs font-medium text-gray-500">
+              <span class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1M21 12h-1M4 12H3m3.343-5.657l-.707-.707"></path></svg>
+                Risk Scoring, Compliance & Routing Decision (Sequential)
+              </span>
+              <span class="chk-status text-[10px] font-bold uppercase tracking-wider">Pending</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Final Underwriting Verdict -->
+        <section id="verdictWrapper" class="hidden space-y-6">
+          
+          <!-- Big Banner Verdict -->
+          <div id="decisionBanner" class="p-6 rounded-2xl border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl relative overflow-hidden">
+            <div class="space-y-1.5 relative z-10">
+              <h3 class="text-xs font-bold uppercase tracking-widest opacity-80">Automatic Lending Verdict</h3>
+              <p id="txtFinalDecision" class="text-3xl font-extrabold tracking-tight">VERDICT</p>
+            </div>
+            
+            <div class="bg-white/5 border border-white/10 px-5 py-3 rounded-xl backdrop-blur-md text-right shrink-0">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Run Latency</div>
+              <div id="txtPipelineTime" class="text-xl font-extrabold text-white mt-1">0 ms</div>
+            </div>
+          </div>
+
+          <!-- Reason block -->
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl space-y-2.5">
+            <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Explainability Attributions & Audit Trail</h4>
+            <p id="txtDecisionReason" class="text-sm text-gray-200 leading-relaxed font-medium">N/A</p>
+          </div>
+
+          <!-- Score and Metrics Dashboard -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- Circular Repayment Dial -->
+            <div class="md:col-span-5 bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center shadow-xl space-y-4">
+              <div>
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Credit Index Score</span>
+                <span class="text-[10px] text-gray-500 block mt-0.5">XGBoost prediction rating</span>
+              </div>
+              <div class="relative w-32 h-32 flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90">
+                  <circle cx="64" cy="64" r="50" class="stroke-white/5 fill-none" stroke-width="8"></circle>
+                  <circle id="gaugeCircle" cx="64" cy="64" r="50" class="stroke-indigo-500 fill-none transition-all duration-1000 ease-out" stroke-width="8" stroke-dasharray="314.16" stroke-dashoffset="314.16"></circle>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <span id="txtCreditScore" class="text-2xl font-black text-white">N/A</span>
+                  <span class="text-[9px] text-gray-500 uppercase tracking-wider font-semibold">Repayment Rating</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Normalized Financial Insights -->
+            <div class="md:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="bg-white/5 border border-white/10 p-5 rounded-2xl shadow-xl flex flex-col justify-between">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Normalized Cashflow</span>
+                <span id="txtMonthlyIncome" class="text-xl font-extrabold text-white block mt-2">N/A</span>
+                <span class="text-[10px] text-gray-500 mt-1 block">Aggregated monthly income</span>
+              </div>
+              <div class="bg-white/5 border border-white/10 p-5 rounded-2xl shadow-xl flex flex-col justify-between">
+                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">OCR Confidence Bound</span>
+                <span id="txtDocConfidence" class="text-xl font-extrabold text-white block mt-2">N/A</span>
+                <span class="text-[10px] text-gray-500 mt-1 block">Identity document clarity rating</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom details -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl shadow-xl space-y-3">
+              <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Anchored Cashflow Channels</h4>
+              <div id="incomeSourcesBox" class="flex flex-wrap gap-2 pt-1"></div>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 p-5 rounded-2xl shadow-xl space-y-3">
+              <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider">NRB Compliance Guard</h4>
+              <div id="complianceFlagsBox" class="space-y-2 pt-1"></div>
+            </div>
+          </div>
+
+        </section>
+      </main>
     </div>
+  </div>
 
-    <script>
-        document.getElementById('document').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : "Upload Citizenship or Lalpurja Card (PNG/JPG)";
-            document.getElementById('fileNamePlaceholder').innerText = fileName;
+  <script>
+    // Drag and Drop implementation
+    const dropZone = document.getElementById('dropZone');
+    const docInput = document.getElementById('document');
+    const placeholder = document.getElementById('fileNamePlaceholder');
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add('border-indigo-500', 'bg-indigo-950/20');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('border-indigo-500', 'bg-indigo-950/20');
+      }, false);
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      docInput.files = files;
+      updateFileName(files[0]);
+    });
+
+    docInput.addEventListener('change', function(e) {
+      updateFileName(e.target.files[0]);
+    });
+
+    function updateFileName(file) {
+      placeholder.innerText = file ? file.name : "Drag & drop image file or browse";
+    }
+
+    // Pipeline Form submission
+    document.getElementById('loanPipelineForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // UI components
+      document.getElementById('welcomeBlock').classList.add('hidden');
+      document.getElementById('verdictWrapper').classList.add('hidden');
+      
+      const trackerBlock = document.getElementById('agentTrackerBlock');
+      const progressBar = document.getElementById('documentProgressBar');
+      const progressPercent = document.getElementById('progressBarPercentage');
+      const consoleLogs = document.getElementById('consoleLogs');
+      
+      const chkParallel = document.getElementById('chkParallel');
+      const chkSequential = document.getElementById('chkSequential');
+
+      // Reset UI state
+      trackerBlock.classList.remove('hidden');
+      progressBar.style.width = '0%';
+      progressPercent.innerText = '0%';
+      consoleLogs.innerHTML = '<div>&gt; RIN-ACLO [SYS]: Launching core multi-agent lending orchestrator...</div>';
+      
+      chkParallel.className = "flex items-center justify-between text-xs font-medium text-gray-500";
+      chkParallel.querySelector('.chk-status').innerText = "Pending";
+      chkSequential.className = "flex items-center justify-between text-xs font-medium text-gray-500";
+      chkSequential.querySelector('.chk-status').innerText = "Pending";
+
+      const appendLog = (msg) => {
+        const div = document.createElement('div');
+        div.innerHTML = `&gt; ${msg}`;
+        consoleLogs.appendChild(div);
+        consoleLogs.scrollTop = consoleLogs.scrollHeight;
+      };
+
+      // Ingest params
+      const loan_amount_npr = document.getElementById('loan_amount_npr').value;
+      const sector = document.getElementById('sector').value;
+      const use_mock_income = document.getElementById('use_mock_income').checked;
+      const documentFile = docInput.files[0];
+
+      const formDataPayload = new FormData();
+      formDataPayload.append('loan_amount_npr', loan_amount_npr);
+      formDataPayload.append('sector', sector);
+      formDataPayload.append('use_mock_income', use_mock_income);
+      formDataPayload.append('document', documentFile);
+
+      // Simulation steps
+      let currentProgress = 5;
+      progressBar.style.width = currentProgress + '%';
+      progressPercent.innerText = currentProgress + '%';
+
+      const progressInterval = setInterval(() => {
+        if (currentProgress < 40) {
+          currentProgress += 7;
+          if(currentProgress > 15 && currentProgress < 25) {
+            appendLog("<span class='text-indigo-400'>[DOCUMENT AGENT]</span> Initialising preprocessor filters: Grayscale, Denoising...");
+          }
+        } else if (currentProgress < 75) {
+          currentProgress += 5;
+          chkParallel.className = "flex items-center justify-between text-xs font-bold text-indigo-400 animate-pulse";
+          chkParallel.querySelector('.chk-status').innerText = "Running...";
+          if(currentProgress > 45 && currentProgress < 55) {
+            appendLog("<span class='text-indigo-400'>[DOCUMENT AGENT]</span> Running multi-threaded PaddleOCR text region parser...");
+          }
+          if(currentProgress > 60 && currentProgress < 70) {
+            appendLog("<span class='text-emerald-400'>[INCOME AGENT]</span> Running normalization. Parsing mobile wallet ledgers...");
+          }
+        } else if (currentProgress < 92) {
+          currentProgress += 2;
+          if(currentProgress > 80 && currentProgress < 85) {
+             appendLog("<span class='text-emerald-400'>[INCOME AGENT]</span> Estimating monthly distributions and computing variance factors...");
+          }
+        }
+        progressBar.style.width = currentProgress + '%';
+        progressPercent.innerText = currentProgress + '%';
+      }, 300);
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/v1/loan/apply', {
+          method: 'POST',
+          body: formDataPayload
         });
 
-        document.getElementById('loanPipelineForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        const data = await response.json();
+        
+        clearInterval(progressInterval);
+        progressBar.style.width = '100%';
+        progressPercent.innerText = '100%';
+        
+        appendLog("<span class='text-emerald-400'>[SYS]</span> Document and Income Agent processing complete.");
+        chkParallel.className = "flex items-center justify-between text-xs font-bold text-emerald-400";
+        chkParallel.querySelector('.chk-status').innerText = "Completed ✔";
+        
+        chkSequential.className = "flex items-center justify-between text-xs font-bold text-indigo-400 animate-pulse";
+        chkSequential.querySelector('.chk-status').innerText = "Evaluating Scoring & Regulatory Layers...";
+        
+        appendLog("<span class='text-purple-400'>[SCORE AGENT]</span> Invoking XGBoost credit score engine. Running SHAP explanation model...");
+        await new Promise(r => setTimeout(r, 600));
 
-            // UI Element References
-            document.getElementById('verdictWrapper').classList.add('hidden');
-            const trackerBlock = document.getElementById('agentTrackerBlock');
-            const progressBar = document.getElementById('documentProgressBar');
-            const progressPercent = document.getElementById('progressBarPercentage');
-            const progressText = document.getElementById('progressStatusText');
-            
-            const chkParallel = document.getElementById('chkParallel');
-            const chkSequential = document.getElementById('chkSequential');
+        appendLog("<span class='text-amber-400'>[COMPLIANCE AGENT]</span> Validating application against NRB microfinance rules...");
+        await new Promise(r => setTimeout(r, 500));
 
-            // Reset States
-            trackerBlock.classList.remove('hidden');
-            progressBar.style.width = '0%';
-            progressPercent.innerText = '0%';
-            progressText.innerText = 'Warming up deep network modules and parsing files...';
-            
-            chkParallel.className = "flex items-center justify-between text-xs font-medium text-gray-400";
-            chkParallel.querySelector('.chk-status').innerText = "Pending...";
-            chkSequential.className = "flex items-center justify-between text-xs font-medium text-gray-400";
-            chkSequential.querySelector('.chk-status').innerText = "Pending...";
+        appendLog("<span class='text-rose-400'>[DECISION AGENT]</span> Issuing final consensus routing and PDF audit receipt...");
+        await new Promise(r => setTimeout(r, 400));
+        
+        chkSequential.className = "flex items-center justify-between text-xs font-bold text-emerald-400";
+        chkSequential.querySelector('.chk-status').innerText = "Completed ✔";
 
-            // Gather Form Params
-            const loan_amount_npr = document.getElementById('loan_amount_npr').value;
-            const sector = document.getElementById('sector').value;
-            const use_mock_income = document.getElementById('use_mock_income').checked;
-            const documentFile = document.getElementById('document').files[0];
+        trackerBlock.classList.add('hidden');
+        document.getElementById('verdictWrapper').classList.remove('hidden');
 
-            const formDataPayload = new FormData();
-            formDataPayload.append('loan_amount_npr', loan_amount_npr);
-            formDataPayload.append('sector', sector);
-            formDataPayload.append('use_mock_income', use_mock_income);
-            formDataPayload.append('document', documentFile);
+        // Bind data
+        document.getElementById('txtFinalDecision').innerText = data.final_decision;
+        document.getElementById('txtDecisionReason').innerText = data.decision_reason;
+        document.getElementById('txtPipelineTime').innerText = data.pipeline_time_ms + " ms";
+        
+        const creditScore = data.credit_score !== null ? (data.credit_score * 1000).toFixed(0) : 0;
+        document.getElementById('txtCreditScore').innerText = creditScore;
+        document.getElementById('txtMonthlyIncome').innerText = data.monthly_income_npr ? "NPR " + Math.floor(data.monthly_income_npr).toLocaleString() : "N/A";
+        document.getElementById('txtDocConfidence').innerText = data.doc_confidence ? (data.doc_confidence * 100).toFixed(1) + "%" : "N/A";
 
-            // --- ANIMATION / PROGRESS BAR STEP HANDLING ---
-            // Document Agent takes the most time, so we simulate progress updates up to 90% while the API works
-            let currentProgress = 5;
-            progressBar.style.width = currentProgress + '%';
-            progressPercent.innerText = currentProgress + '%';
+        // Gauge circular animation
+        const circle = document.getElementById('gaugeCircle');
+        const circumference = 314.16;
+        const scoreFraction = data.credit_score || 0;
+        circle.style.strokeDashoffset = circumference - (scoreFraction * circumference);
 
-            const progressInterval = setInterval(() => {
-                if (currentProgress < 40) {
-                    currentProgress += 8;
-                    progressText.innerText = "Document Agent: Segmenting document regions and clearing noise filters...";
-                } else if (currentProgress < 75) {
-                    currentProgress += 5;
-                    chkParallel.className = "flex items-center justify-between text-xs font-semibold text-blue-600 animate-pulse";
-                    chkParallel.querySelector('.chk-status').innerText = "Running Parallel OCR & Alternative Income Extraction...";
-                    progressText.innerText = "Document Agent: Aligning character patterns and matching structured tokens...";
-                } else if (currentProgress < 92) {
-                    currentProgress += 2;
-                    progressText.innerText = "Income Agent: Merging cross-channel transaction ledger vectors...";
-                }
-                progressBar.style.width = currentProgress + '%';
-                progressPercent.innerText = currentProgress + '%';
-            }, 350);
+        // Update Gauge colors
+        if(scoreFraction >= 0.7) {
+          circle.className.baseVal = "stroke-emerald-400 fill-none transition-all duration-1000 ease-out";
+        } else if(scoreFraction >= 0.4) {
+          circle.className.baseVal = "stroke-amber-400 fill-none transition-all duration-1000 ease-out";
+        } else {
+          circle.className.baseVal = "stroke-rose-400 fill-none transition-all duration-1000 ease-out";
+        }
 
-            try {
-                // Post across the localhost network gateway
-                const response = await fetch('http://127.0.0.1:8000/api/v1/loan/apply', {
-                    method: 'POST',
-                    body: formDataPayload
-                });
+        // Color Banner Styling
+        const banner = document.getElementById('decisionBanner');
+        if (data.final_decision === "Recommend") {
+          banner.className = "p-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl shadow-emerald-500/5";
+        } else if (data.final_decision === "Refer") {
+          banner.className = "p-6 rounded-2xl border border-amber-500/20 bg-amber-500/10 text-amber-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl shadow-amber-500/5";
+        } else {
+          banner.className = "p-6 rounded-2xl border border-rose-500/20 bg-rose-500/10 text-rose-400 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6 shadow-xl shadow-rose-500/5";
+        }
 
-                const data = await response.json();
-                
-                // Clear the active increment loop and jump immediately to completion
-                clearInterval(progressInterval);
-                progressBar.style.width = '100%';
-                progressPercent.innerText = '100%';
-                progressText.innerText = 'Document analysis completely finished.';
-                
-                chkParallel.className = "flex items-center justify-between text-xs font-medium text-green-600";
-                chkParallel.querySelector('.chk-status').innerText = "Completed ✔";
-                
-                chkSequential.className = "flex items-center justify-between text-xs font-semibold text-blue-600 animate-pulse";
-                chkSequential.querySelector('.chk-status').innerText = "Running Core Analytics Risk Stack...";
+        const sourcesBox = document.getElementById('incomeSourcesBox');
+        sourcesBox.innerHTML = '';
+        if(data.income_sources && data.income_sources.length > 0) {
+          data.income_sources.forEach(src => {
+            const span = document.createElement('span');
+            span.className = "px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-white/5 text-gray-300 rounded-lg border border-white/5";
+            span.innerText = src;
+            sourcesBox.appendChild(span);
+          });
+        } else {
+          sourcesBox.innerHTML = '<span class="text-xs text-gray-500 italic">No transactional streams tracked.</span>';
+        }
 
-                // Brief artificial pause to demonstrate the lightning-fast sequential layer to examiners
-                await new Promise(r => setTimeout(r, 600));
-                
-                chkSequential.className = "flex items-center justify-between text-xs font-medium text-green-600";
-                chkSequential.querySelector('.chk-status').innerText = "Completed ✔";
+        const flagsBox = document.getElementById('complianceFlagsBox');
+        flagsBox.innerHTML = '';
+        if(data.compliance_flags && data.compliance_flags.length > 0) {
+          data.compliance_flags.forEach(flag => {
+            const div = document.createElement('div');
+            div.className = "p-3 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-400 text-xs font-semibold uppercase tracking-wide flex items-center gap-2";
+            div.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> Limit Breach: ${flag}`;
+            flagsBox.appendChild(div);
+          });
+        } else {
+          flagsBox.innerHTML = '<div class="p-3.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 text-xs font-bold flex items-center gap-2"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> 100% Compliant with NRB Directives. Suitable for routing.</div>';
+        }
 
-                // Swap displays
-                trackerBlock.classList.add('hidden');
-                document.getElementById('verdictWrapper').classList.remove('hidden');
-
-                // Bind response metadata to elements
-                document.getElementById('txtFinalDecision').innerText = data.final_decision;
-                document.getElementById('txtDecisionReason').innerText = data.decision_reason;
-                document.getElementById('txtPipelineTime').innerText = data.pipeline_time_ms + " ms";
-                document.getElementById('txtCreditScore').innerText = data.credit_score !== null ? (data.credit_score * 1000).toFixed(0) : "N/A";
-                document.getElementById('txtMonthlyIncome').innerText = data.monthly_income_npr ? "NPR " + Math.floor(data.monthly_income_npr).toLocaleString() : "N/A";
-                document.getElementById('txtDocConfidence').innerText = data.doc_confidence ? (data.doc_confidence * 100).toFixed(1) + "%" : "N/A";
-
-                // Shift Banner Colors dynamically to fit B2B Triage Vocabulary
-                const banner = document.getElementById('decisionBanner');
-                if (data.final_decision === "Recommend") {
-                    banner.className = "p-6 rounded-xl border border-green-200 bg-green-950 text-green-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4";
-                } else if (data.final_decision === "Refer") {
-                    banner.className = "p-6 rounded-xl border border-amber-200 bg-amber-950 text-amber-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4";
-                } else {
-                    banner.className = "p-6 rounded-xl border border-red-200 bg-red-950 text-red-300 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4";
-                }
-
-                const sourcesBox = document.getElementById('incomeSourcesBox');
-                sourcesBox.innerHTML = '';
-                if(data.income_sources && data.income_sources.length > 0) {
-                    data.income_sources.forEach(src => {
-                        const span = document.createElement('span');
-                        span.className = "px-2.5 py-1 text-xs font-bold uppercase tracking-wider bg-gray-100 text-gray-800 rounded border border-gray-200/60";
-                        span.innerText = src;
-                        sourcesBox.appendChild(span);
-                    });
-                } else {
-                    sourcesBox.innerHTML = '<span class="text-xs text-gray-400 italic">No transactional streams tracked.</span>';
-                }
-
-                const flagsBox = document.getElementById('complianceFlagsBox');
-                flagsBox.innerHTML = '';
-                if(data.compliance_flags && data.compliance_flags.length > 0) {
-                    data.compliance_flags.forEach(flag => {
-                        const div = document.createElement('div');
-                        div.className = "p-2 rounded border border-red-200 bg-red-50 text-red-700 text-xs font-bold uppercase tracking-wide";
-                        div.innerText = "🚨 Limit Breach: " + flag;
-                        flagsBox.appendChild(div);
-                    });
-                } else {
-                    flagsBox.innerHTML = '<div class="p-2.5 rounded border border-green-200 bg-green-50 text-green-700 text-xs font-semibold">✔ 100% Compliant with NRB Directives. Suitable for routing.</div>';
-                }
-
-            } catch (err) {
-                clearInterval(progressInterval);
-                alert("Network communication gap: Verify your local Uvicorn FastAPI server is active!");
-                console.error(err);
-                trackerBlock.classList.add('hidden');
-            }
-        });
-    </script>
+      } catch (err) {
+        clearInterval(progressInterval);
+        alert("Network communication gap: Verify your local Uvicorn FastAPI server is active!");
+        console.error(err);
+        trackerBlock.classList.add('hidden');
+        document.getElementById('welcomeBlock').classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
