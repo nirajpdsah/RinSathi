@@ -1,0 +1,3569 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 33 0 R 35 0 R 37 0 R 39 0 R 41 0 R 43 0 R 45 0 R 47 0 R 49 0 R 51 0 R 53 0 R 55 0 R 57 0 R 59 0 R 61 0 R 63 0 R 65 0 R 67 0 R 69 0 R 71 0 R 73 0 R 75 0 R 77 0 R 79 0 R 81 0 R 83 0 R 85 0 R 87 0 R 89 0 R 91 0 R 93 0 R 95 0 R 97 0 R 99 0 R 101 0 R 103 0 R 105 0 R] /Count 51 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2992 >>
+stream
+BT
+/F1 10 Tf
+/F1 17 Tf
+1 0 0 1 54 744 Tm (RinSathi Mid-Defense Engineering Handbook) Tj
+/F1 10 Tf
+1 0 0 1 54 697 Tm (Complete codebase guide, defense preparation manual, and professional explanation bank.) Tj
+/F1 10 Tf
+1 0 0 1 54 669 Tm (Project: RinSathi - Autonomous Credit & Lending Orchestrator) Tj
+/F1 10 Tf
+1 0 0 1 54 655 Tm (Audience: RinSathi team members preparing for mid-defense) Tj
+/F1 10 Tf
+1 0 0 1 54 641 Tm (Purpose: One document that explains what the project does, how every folder/file contributes,) Tj
+/F1 10 Tf
+1 0 0 1 54 627 Tm (what important code means, how to demo Swagger, and how to answer questions like professional) Tj
+/F1 10 Tf
+1 0 0 1 54 613 Tm (engineers.) Tj
+/F1 10 Tf
+1 0 0 1 54 599 Tm (Codebase reviewed: June 16, 2026) Tj
+/F1 9 Tf
+1 0 0 1 54 571 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 544 Tm (Table of Contents) Tj
+/F1 10 Tf
+1 0 0 1 54 500 Tm (1. What RinSathi Is) Tj
+/F1 10 Tf
+1 0 0 1 54 486 Tm (2. Mid-Defense Pitch) Tj
+/F1 10 Tf
+1 0 0 1 54 472 Tm (3. Complete System Flow) Tj
+/F1 10 Tf
+1 0 0 1 54 458 Tm (4. Folder-by-Folder Map) Tj
+/F1 10 Tf
+1 0 0 1 54 444 Tm (5. File-by-File Deep Explanation With Code Concepts) Tj
+/F1 10 Tf
+1 0 0 1 54 430 Tm (6. Swagger Docs: What To Show And What To Say) Tj
+/F1 10 Tf
+1 0 0 1 54 416 Tm (7. Important Engineering Concepts In Layman Terms) Tj
+/F1 10 Tf
+1 0 0 1 54 402 Tm (8. Known Limitations And Honest Professional Answers) Tj
+/F1 10 Tf
+1 0 0 1 54 388 Tm (9. Live Demo Script) Tj
+/F1 10 Tf
+1 0 0 1 54 374 Tm (10. Defense Q&A Bank) Tj
+/F1 10 Tf
+1 0 0 1 54 360 Tm (11. Team Study Plan) Tj
+/F1 10 Tf
+1 0 0 1 54 346 Tm (12. Final Professional Closing) Tj
+/F1 9 Tf
+1 0 0 1 54 318 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 291 Tm (1. What RinSathi Is) Tj
+/F1 10 Tf
+1 0 0 1 54 247 Tm (RinSathi is an AI-assisted loan assessment system designed for microfinance and rural lending in) Tj
+/F1 10 Tf
+1 0 0 1 54 233 Tm (Nepal. Its main job is to take a loan application, read the applicant's documents, estimate) Tj
+/F1 10 Tf
+1 0 0 1 54 219 Tm (income from alternative data sources, calculate a repayment score, check compliance rules, and) Tj
+/F1 10 Tf
+1 0 0 1 54 205 Tm (return a final recommendation.) Tj
+/F1 10 Tf
+1 0 0 1 54 177 Tm (In normal banking, a person without a salary slip or formal bank statement may be rejected even) Tj
+/F1 10 Tf
+1 0 0 1 54 163 Tm (if they have real income. RinSathi tries to solve that by using alternative signals such as) Tj
+/F1 10 Tf
+1 0 0 1 54 149 Tm (eSewa-like wallet transactions, remittance records, cooperative savings records, and identity) Tj
+/F1 10 Tf
+1 0 0 1 54 135 Tm (documents.) Tj
+/F1 10 Tf
+1 0 0 1 54 107 Tm (The system is built around five agents:) Tj
+/F1 10 Tf
+1 0 0 1 54 79 Tm (1. Document Agent - reads identity/land documents using OCR.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 1) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 3232 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (2. Income Agent - calculates monthly income from alternative financial records.) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (3. Score Agent - uses a machine learning model to estimate repayment strength.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (4. Compliance Agent - checks rules and regulatory guardrails.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (5. Decision Agent - gives final decision and explanation.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm ("RinSathi is a FastAPI-based, multi-agent credit assessment pipeline that combines OCR,) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (alternative income analysis, machine learning scoring, compliance rules, and explainability to) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (support microfinance loan officers.") Tj
+/F1 10 Tf
+1 0 0 1 54 590 Tm (Important safety line:) Tj
+/F1 10 Tf
+1 0 0 1 54 562 Tm ("RinSathi is a decision-support system. It helps loan officers make faster and more auditable) Tj
+/F1 10 Tf
+1 0 0 1 54 548 Tm (decisions; it does not blindly replace all human judgment.") Tj
+/F1 9 Tf
+1 0 0 1 54 520 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 493 Tm (2. Mid-Defense Pitch) Tj
+/F1 10 Tf
+1 0 0 1 54 449 Tm (Use this when the examiner asks, "Explain your project.") Tj
+/F1 10 Tf
+1 0 0 1 54 421 Tm ("Our project, RinSathi, addresses a major problem in rural microfinance: many applicants do not) Tj
+/F1 10 Tf
+1 0 0 1 54 407 Tm (have formal salary slips, bank statements, or credit history, but they still have real repayment) Tj
+/F1 10 Tf
+1 0 0 1 54 393 Tm (capacity through remittances, mobile wallet income, cooperative deposits, and agricultural) Tj
+/F1 10 Tf
+1 0 0 1 54 379 Tm (income. We built a five-agent AI-assisted pipeline. The Document Agent extracts document data) Tj
+/F1 10 Tf
+1 0 0 1 54 365 Tm (using PaddleOCR and OpenCV. The Income Agent normalizes alternative cashflow sources into a) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm (monthly income estimate. The Score Agent uses an XGBoost model to calculate repayment) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (probability. The Compliance Agent checks rule-based constraints such as KYC quality, income) Tj
+/F1 10 Tf
+1 0 0 1 54 323 Tm (reliability, loan-to-asset risk, sector exposure, and AML-style flags. Finally, the Decision) Tj
+/F1 10 Tf
+1 0 0 1 54 309 Tm (Agent produces a recommendation, referral, or rejection reason. We expose the system through) Tj
+/F1 10 Tf
+1 0 0 1 54 295 Tm (FastAPI, a dashboard frontend, and Swagger API documentation.") Tj
+/F1 10 Tf
+1 0 0 1 54 267 Tm (Short version:) Tj
+/F1 10 Tf
+1 0 0 1 54 239 Tm ("RinSathi turns informal borrower data into a structured, explainable, compliance-aware loan) Tj
+/F1 10 Tf
+1 0 0 1 54 225 Tm (recommendation.") Tj
+/F1 9 Tf
+1 0 0 1 54 197 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 170 Tm (3. Complete System Flow) Tj
+/F1 12 Tf
+1 0 0 1 54 126 Tm (3.1 User Flow) Tj
+/F1 10 Tf
+1 0 0 1 54 84 Tm (1. User opens the portal at /.) Tj
+/F1 10 Tf
+1 0 0 1 54 70 Tm (2. User goes to the underwriting dashboard at /dashboard.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 2) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 2628 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (3. User enters requested loan amount and business sector.) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (4. User uploads a citizenship or Lalpurja image.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (5. User enables mock income data for demo, or uses income console at /apply.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (6. Frontend sends the request to POST /api/v1/loan/apply.) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (7. Backend creates a SharedState object for the application.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (8. Document Agent and Income Agent run concurrently.) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (9. Score Agent calculates score.) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm (10. Compliance Agent checks rule flags.) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (11. Decision Agent generates verdict.) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (12. API returns JSON.) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm (13. Dashboard displays result.) Tj
+/F1 12 Tf
+1 0 0 1 54 576 Tm (3.2 Technical Flow) Tj
+/F1 10 Tf
+1 0 0 1 54 534 Tm (The most important internal object is SharedState. Think of it as a loan application file) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (folder. At the beginning, it contains applicant ID, loan amount, and sector. Each agent writes) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm (its output into this same folder.) Tj
+/F1 10 Tf
+1 0 0 1 54 478 Tm (Flow:) Tj
+/F1 9 Tf
+1 0 0 1 54 450 Tm (Frontend form) Tj
+/F1 9 Tf
+1 0 0 1 54 437 Tm (  -> FastAPI route /api/v1/loan/apply) Tj
+/F1 9 Tf
+1 0 0 1 54 424 Tm (  -> SharedState created) Tj
+/F1 9 Tf
+1 0 0 1 54 411 Tm (  -> Document Agent + Income Agent run together) Tj
+/F1 9 Tf
+1 0 0 1 54 398 Tm (  -> Score Agent) Tj
+/F1 9 Tf
+1 0 0 1 54 385 Tm (  -> Compliance Agent) Tj
+/F1 9 Tf
+1 0 0 1 54 372 Tm (  -> Decision Agent) Tj
+/F1 9 Tf
+1 0 0 1 54 359 Tm (  -> JSON response) Tj
+/F1 9 Tf
+1 0 0 1 54 346 Tm (  -> Dashboard display) Tj
+/F1 10 Tf
+1 0 0 1 54 319 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 291 Tm ("We used a SharedState pattern because it keeps the pipeline simple. Every agent has one input) Tj
+/F1 10 Tf
+1 0 0 1 54 277 Tm (and one output: it receives the state, updates its fields, and returns the state.") Tj
+/F1 9 Tf
+1 0 0 1 54 249 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 222 Tm (4. Folder-by-Folder Map) Tj
+/F1 12 Tf
+1 0 0 1 54 178 Tm (Root folder) Tj
+/F1 10 Tf
+1 0 0 1 54 136 Tm (The root contains app startup files, configuration, documentation, test helpers, and generated) Tj
+/F1 10 Tf
+1 0 0 1 54 122 Tm (assets.) Tj
+/F1 10 Tf
+1 0 0 1 54 94 Tm (Important root files:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 3) Tj
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1906 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (- main.py: FastAPI app entrypoint.) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (- config.py: central configuration from .env.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (- requirements.txt: dependency list.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (- README.md: public overview.) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (- mock_defense_guide.md: earlier defense notes.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (- alembic.ini: database migration configuration.) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (- test_*.py and test_score.html: development testing helpers.) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm (- fix_*.py: temporary repair/helper scripts created during development.) Tj
+/F1 12 Tf
+1 0 0 1 54 618 Tm (`agents/`) Tj
+/F1 10 Tf
+1 0 0 1 54 576 Tm (Core business logic. This is where the multi-agent pipeline lives.) Tj
+/F1 12 Tf
+1 0 0 1 54 548 Tm (`api/`) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm (HTTP layer. It defines request/response models and API endpoints.) Tj
+/F1 12 Tf
+1 0 0 1 54 478 Tm (`db/`) Tj
+/F1 10 Tf
+1 0 0 1 54 436 Tm (Database models, database connection, and migration setup.) Tj
+/F1 12 Tf
+1 0 0 1 54 408 Tm (`frontend/templates/`) Tj
+/F1 10 Tf
+1 0 0 1 54 366 Tm (HTML pages served by FastAPI.) Tj
+/F1 12 Tf
+1 0 0 1 54 338 Tm (`utils/`) Tj
+/F1 10 Tf
+1 0 0 1 54 296 Tm (Reusable helper functions for OCR, income parsing, and explanation formatting.) Tj
+/F1 12 Tf
+1 0 0 1 54 268 Tm (`ml/`) Tj
+/F1 10 Tf
+1 0 0 1 54 226 Tm (Machine learning training script and saved trained model.) Tj
+/F1 12 Tf
+1 0 0 1 54 198 Tm (`docs/`) Tj
+/F1 10 Tf
+1 0 0 1 54 156 Tm (Defense handbook, reference PDF, and PDF generator.) Tj
+/F1 12 Tf
+1 0 0 1 54 128 Tm (`venv/`) Tj
+/F1 10 Tf
+1 0 0 1 54 86 Tm (Python virtual environment. It contains installed packages. Do not explain every file inside it;) Tj
+/F1 10 Tf
+1 0 0 1 54 72 Tm (it is generated by Python tooling.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 4) Tj
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2050 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (`__pycache__/`) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (Compiled Python cache files. These are generated automatically and are not handwritten source) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (code.) Tj
+/F1 12 Tf
+1 0 0 1 54 646 Tm (`.git/`) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm (Git version-control database. Not part of runtime logic.) Tj
+/F1 9 Tf
+1 0 0 1 54 576 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 549 Tm (5. File-by-File Deep Explanation With Code Concepts) Tj
+/F1 10 Tf
+1 0 0 1 54 505 Tm (This is the most important section for your team. If an examiner opens any file, use the) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (matching explanation.) Tj
+/F1 9 Tf
+1 0 0 1 54 463 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 436 Tm (5.1 `main.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 392 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 350 Tm (main.py is the starting point of the backend. When we run:) Tj
+/F1 9 Tf
+1 0 0 1 54 322 Tm (uvicorn main:app --reload) Tj
+/F1 10 Tf
+1 0 0 1 54 295 Tm (Uvicorn imports the app object from main.py and starts the FastAPI server.) Tj
+/F1 12 Tf
+1 0 0 1 54 267 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 225 Tm (app = FastAPI\() Tj
+/F1 9 Tf
+1 0 0 1 54 212 Tm (    title="RinSathi ACLO API",) Tj
+/F1 9 Tf
+1 0 0 1 54 199 Tm (    description="Autonomous Credit and Lending Orchestrator ...",) Tj
+/F1 9 Tf
+1 0 0 1 54 186 Tm (    version="1.0.0",) Tj
+/F1 9 Tf
+1 0 0 1 54 173 Tm (    lifespan=lifespan,) Tj
+/F1 9 Tf
+1 0 0 1 54 160 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 133 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 105 Tm (This creates the web application. The title, description, and version also appear in Swagger) Tj
+/F1 10 Tf
+1 0 0 1 54 91 Tm (docs. That means main.py does not only start the server; it also defines the identity of the API) Tj
+/F1 10 Tf
+1 0 0 1 54 77 Tm (documentation.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 5) Tj
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 2217 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (Startup Lifecycle) Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (@asynccontextmanager) Tj
+/F1 9 Tf
+1 0 0 1 54 675 Tm (async def lifespan\(app: FastAPI\):) Tj
+/F1 9 Tf
+1 0 0 1 54 662 Tm (    await create_tables\(\)) Tj
+/F1 9 Tf
+1 0 0 1 54 649 Tm (    from utils.ocr import warm_up_ocr) Tj
+/F1 9 Tf
+1 0 0 1 54 636 Tm (    await warm_up_ocr\(\)) Tj
+/F1 9 Tf
+1 0 0 1 54 623 Tm (    yield) Tj
+/F1 10 Tf
+1 0 0 1 54 596 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 568 Tm (Before the server starts accepting requests, it prepares the database tables and warms up the) Tj
+/F1 10 Tf
+1 0 0 1 54 554 Tm (OCR engine. Warming OCR means loading its model earlier so the first real request is not too) Tj
+/F1 10 Tf
+1 0 0 1 54 540 Tm (slow.) Tj
+/F1 10 Tf
+1 0 0 1 54 512 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 484 Tm ("We use FastAPI lifespan to run startup tasks once: table creation and OCR warmup. This improves) Tj
+/F1 10 Tf
+1 0 0 1 54 470 Tm (reliability and first-request performance.") Tj
+/F1 12 Tf
+1 0 0 1 54 442 Tm (Middleware) Tj
+/F1 9 Tf
+1 0 0 1 54 400 Tm (app.add_middleware\() Tj
+/F1 9 Tf
+1 0 0 1 54 387 Tm (    CORSMiddleware,) Tj
+/F1 9 Tf
+1 0 0 1 54 374 Tm (    allow_origins=["*"],) Tj
+/F1 9 Tf
+1 0 0 1 54 361 Tm (    allow_methods=["*"],) Tj
+/F1 9 Tf
+1 0 0 1 54 348 Tm (    allow_headers=["*"],) Tj
+/F1 9 Tf
+1 0 0 1 54 335 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 308 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 280 Tm (CORS allows browser frontend pages to call the backend API. During demo/development, it allows) Tj
+/F1 10 Tf
+1 0 0 1 54 266 Tm (all origins for convenience.) Tj
+/F1 10 Tf
+1 0 0 1 54 238 Tm (Professional caveat:) Tj
+/F1 10 Tf
+1 0 0 1 54 210 Tm ("In production, we would restrict allow_origins to the official frontend domain.") Tj
+/F1 12 Tf
+1 0 0 1 54 182 Tm (Router Registration) Tj
+/F1 9 Tf
+1 0 0 1 54 140 Tm (app.include_router\(documents.router, prefix="/api/v1"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 127 Tm (app.include_router\(income.router, prefix="/api/v1"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 114 Tm (app.include_router\(loan.router, prefix="/api/v1"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 87 Tm (Layman explanation:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 6) Tj
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 2458 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (This connects the route files to the main app. The prefix="/api/v1" means endpoints become) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (versioned paths like /api/v1/loan/apply.) Tj
+/F1 12 Tf
+1 0 0 1 54 702 Tm (Frontend Routes) Tj
+/F1 9 Tf
+1 0 0 1 54 660 Tm (@app.get\("/"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 647 Tm (async def root\(request: Request\):) Tj
+/F1 9 Tf
+1 0 0 1 54 634 Tm (    return templates.TemplateResponse\(request=request, name="login.html"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 607 Tm (This serves the login page. Similar routes serve /apply and /dashboard.) Tj
+/F1 12 Tf
+1 0 0 1 54 579 Tm (Health Check) Tj
+/F1 9 Tf
+1 0 0 1 54 537 Tm (@app.get\("/health", tags=["System"]\)) Tj
+/F1 9 Tf
+1 0 0 1 54 524 Tm (async def health\(\):) Tj
+/F1 9 Tf
+1 0 0 1 54 511 Tm (    return {) Tj
+/F1 9 Tf
+1 0 0 1 54 498 Tm (        "status": "ok",) Tj
+/F1 9 Tf
+1 0 0 1 54 485 Tm (        "version": "1.0.0",) Tj
+/F1 9 Tf
+1 0 0 1 54 472 Tm (        "ocr_mode": "paddleocr" if OCR_AVAILABLE else "mock",) Tj
+/F1 9 Tf
+1 0 0 1 54 459 Tm (        "database": "supabase",) Tj
+/F1 9 Tf
+1 0 0 1 54 446 Tm (    }) Tj
+/F1 10 Tf
+1 0 0 1 54 419 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 391 Tm (This is a quick endpoint to check whether the system is alive and whether OCR is running in real) Tj
+/F1 10 Tf
+1 0 0 1 54 377 Tm (or fallback mode.) Tj
+/F1 12 Tf
+1 0 0 1 54 349 Tm (Important Defense Note) Tj
+/F1 10 Tf
+1 0 0 1 54 307 Tm (There is also a POST /api/v1/income/analyze route inside main.py, while another route with the) Tj
+/F1 10 Tf
+1 0 0 1 54 293 Tm (same path exists in api/routes/income.py. This is a mid-defense integration cleanup item.) Tj
+/F1 10 Tf
+1 0 0 1 54 265 Tm (Professional answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 237 Tm ("The app currently has duplicate income-analysis route definitions from sprint integration. The) Tj
+/F1 10 Tf
+1 0 0 1 54 223 Tm (intended production cleanup is to keep the route inside api/routes/income.py and remove the) Tj
+/F1 10 Tf
+1 0 0 1 54 209 Tm (controller duplicate from main.py.") Tj
+/F1 9 Tf
+1 0 0 1 54 181 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 154 Tm (5.2 `config.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 110 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 68 Tm (config.py stores application settings in one place. Instead of hardcoding thresholds across the) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 7) Tj
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 2307 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (project, the system reads values from .env.) Tj
+/F1 12 Tf
+1 0 0 1 54 716 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (class Settings\(BaseSettings\):) Tj
+/F1 9 Tf
+1 0 0 1 54 661 Tm (    DATABASE_URL: str) Tj
+/F1 9 Tf
+1 0 0 1 54 648 Tm (    SECRET_KEY: str = "change-in-production") Tj
+/F1 9 Tf
+1 0 0 1 54 635 Tm (    APPROVE_THRESHOLD: float = 0.65) Tj
+/F1 9 Tf
+1 0 0 1 54 622 Tm (    REFER_THRESHOLD: float = 0.40) Tj
+/F1 9 Tf
+1 0 0 1 54 609 Tm (    MIN_KYC_CONFIDENCE: float = 0.70) Tj
+/F1 9 Tf
+1 0 0 1 54 596 Tm (    MAX_LOAN_TO_ASSET: float = 0.75) Tj
+/F1 9 Tf
+1 0 0 1 54 583 Tm (    AML_TXN_LIMIT_NPR: float = 1_000_000) Tj
+/F1 9 Tf
+1 0 0 1 54 570 Tm (    AGRI_SECTOR_LIMIT_NPR: float = 500_000) Tj
+/F1 9 Tf
+1 0 0 1 54 557 Tm (    OCR_TIMEOUT_SECONDS: float = 10.0) Tj
+/F1 10 Tf
+1 0 0 1 54 530 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 502 Tm (These are project control knobs. If NRB rules or project thresholds change, we should change) Tj
+/F1 10 Tf
+1 0 0 1 54 488 Tm (them in .env/config instead of editing five different files.) Tj
+/F1 12 Tf
+1 0 0 1 54 460 Tm (Cached Settings) Tj
+/F1 9 Tf
+1 0 0 1 54 418 Tm (@lru_cache\(\)) Tj
+/F1 9 Tf
+1 0 0 1 54 405 Tm (def get_settings\(\) -> Settings:) Tj
+/F1 9 Tf
+1 0 0 1 54 392 Tm (    return Settings\(\)) Tj
+/F1 10 Tf
+1 0 0 1 54 365 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (The settings are loaded once and reused. This avoids repeatedly reading .env.) Tj
+/F1 10 Tf
+1 0 0 1 54 309 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 281 Tm ("This follows the Twelve-Factor App principle: configuration lives outside business logic, so) Tj
+/F1 10 Tf
+1 0 0 1 54 267 Tm (the same code can run in development, demo, and production with different settings.") Tj
+/F1 9 Tf
+1 0 0 1 54 239 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 212 Tm (5.3 `.env`) Tj
+/F1 12 Tf
+1 0 0 1 54 168 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 126 Tm (.env stores environment-specific secrets and settings such as database URL and secret key.) Tj
+/F1 10 Tf
+1 0 0 1 54 98 Tm (Do not show real secret values in defense.) Tj
+/F1 10 Tf
+1 0 0 1 54 70 Tm (Defense line:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 8) Tj
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 2339 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm ("The .env file is intentionally local and should not be committed with real production secrets.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (It allows us to configure the app without hardcoding credentials.") Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 661 Tm (5.4 `requirements.txt`) Tj
+/F1 12 Tf
+1 0 0 1 54 617 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 575 Tm (Lists installed Python packages needed for the project.) Tj
+/F1 10 Tf
+1 0 0 1 54 547 Tm (Important packages:) Tj
+/F1 10 Tf
+1 0 0 1 54 519 Tm (- fastapi: API framework.) Tj
+/F1 10 Tf
+1 0 0 1 54 505 Tm (- uvicorn: server runner.) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (- pydantic and pydantic-settings: validation and config.) Tj
+/F1 10 Tf
+1 0 0 1 54 477 Tm (- SQLAlchemy and asyncpg: database access.) Tj
+/F1 10 Tf
+1 0 0 1 54 463 Tm (- paddleocr and paddlepaddle: OCR engine.) Tj
+/F1 10 Tf
+1 0 0 1 54 449 Tm (- opencv-python-headless: image preprocessing.) Tj
+/F1 10 Tf
+1 0 0 1 54 435 Tm (- pandas, numpy: data processing.) Tj
+/F1 10 Tf
+1 0 0 1 54 421 Tm (- xgboost, scikit-learn: ML training and inference.) Tj
+/F1 10 Tf
+1 0 0 1 54 407 Tm (- joblib: model saving/loading.) Tj
+/F1 10 Tf
+1 0 0 1 54 393 Tm (- python-multipart: file uploads in FastAPI.) Tj
+/F1 10 Tf
+1 0 0 1 54 379 Tm (- Jinja2: templates.) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 323 Tm ("The requirements file makes the environment reproducible. Anyone can install the same) Tj
+/F1 10 Tf
+1 0 0 1 54 309 Tm (dependencies with pip install -r requirements.txt.") Tj
+/F1 9 Tf
+1 0 0 1 54 281 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 254 Tm (5.5 `README.md`) Tj
+/F1 12 Tf
+1 0 0 1 54 210 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 168 Tm (Provides the public-facing explanation of the project: problem, architecture, tech stack, setup,) Tj
+/F1 10 Tf
+1 0 0 1 54 154 Tm (and usage.) Tj
+/F1 10 Tf
+1 0 0 1 54 126 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 98 Tm ("README is for onboarding developers and evaluators. The handbook is deeper; README is the quick) Tj
+/F1 10 Tf
+1 0 0 1 54 84 Tm (start.") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 9) Tj
+ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 2011 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 717 Tm (5.6 `mock_defense_guide.md`) Tj
+/F1 12 Tf
+1 0 0 1 54 673 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 631 Tm (Earlier defense guide with architecture explanations and sample answers. This new handbook) Tj
+/F1 10 Tf
+1 0 0 1 54 617 Tm (expands it with file-by-file code explanation.) Tj
+/F1 10 Tf
+1 0 0 1 54 589 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 561 Tm ("This file was an earlier preparation note. We upgraded it into the full mid-defense handbook.") Tj
+/F1 9 Tf
+1 0 0 1 54 533 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 506 Tm (5.7 `alembic.ini`) Tj
+/F1 12 Tf
+1 0 0 1 54 462 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 420 Tm (Alembic configuration for database migrations.) Tj
+/F1 10 Tf
+1 0 0 1 54 392 Tm (Important line:) Tj
+/F1 9 Tf
+1 0 0 1 54 364 Tm (script_location = %\(here\)s/db/migration) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 309 Tm (This tells Alembic where migration scripts live.) Tj
+/F1 10 Tf
+1 0 0 1 54 281 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 253 Tm ("Alembic helps us version database schema changes safely instead of manually editing tables.") Tj
+/F1 9 Tf
+1 0 0 1 54 225 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 198 Tm (5.8 `api/__init__.py`, `agents/__init__.py`, `db/__init__.py`, `api/routes/__init__.py`, `utils/__init__.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 154 Tm (What These Files Do) Tj
+/F1 10 Tf
+1 0 0 1 54 112 Tm (These files mark folders as Python packages. They may be empty, but they are useful because) Tj
+/F1 10 Tf
+1 0 0 1 54 98 Tm (Python can import modules from those folders cleanly.) Tj
+/F1 10 Tf
+1 0 0 1 54 70 Tm (Defense line:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 10) Tj
+ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 22 0 R >>
+endobj
+24 0 obj
+<< /Length 2196 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm ("The __init__.py files organize our code into importable packages like agents, api, db, and) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (utils.") Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 661 Tm (5.9 `api/schemas.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 617 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 575 Tm (Defines API response shapes using Pydantic models.) Tj
+/F1 12 Tf
+1 0 0 1 54 547 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 505 Tm (class FieldResult\(BaseModel\):) Tj
+/F1 9 Tf
+1 0 0 1 54 492 Tm (    value: str) Tj
+/F1 9 Tf
+1 0 0 1 54 479 Tm (    confidence: float) Tj
+/F1 10 Tf
+1 0 0 1 54 452 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 424 Tm (One OCR field has a text value and a confidence score.) Tj
+/F1 9 Tf
+1 0 0 1 54 396 Tm (class DocumentUploadResponse\(BaseModel\):) Tj
+/F1 9 Tf
+1 0 0 1 54 383 Tm (    applicant_id: uuid.UUID) Tj
+/F1 9 Tf
+1 0 0 1 54 370 Tm (    document_verified: bool) Tj
+/F1 9 Tf
+1 0 0 1 54 357 Tm (    extracted_fields: dict[str, FieldResult]) Tj
+/F1 9 Tf
+1 0 0 1 54 344 Tm (    doc_confidence: float) Tj
+/F1 9 Tf
+1 0 0 1 54 331 Tm (    manual_review_required: bool) Tj
+/F1 9 Tf
+1 0 0 1 54 318 Tm (    processing_time_ms: int) Tj
+/F1 9 Tf
+1 0 0 1 54 305 Tm (    ocr_mode: str) Tj
+/F1 10 Tf
+1 0 0 1 54 278 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 250 Tm (This is the expected response format after document processing. It tells the frontend what) Tj
+/F1 10 Tf
+1 0 0 1 54 236 Tm (fields to expect.) Tj
+/F1 10 Tf
+1 0 0 1 54 208 Tm (Swagger connection:) Tj
+/F1 10 Tf
+1 0 0 1 54 180 Tm (FastAPI reads these models and automatically shows response schemas in /docs.) Tj
+/F1 10 Tf
+1 0 0 1 54 152 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 124 Tm ("Pydantic schemas are our API contract. They make the API predictable for frontend developers) Tj
+/F1 10 Tf
+1 0 0 1 54 110 Tm (and generate Swagger documentation automatically.") Tj
+/F1 9 Tf
+1 0 0 1 54 82 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 11) Tj
+ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 2246 >>
+stream
+BT
+/F1 10 Tf
+/F1 14 Tf
+1 0 0 1 54 744 Tm (5.10 `api/routes/documents.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 700 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 658 Tm (Handles document upload and OCR polling.) Tj
+/F1 12 Tf
+1 0 0 1 54 630 Tm (Main Code Portion: In-Memory Job Store) Tj
+/F1 9 Tf
+1 0 0 1 54 588 Tm (jobs_db: Dict[str, dict] = {}) Tj
+/F1 10 Tf
+1 0 0 1 54 561 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 533 Tm (This is a temporary memory-based tracking table. When a document is uploaded, the system creates) Tj
+/F1 10 Tf
+1 0 0 1 54 519 Tm (a job ID and stores job status here.) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (Professional caveat:) Tj
+/F1 10 Tf
+1 0 0 1 54 463 Tm ("For production, this should move from memory to Redis or database storage because memory resets) Tj
+/F1 10 Tf
+1 0 0 1 54 449 Tm (when the server restarts.") Tj
+/F1 12 Tf
+1 0 0 1 54 421 Tm (Background Task) Tj
+/F1 9 Tf
+1 0 0 1 54 379 Tm (async def ocr_worker_task\(job_id: str, image_bytes: bytes\):) Tj
+/F1 9 Tf
+1 0 0 1 54 366 Tm (    jobs_db[job_id]["status"] = "processing") Tj
+/F1 9 Tf
+1 0 0 1 54 353 Tm (    ocr_result = await run_ocr\(image_bytes\)) Tj
+/F1 9 Tf
+1 0 0 1 54 340 Tm (    final_payload = extract_fields\(ocr_result\)) Tj
+/F1 9 Tf
+1 0 0 1 54 327 Tm (    jobs_db[job_id]["status"] = "completed") Tj
+/F1 9 Tf
+1 0 0 1 54 314 Tm (    jobs_db[job_id]["result"] = final_payload) Tj
+/F1 10 Tf
+1 0 0 1 54 287 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 259 Tm (The server accepts the file quickly, then OCR runs in the background. This prevents the request) Tj
+/F1 10 Tf
+1 0 0 1 54 245 Tm (from waiting too long.) Tj
+/F1 12 Tf
+1 0 0 1 54 217 Tm (Upload Endpoint) Tj
+/F1 9 Tf
+1 0 0 1 54 175 Tm (@router.post\("/document/upload"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 162 Tm (async def upload_document\(background_tasks: BackgroundTasks, file: UploadFile =) Tj
+/F1 9 Tf
+1 0 0 1 54 149 Tm (File\(...\)\):) Tj
+/F1 9 Tf
+1 0 0 1 54 136 Tm (    image_bytes = await file.read\(\)) Tj
+/F1 9 Tf
+1 0 0 1 54 123 Tm (    job_id = str\(uuid.uuid4\(\)\)) Tj
+/F1 9 Tf
+1 0 0 1 54 110 Tm (    background_tasks.add_task\(ocr_worker_task, job_id, image_bytes\)) Tj
+/F1 10 Tf
+1 0 0 1 54 83 Tm (Layman explanation:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 12) Tj
+ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 2285 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (The API reads the uploaded file, creates a unique tracking ticket, and starts OCR after) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (returning a pending response.) Tj
+/F1 12 Tf
+1 0 0 1 54 702 Tm (Polling Endpoint) Tj
+/F1 9 Tf
+1 0 0 1 54 660 Tm (@router.get\("/document/result/{job_id}"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 647 Tm (async def get_ocr_result\(job_id: str\):) Tj
+/F1 9 Tf
+1 0 0 1 54 634 Tm (    if job_id not in jobs_db:) Tj
+/F1 9 Tf
+1 0 0 1 54 621 Tm (        raise HTTPException\(status_code=404, detail="Job ID tracking ticket not found."\)) Tj
+/F1 10 Tf
+1 0 0 1 54 594 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 566 Tm (The frontend can keep asking, "Is my OCR finished?" using the job ID.) Tj
+/F1 10 Tf
+1 0 0 1 54 538 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 510 Tm ("This uses a ticket-polling pattern. It is useful for slow OCR jobs because upload and) Tj
+/F1 10 Tf
+1 0 0 1 54 496 Tm (processing are decoupled.") Tj
+/F1 9 Tf
+1 0 0 1 54 468 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 441 Tm (5.11 `api/routes/income.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 397 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 355 Tm (Exposes income-analysis endpoints.) Tj
+/F1 12 Tf
+1 0 0 1 54 327 Tm (Request Schema) Tj
+/F1 9 Tf
+1 0 0 1 54 285 Tm (class IncomeAnalyzeRequest\(BaseModel\):) Tj
+/F1 9 Tf
+1 0 0 1 54 272 Tm (    applicant_id: uuid.UUID) Tj
+/F1 9 Tf
+1 0 0 1 54 259 Tm (    esewa_data: Optional[dict] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 246 Tm (    remittance_data: Optional[dict] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 233 Tm (    coop_data: Optional[dict] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 220 Tm (    use_mock_data: bool = False) Tj
+/F1 10 Tf
+1 0 0 1 54 193 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 165 Tm (The user can provide any of the three income data types. During demo, use_mock_data=True) Tj
+/F1 10 Tf
+1 0 0 1 54 151 Tm (generates sample data automatically.) Tj
+/F1 12 Tf
+1 0 0 1 54 123 Tm (Validation) Tj
+/F1 9 Tf
+1 0 0 1 54 81 Tm (if not any\([esewa_data, remittance_data, coop_data]\):) Tj
+/F1 9 Tf
+1 0 0 1 54 68 Tm (    raise HTTPException\(status_code=422, detail="At least one income source is) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 13) Tj
+ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
+endobj
+30 0 obj
+<< /Length 1947 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (required..."\)) Tj
+/F1 10 Tf
+1 0 0 1 54 717 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 689 Tm (The API refuses to analyze income if no income data is provided.) Tj
+/F1 12 Tf
+1 0 0 1 54 661 Tm (Income Parsing) Tj
+/F1 9 Tf
+1 0 0 1 54 619 Tm (sigs, name = parse_esewa\(esewa_data\)) Tj
+/F1 9 Tf
+1 0 0 1 54 606 Tm (all_signals.extend\(sigs\)) Tj
+/F1 10 Tf
+1 0 0 1 54 579 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 551 Tm (Each parser converts its source into a common signal format. Then all signals are combined.) Tj
+/F1 12 Tf
+1 0 0 1 54 523 Tm (Response) Tj
+/F1 9 Tf
+1 0 0 1 54 481 Tm (return IncomeAnalyzeResponse\() Tj
+/F1 9 Tf
+1 0 0 1 54 468 Tm (    mean_monthly_npr=estimate["mean_monthly_npr"],) Tj
+/F1 9 Tf
+1 0 0 1 54 455 Tm (    confidence=estimate["confidence"],) Tj
+/F1 9 Tf
+1 0 0 1 54 442 Tm (    sources=estimate["sources"],) Tj
+/F1 9 Tf
+1 0 0 1 54 429 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 402 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 374 Tm (The endpoint returns monthly income, confidence, source list, and supporting metrics.) Tj
+/F1 10 Tf
+1 0 0 1 54 346 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 318 Tm ("The Income API accepts messy alternative financial data and standardizes it into one clean) Tj
+/F1 10 Tf
+1 0 0 1 54 304 Tm (monthly-income estimate.") Tj
+/F1 9 Tf
+1 0 0 1 54 276 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 249 Tm (5.12 `api/routes/loan.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 205 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 163 Tm (This is the main full-pipeline route.) Tj
+/F1 12 Tf
+1 0 0 1 54 135 Tm (Request Inputs) Tj
+/F1 9 Tf
+1 0 0 1 54 93 Tm (async def apply_for_loan\() Tj
+/F1 9 Tf
+1 0 0 1 54 80 Tm (    loan_amount_npr: float = Form\(...\),) Tj
+/F1 9 Tf
+1 0 0 1 54 67 Tm (    sector: str = Form\(...\),) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 14) Tj
+ET
+endstream
+endobj
+31 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 30 0 R >>
+endobj
+32 0 obj
+<< /Length 2251 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (    use_mock_income: bool = Form\(False\),) Tj
+/F1 9 Tf
+1 0 0 1 54 731 Tm (    document: UploadFile = File\(...\),) Tj
+/F1 9 Tf
+1 0 0 1 54 718 Tm (\):) Tj
+/F1 10 Tf
+1 0 0 1 54 691 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 663 Tm (This endpoint accepts both text fields and a file. That is why it uses multipart/form-data.) Tj
+/F1 12 Tf
+1 0 0 1 54 635 Tm (Input Validation) Tj
+/F1 9 Tf
+1 0 0 1 54 593 Tm (if loan_amount_npr <= 0:) Tj
+/F1 9 Tf
+1 0 0 1 54 580 Tm (    raise HTTPException\(status_code=422, detail="loan_amount_npr must be greater than) Tj
+/F1 9 Tf
+1 0 0 1 54 567 Tm (0"\)) Tj
+/F1 9 Tf
+1 0 0 1 54 541 Tm (allowed_types = {"image/jpeg", "image/jpg", "image/png"}) Tj
+/F1 9 Tf
+1 0 0 1 54 528 Tm (if document.content_type not in allowed_types:) Tj
+/F1 9 Tf
+1 0 0 1 54 515 Tm (    raise HTTPException\(status_code=400, detail="Document must be JPG or PNG"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 488 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 460 Tm (The backend rejects invalid loan amounts and unsupported file types before running expensive) Tj
+/F1 10 Tf
+1 0 0 1 54 446 Tm (processing.) Tj
+/F1 12 Tf
+1 0 0 1 54 418 Tm (SharedState Creation) Tj
+/F1 9 Tf
+1 0 0 1 54 376 Tm (state = SharedState\() Tj
+/F1 9 Tf
+1 0 0 1 54 363 Tm (    applicant_id=uuid.uuid4\(\),) Tj
+/F1 9 Tf
+1 0 0 1 54 350 Tm (    loan_amount_npr=loan_amount_npr,) Tj
+/F1 9 Tf
+1 0 0 1 54 337 Tm (    sector=sector,) Tj
+/F1 9 Tf
+1 0 0 1 54 324 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 297 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 269 Tm (This creates a new loan file folder for the request.) Tj
+/F1 12 Tf
+1 0 0 1 54 241 Tm (Parallel Execution) Tj
+/F1 9 Tf
+1 0 0 1 54 199 Tm (await asyncio.gather\(run_document\(\), run_income\(\)\)) Tj
+/F1 10 Tf
+1 0 0 1 54 172 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 144 Tm (Document OCR and income parsing run at the same time because they do not depend on each other.) Tj
+/F1 10 Tf
+1 0 0 1 54 116 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 88 Tm ("We run independent agents concurrently to reduce total latency. OCR can be slow, so we do not) Tj
+/F1 10 Tf
+1 0 0 1 54 74 Tm (make income parsing wait unnecessarily.") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 15) Tj
+ET
+endstream
+endobj
+33 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 32 0 R >>
+endobj
+34 0 obj
+<< /Length 2360 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (Timeout Handling) Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (return await asyncio.wait_for\() Tj
+/F1 9 Tf
+1 0 0 1 54 675 Tm (    doc_agent.run\(state, image_bytes\),) Tj
+/F1 9 Tf
+1 0 0 1 54 662 Tm (    timeout=settings.OCR_TIMEOUT_SECONDS) Tj
+/F1 9 Tf
+1 0 0 1 54 649 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 622 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 594 Tm (If OCR takes too long, the system stops waiting and marks the case for manual review.) Tj
+/F1 12 Tf
+1 0 0 1 54 566 Tm (Score Bridge) Tj
+/F1 10 Tf
+1 0 0 1 54 524 Tm (The route attempts to run Score Agent and has fallback logic:) Tj
+/F1 9 Tf
+1 0 0 1 54 496 Tm (try:) Tj
+/F1 9 Tf
+1 0 0 1 54 483 Tm (    state = await score_agent.run\(state\)) Tj
+/F1 9 Tf
+1 0 0 1 54 470 Tm (except Exception:) Tj
+/F1 9 Tf
+1 0 0 1 54 457 Tm (    base_prob = 0.5 + income_bonus + \(inc_conf * 0.2\) - loan_penalty) Tj
+/F1 9 Tf
+1 0 0 1 54 444 Tm (    state.credit_score = min\(max\(base_prob, 0.3\), 0.98\)) Tj
+/F1 10 Tf
+1 0 0 1 54 417 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 389 Tm (This was added to keep the integrated demo running even if the Score Agent method name does not) Tj
+/F1 10 Tf
+1 0 0 1 54 375 Tm (match. It is a mid-defense bridge.) Tj
+/F1 10 Tf
+1 0 0 1 54 347 Tm (Professional answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 319 Tm ("The route contains defensive fallback scoring during sprint integration. The cleanup is to) Tj
+/F1 10 Tf
+1 0 0 1 54 305 Tm (rename or add ScoreAgent.run\(\) and remove fallback math once the ML method contract is) Tj
+/F1 10 Tf
+1 0 0 1 54 291 Tm (finalized.") Tj
+/F1 12 Tf
+1 0 0 1 54 263 Tm (Final Response) Tj
+/F1 9 Tf
+1 0 0 1 54 221 Tm (return LoanDecisionResponse\() Tj
+/F1 9 Tf
+1 0 0 1 54 208 Tm (    applicant_id=state.applicant_id,) Tj
+/F1 9 Tf
+1 0 0 1 54 195 Tm (    final_decision=state.final_decision or "Refer",) Tj
+/F1 9 Tf
+1 0 0 1 54 182 Tm (    decision_reason=state.decision_reason or "Processing incomplete",) Tj
+/F1 9 Tf
+1 0 0 1 54 169 Tm (    credit_score=state.credit_score,) Tj
+/F1 9 Tf
+1 0 0 1 54 156 Tm (    compliance_flags=state.compliance_flags,) Tj
+/F1 9 Tf
+1 0 0 1 54 143 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 116 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 88 Tm (The endpoint collects the final values from SharedState and returns them as JSON.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 16) Tj
+ET
+endstream
+endobj
+35 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 34 0 R >>
+endobj
+36 0 obj
+<< /Length 1983 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm ("This file is the orchestrator route. It wires all agents together and returns the final loan) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (decision.") Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 647 Tm (5.13 `agents/shared_state.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 603 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 561 Tm (Defines the central data model passed through the five-agent pipeline.) Tj
+/F1 12 Tf
+1 0 0 1 54 533 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 491 Tm (class SharedState\(BaseModel\):) Tj
+/F1 9 Tf
+1 0 0 1 54 478 Tm (    model_config = ConfigDict\(validate_assignment=True\)) Tj
+/F1 10 Tf
+1 0 0 1 54 451 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 423 Tm (This tells Pydantic to validate fields not only when the object is created, but also whenever an) Tj
+/F1 10 Tf
+1 0 0 1 54 409 Tm (agent changes a value.) Tj
+/F1 10 Tf
+1 0 0 1 54 381 Tm (Example:) Tj
+/F1 10 Tf
+1 0 0 1 54 353 Tm (If monthly_income_npr expects a float and an agent writes "forty thousand", Pydantic can catch) Tj
+/F1 10 Tf
+1 0 0 1 54 339 Tm (that.) Tj
+/F1 12 Tf
+1 0 0 1 54 311 Tm (Identity Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 269 Tm (applicant_id: uuid.UUID) Tj
+/F1 9 Tf
+1 0 0 1 54 256 Tm (loan_amount_npr: float) Tj
+/F1 9 Tf
+1 0 0 1 54 243 Tm (sector: str) Tj
+/F1 10 Tf
+1 0 0 1 54 216 Tm (These are known at the start of the pipeline.) Tj
+/F1 12 Tf
+1 0 0 1 54 188 Tm (Document Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 146 Tm (document_verified: Optional[bool] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 133 Tm (extracted_fields: Optional[dict] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 120 Tm (doc_confidence: Optional[float] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 107 Tm (manual_review_required: bool = False) Tj
+/F1 10 Tf
+1 0 0 1 54 80 Tm (These are filled by Document Agent.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 17) Tj
+ET
+endstream
+endobj
+37 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 36 0 R >>
+endobj
+38 0 obj
+<< /Length 2074 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (Income Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (monthly_income_npr: Optional[float] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 675 Tm (income_confidence: Optional[float] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 662 Tm (income_sources: list[str] = []) Tj
+/F1 10 Tf
+1 0 0 1 54 635 Tm (These are filled by Income Agent.) Tj
+/F1 12 Tf
+1 0 0 1 54 607 Tm (Score Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 565 Tm (credit_score: Optional[float] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 552 Tm (shap_explanation: Optional[list[dict]] = None) Tj
+/F1 10 Tf
+1 0 0 1 54 525 Tm (These are filled by Score Agent.) Tj
+/F1 12 Tf
+1 0 0 1 54 497 Tm (Compliance Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 455 Tm (compliance_flags: list[str] = []) Tj
+/F1 10 Tf
+1 0 0 1 54 428 Tm (This is filled by Compliance Agent.) Tj
+/F1 12 Tf
+1 0 0 1 54 400 Tm (Decision Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 358 Tm (final_decision: Optional[Literal["Approve", "Reject", "Refer"]] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 345 Tm (decision_reason: Optional[str] = None) Tj
+/F1 9 Tf
+1 0 0 1 54 332 Tm (audit_trail_path: Optional[str] = None) Tj
+/F1 10 Tf
+1 0 0 1 54 305 Tm (These are filled by Decision Agent.) Tj
+/F1 10 Tf
+1 0 0 1 54 277 Tm (Important codebase note:) Tj
+/F1 10 Tf
+1 0 0 1 54 249 Tm (Some runtime code writes shap_explanations and score_confidence, but the model defines) Tj
+/F1 10 Tf
+1 0 0 1 54 235 Tm (shap_explanation. This should be aligned in cleanup.) Tj
+/F1 10 Tf
+1 0 0 1 54 207 Tm (Professional answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 179 Tm ("SharedState is the contract. During final hardening we will align all field names so agents and) Tj
+/F1 10 Tf
+1 0 0 1 54 165 Tm (schemas use the same naming consistently.") Tj
+/F1 10 Tf
+1 0 0 1 54 137 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 109 Tm ("SharedState is the backbone of the whole project. It is the common language spoken by all) Tj
+/F1 10 Tf
+1 0 0 1 54 95 Tm (agents.") Tj
+/F1 9 Tf
+1 0 0 1 54 67 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 18) Tj
+ET
+endstream
+endobj
+39 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 38 0 R >>
+endobj
+40 0 obj
+<< /Length 2063 >>
+stream
+BT
+/F1 10 Tf
+/F1 14 Tf
+1 0 0 1 54 730 Tm (5.14 `agents/document_agent.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 686 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 644 Tm (Receives image bytes, runs OCR, extracts document fields, calculates confidence, and flags) Tj
+/F1 10 Tf
+1 0 0 1 54 630 Tm (manual review when needed.) Tj
+/F1 12 Tf
+1 0 0 1 54 602 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 560 Tm (ocr_result = await run_ocr\(image_bytes\)) Tj
+/F1 9 Tf
+1 0 0 1 54 547 Tm (fields = extract_fields\(ocr_result\)) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 492 Tm (run_ocr reads the image and converts it to text. extract_fields tries to convert raw text into) Tj
+/F1 10 Tf
+1 0 0 1 54 478 Tm (useful fields like name or citizenship number.) Tj
+/F1 12 Tf
+1 0 0 1 54 450 Tm (Handling OCR Timeout/Error) Tj
+/F1 9 Tf
+1 0 0 1 54 408 Tm (if ocr_result.get\("timed_out"\):) Tj
+/F1 9 Tf
+1 0 0 1 54 395 Tm (    state.document_verified = False) Tj
+/F1 9 Tf
+1 0 0 1 54 382 Tm (    state.doc_confidence = 0.0) Tj
+/F1 9 Tf
+1 0 0 1 54 369 Tm (    state.manual_review_required = True) Tj
+/F1 9 Tf
+1 0 0 1 54 356 Tm (    return state) Tj
+/F1 10 Tf
+1 0 0 1 54 329 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 301 Tm (If OCR fails, the system does not crash. It marks the document as not verified and sends it for) Tj
+/F1 10 Tf
+1 0 0 1 54 287 Tm (manual review.) Tj
+/F1 12 Tf
+1 0 0 1 54 259 Tm (Confidence Calculation) Tj
+/F1 9 Tf
+1 0 0 1 54 217 Tm (conf_values = [) Tj
+/F1 9 Tf
+1 0 0 1 54 204 Tm (    f["confidence"] for f in fields.values\(\)) Tj
+/F1 9 Tf
+1 0 0 1 54 191 Tm (    if f.get\("confidence", 0\) > 0) Tj
+/F1 9 Tf
+1 0 0 1 54 178 Tm (]) Tj
+/F1 9 Tf
+1 0 0 1 54 165 Tm (mean_confidence = round\(sum\(conf_values\) / len\(conf_values\), 4\)) Tj
+/F1 10 Tf
+1 0 0 1 54 138 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 110 Tm (Each extracted field has a confidence. The document confidence is the average confidence of) Tj
+/F1 10 Tf
+1 0 0 1 54 96 Tm (found fields.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 19) Tj
+ET
+endstream
+endobj
+41 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 40 0 R >>
+endobj
+42 0 obj
+<< /Length 2051 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (KYC Threshold) Tj
+/F1 9 Tf
+1 0 0 1 54 702 Tm (if mean_confidence < settings.MIN_KYC_CONFIDENCE:) Tj
+/F1 9 Tf
+1 0 0 1 54 689 Tm (    state.document_verified = False) Tj
+/F1 9 Tf
+1 0 0 1 54 676 Tm (    state.manual_review_required = True) Tj
+/F1 9 Tf
+1 0 0 1 54 663 Tm (else:) Tj
+/F1 9 Tf
+1 0 0 1 54 650 Tm (    state.document_verified = True) Tj
+/F1 10 Tf
+1 0 0 1 54 623 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 595 Tm (If OCR confidence is below 70 percent by default, the document is too risky for automatic) Tj
+/F1 10 Tf
+1 0 0 1 54 581 Tm (acceptance.) Tj
+/F1 10 Tf
+1 0 0 1 54 553 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 525 Tm ("Document Agent does not claim to detect all fraud. It extracts and scores document readability.) Tj
+/F1 10 Tf
+1 0 0 1 54 511 Tm (Low confidence goes to manual review.") Tj
+/F1 9 Tf
+1 0 0 1 54 483 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 456 Tm (5.15 `agents/income_agent.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 412 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 370 Tm (Combines eSewa, remittance, and cooperative records into one monthly income estimate.) Tj
+/F1 12 Tf
+1 0 0 1 54 342 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 300 Tm (if esewa_data:) Tj
+/F1 9 Tf
+1 0 0 1 54 287 Tm (    esewa_signals, esewa_name = parse_esewa\(esewa_data\)) Tj
+/F1 9 Tf
+1 0 0 1 54 274 Tm (    all_signals.extend\(esewa_signals\)) Tj
+/F1 10 Tf
+1 0 0 1 54 247 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 219 Tm (If eSewa data exists, parse it into standard income signals.) Tj
+/F1 12 Tf
+1 0 0 1 54 191 Tm (Normalization) Tj
+/F1 9 Tf
+1 0 0 1 54 149 Tm (estimate = normalize_to_monthly_estimate\(all_signals\)) Tj
+/F1 10 Tf
+1 0 0 1 54 122 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 94 Tm (This combines all income signals and calculates monthly average, confidence, source count, and) Tj
+/F1 10 Tf
+1 0 0 1 54 80 Tm (stability.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 20) Tj
+ET
+endstream
+endobj
+43 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 42 0 R >>
+endobj
+44 0 obj
+<< /Length 2102 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (Name Cross-Validation) Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (name_check = check_name_consistency\(doc_name, income_names\)) Tj
+/F1 9 Tf
+1 0 0 1 54 675 Tm (if name_check["checked"] and not name_check["is_consistent"]:) Tj
+/F1 9 Tf
+1 0 0 1 54 662 Tm (    estimate["confidence"] = round\(estimate["confidence"] * 0.6, 4\)) Tj
+/F1 10 Tf
+1 0 0 1 54 635 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 607 Tm (If the name on the document does not match income records, the system reduces income confidence) Tj
+/F1 10 Tf
+1 0 0 1 54 593 Tm (by 40 percent.) Tj
+/F1 10 Tf
+1 0 0 1 54 565 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 537 Tm ("The Income Agent does not just add numbers. It also checks reliability using data coverage,) Tj
+/F1 10 Tf
+1 0 0 1 54 523 Tm (stability, source diversity, and name consistency.") Tj
+/F1 9 Tf
+1 0 0 1 54 495 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 468 Tm (5.16 `agents/score_agent.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 424 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 382 Tm (Loads the trained model and calculates a repayment score.) Tj
+/F1 12 Tf
+1 0 0 1 54 354 Tm (Model Loading) Tj
+/F1 9 Tf
+1 0 0 1 54 312 Tm (if os.path.exists\(self.model_path\):) Tj
+/F1 9 Tf
+1 0 0 1 54 299 Tm (    self.model = joblib.load\(self.model_path\)) Tj
+/F1 10 Tf
+1 0 0 1 54 272 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 244 Tm (The trained model is saved on disk as ml/credit_model.joblib. Score Agent loads it into memory.) Tj
+/F1 12 Tf
+1 0 0 1 54 216 Tm (Input Row) Tj
+/F1 9 Tf
+1 0 0 1 54 174 Tm (live_applicant_row = pd.DataFrame\([{) Tj
+/F1 9 Tf
+1 0 0 1 54 161 Tm (    "loan_amount_npr": loan_amount,) Tj
+/F1 9 Tf
+1 0 0 1 54 148 Tm (    "monthly_income_npr": monthly_income,) Tj
+/F1 9 Tf
+1 0 0 1 54 135 Tm (    "income_confidence": income_conf,) Tj
+/F1 9 Tf
+1 0 0 1 54 122 Tm (    "doc_confidence": doc_conf) Tj
+/F1 9 Tf
+1 0 0 1 54 109 Tm (}]\)) Tj
+/F1 10 Tf
+1 0 0 1 54 82 Tm (Layman explanation:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 21) Tj
+ET
+endstream
+endobj
+45 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 44 0 R >>
+endobj
+46 0 obj
+<< /Length 2226 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (The model expects a table row. Even for one applicant, we format data as a one-row table.) Tj
+/F1 12 Tf
+1 0 0 1 54 716 Tm (Prediction) Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (probabilities = self.model.predict_proba\(live_applicant_row\)) Tj
+/F1 9 Tf
+1 0 0 1 54 661 Tm (repayment_probability = float\(probabilities[0][1]\)) Tj
+/F1 9 Tf
+1 0 0 1 54 648 Tm (calculated_credit_score = int\(repayment_probability * 1000\)) Tj
+/F1 10 Tf
+1 0 0 1 54 621 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 593 Tm (The model returns probability for each class. We take the repayment class probability and) Tj
+/F1 10 Tf
+1 0 0 1 54 579 Tm (convert it into a 0-1000 score.) Tj
+/F1 12 Tf
+1 0 0 1 54 551 Tm (Explanation) Tj
+/F1 9 Tf
+1 0 0 1 54 509 Tm (readable_narrative_list = ShapFormatter.generate_human_explanation\(raw_contributions\)) Tj
+/F1 10 Tf
+1 0 0 1 54 482 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 454 Tm (Raw mathematical impacts are converted into sentences a loan officer can understand.) Tj
+/F1 10 Tf
+1 0 0 1 54 426 Tm (Important codebase note:) Tj
+/F1 10 Tf
+1 0 0 1 54 398 Tm (The class defines run_inference, but the route tries to call run. This should be fixed by either) Tj
+/F1 10 Tf
+1 0 0 1 54 384 Tm (renaming run_inference to run or adding:) Tj
+/F1 9 Tf
+1 0 0 1 54 356 Tm (async def run\(self, shared_state\):) Tj
+/F1 9 Tf
+1 0 0 1 54 343 Tm (    await self.run_inference\(shared_state\)) Tj
+/F1 9 Tf
+1 0 0 1 54 330 Tm (    return shared_state) Tj
+/F1 10 Tf
+1 0 0 1 54 303 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 275 Tm ("Score Agent is the ML part. It turns structured applicant features into repayment probability) Tj
+/F1 10 Tf
+1 0 0 1 54 261 Tm (and human-readable risk explanations.") Tj
+/F1 9 Tf
+1 0 0 1 54 233 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 206 Tm (5.17 `agents/compliance_agent.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 162 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 120 Tm (Checks regulatory and internal policy rules. This is not ML. It is deterministic rule logic.) Tj
+/F1 12 Tf
+1 0 0 1 54 92 Tm (Reset Flags) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 22) Tj
+ET
+endstream
+endobj
+47 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 46 0 R >>
+endobj
+48 0 obj
+<< /Length 2118 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 730 Tm (state.compliance_flags = []) Tj
+/F1 10 Tf
+1 0 0 1 54 703 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 675 Tm (Every compliance run starts fresh so old flags do not remain from another case.) Tj
+/F1 12 Tf
+1 0 0 1 54 647 Tm (KYC Rule) Tj
+/F1 9 Tf
+1 0 0 1 54 605 Tm (if state.manual_review_required:) Tj
+/F1 9 Tf
+1 0 0 1 54 592 Tm (    state.compliance_flags.append\("KYC_INCOMPLETE"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 565 Tm (If document quality is low, KYC is incomplete.) Tj
+/F1 12 Tf
+1 0 0 1 54 537 Tm (Income Rule) Tj
+/F1 9 Tf
+1 0 0 1 54 495 Tm (income_conf = state.income_confidence or 0.0) Tj
+/F1 9 Tf
+1 0 0 1 54 482 Tm (if income_conf < 0.25:) Tj
+/F1 9 Tf
+1 0 0 1 54 469 Tm (    state.compliance_flags.append\("INCOME_UNVERIFIABLE"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 442 Tm (If income confidence is too low, the system cannot trust the income claim.) Tj
+/F1 12 Tf
+1 0 0 1 54 414 Tm (Loan-to-Asset Proxy) Tj
+/F1 9 Tf
+1 0 0 1 54 372 Tm (estimated_assets = monthly_income * 12 * 10) Tj
+/F1 9 Tf
+1 0 0 1 54 359 Tm (loan_to_asset = loan_amount / estimated_assets) Tj
+/F1 9 Tf
+1 0 0 1 54 346 Tm (if loan_to_asset > settings.MAX_LOAN_TO_ASSET:) Tj
+/F1 9 Tf
+1 0 0 1 54 333 Tm (    state.compliance_flags.append\("LOAN_TO_ASSET_BREACH"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 306 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 278 Tm (For demo, asset value is estimated using annual income times 10. In production, Lalpurja) Tj
+/F1 10 Tf
+1 0 0 1 54 264 Tm (valuation would be better.) Tj
+/F1 12 Tf
+1 0 0 1 54 236 Tm (Sector Exposure) Tj
+/F1 9 Tf
+1 0 0 1 54 194 Tm (if is_agricultural and loan_amount > settings.AGRI_SECTOR_LIMIT_NPR:) Tj
+/F1 9 Tf
+1 0 0 1 54 181 Tm (    state.compliance_flags.append\("SECTOR_EXPOSURE_LIMIT"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 154 Tm (If an agriculture loan is above the configured cap, it is flagged.) Tj
+/F1 12 Tf
+1 0 0 1 54 126 Tm (AML Flag) Tj
+/F1 9 Tf
+1 0 0 1 54 84 Tm (if monthly_income > settings.AML_TXN_LIMIT_NPR:) Tj
+/F1 9 Tf
+1 0 0 1 54 71 Tm (    state.compliance_flags.append\("AML_FLAG"\)) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 23) Tj
+ET
+endstream
+endobj
+49 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 48 0 R >>
+endobj
+50 0 obj
+<< /Length 2053 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (Very high monthly income is flagged for review.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm ("We deliberately keep compliance rule-based because regulations are not probabilities. A rule is) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (either passed or breached.") Tj
+/F1 9 Tf
+1 0 0 1 54 632 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 605 Tm (5.18 `agents/decision_agent.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 561 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 519 Tm (Final stage. It reads compliance flags and credit score and produces final decision and reason.) Tj
+/F1 12 Tf
+1 0 0 1 54 491 Tm (Compliance Override) Tj
+/F1 9 Tf
+1 0 0 1 54 449 Tm (if state.compliance_flags:) Tj
+/F1 9 Tf
+1 0 0 1 54 436 Tm (    state.final_decision = "Refer") Tj
+/F1 9 Tf
+1 0 0 1 54 423 Tm (    state.decision_reason = \() Tj
+/F1 9 Tf
+1 0 0 1 54 410 Tm (        f"Referred for manual review. ") Tj
+/F1 9 Tf
+1 0 0 1 54 397 Tm (        f"Compliance flags: {'; '.join\(reasons\)}.") Tj
+/F1 9 Tf
+1 0 0 1 54 384 Tm (    \)) Tj
+/F1 9 Tf
+1 0 0 1 54 371 Tm (    return state) Tj
+/F1 10 Tf
+1 0 0 1 54 344 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 316 Tm (If any compliance issue exists, the system does not auto-approve.) Tj
+/F1 12 Tf
+1 0 0 1 54 288 Tm (Missing Score) Tj
+/F1 9 Tf
+1 0 0 1 54 246 Tm (if state.credit_score is None:) Tj
+/F1 9 Tf
+1 0 0 1 54 233 Tm (    state.final_decision = "Refer") Tj
+/F1 10 Tf
+1 0 0 1 54 206 Tm (If scoring failed, send to human review.) Tj
+/F1 12 Tf
+1 0 0 1 54 178 Tm (Intended Score Logic) Tj
+/F1 10 Tf
+1 0 0 1 54 136 Tm (The intended logic is:) Tj
+/F1 9 Tf
+1 0 0 1 54 108 Tm (if score >= settings.APPROVE_THRESHOLD:) Tj
+/F1 9 Tf
+1 0 0 1 54 95 Tm (    final_decision = "Approve" or "Recommend") Tj
+/F1 9 Tf
+1 0 0 1 54 82 Tm (elif score >= settings.REFER_THRESHOLD:) Tj
+/F1 9 Tf
+1 0 0 1 54 69 Tm (    final_decision = "Refer") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 24) Tj
+ET
+endstream
+endobj
+51 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 50 0 R >>
+endobj
+52 0 obj
+<< /Length 2227 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (else:) Tj
+/F1 9 Tf
+1 0 0 1 54 731 Tm (    final_decision = "Reject") Tj
+/F1 10 Tf
+1 0 0 1 54 704 Tm (Important codebase note:) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (The current file has a lower block that references undefined names like credit_score,) Tj
+/F1 10 Tf
+1 0 0 1 54 662 Tm (APPROVE_THRESHOLD, and compliance_flags. Because it is inside a try/except, it falls back to) Tj
+/F1 10 Tf
+1 0 0 1 54 648 Tm (safe Refer on error. This is a known cleanup item.) Tj
+/F1 10 Tf
+1 0 0 1 54 620 Tm (Professional answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 592 Tm ("The Decision Agent's priority design is correct: compliance first, missing score second, score) Tj
+/F1 10 Tf
+1 0 0 1 54 578 Tm (threshold third. The implementation has a sprint-integration variable naming issue that we have) Tj
+/F1 10 Tf
+1 0 0 1 54 564 Tm (identified and will fix before final defense.") Tj
+/F1 10 Tf
+1 0 0 1 54 536 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 508 Tm ("Decision Agent is intentionally conservative. When uncertain, it refers to a human rather than) Tj
+/F1 10 Tf
+1 0 0 1 54 494 Tm (approving blindly.") Tj
+/F1 9 Tf
+1 0 0 1 54 466 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 439 Tm (5.19 `utils/ocr.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 395 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 353 Tm (Handles OCR engine loading, image preprocessing, OCR execution, field extraction, and warmup.) Tj
+/F1 12 Tf
+1 0 0 1 54 325 Tm (OCR Singleton) Tj
+/F1 9 Tf
+1 0 0 1 54 283 Tm (_ocr_engine = None) Tj
+/F1 9 Tf
+1 0 0 1 54 270 Tm (OCR_AVAILABLE = False) Tj
+/F1 10 Tf
+1 0 0 1 54 243 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 215 Tm (The OCR engine is heavy. We keep one global engine instead of creating a new one for every) Tj
+/F1 10 Tf
+1 0 0 1 54 201 Tm (request.) Tj
+/F1 12 Tf
+1 0 0 1 54 173 Tm (PaddleOCR Initialization) Tj
+/F1 9 Tf
+1 0 0 1 54 131 Tm (_ocr_engine = PaddleOCR\() Tj
+/F1 9 Tf
+1 0 0 1 54 118 Tm (    use_angle_cls=True,) Tj
+/F1 9 Tf
+1 0 0 1 54 105 Tm (    lang='ne',) Tj
+/F1 9 Tf
+1 0 0 1 54 92 Tm (    enable_mkldnn=False) Tj
+/F1 9 Tf
+1 0 0 1 54 79 Tm (\)) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 25) Tj
+ET
+endstream
+endobj
+53 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 52 0 R >>
+endobj
+54 0 obj
+<< /Length 2275 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (This loads PaddleOCR for Nepali/multilingual reading. use_angle_cls=True helps detect rotated) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (text. enable_mkldnn=False is a Windows stability choice.) Tj
+/F1 12 Tf
+1 0 0 1 54 660 Tm (Image Preprocessing) Tj
+/F1 9 Tf
+1 0 0 1 54 618 Tm (gray = cv2.cvtColor\(img, cv2.COLOR_BGR2GRAY\)) Tj
+/F1 9 Tf
+1 0 0 1 54 605 Tm (blurred = cv2.GaussianBlur\(gray, \(5, 5\), 0\)) Tj
+/F1 9 Tf
+1 0 0 1 54 592 Tm (_, binarized = cv2.threshold\(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU\)) Tj
+/F1 9 Tf
+1 0 0 1 54 579 Tm (eroded = cv2.erode\(binarized, kernel, iterations=1\)) Tj
+/F1 10 Tf
+1 0 0 1 54 552 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 524 Tm (1. Convert image to black-and-white brightness.) Tj
+/F1 10 Tf
+1 0 0 1 54 510 Tm (2. Smooth noise.) Tj
+/F1 10 Tf
+1 0 0 1 54 496 Tm (3. Convert pixels to pure black or white.) Tj
+/F1 10 Tf
+1 0 0 1 54 482 Tm (4. Thicken text slightly so OCR can detect characters better.) Tj
+/F1 10 Tf
+1 0 0 1 54 454 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 426 Tm ("We preprocess images before OCR because raw mobile photos often contain shadows, stamps, and) Tj
+/F1 10 Tf
+1 0 0 1 54 412 Tm (noise.") Tj
+/F1 12 Tf
+1 0 0 1 54 384 Tm (Async OCR Wrapper) Tj
+/F1 9 Tf
+1 0 0 1 54 342 Tm (result = await asyncio.wait_for\() Tj
+/F1 9 Tf
+1 0 0 1 54 329 Tm (    loop.run_in_executor\(None, _run_ocr_sync, image_bytes\),) Tj
+/F1 9 Tf
+1 0 0 1 54 316 Tm (    timeout=300.0) Tj
+/F1 9 Tf
+1 0 0 1 54 303 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 276 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 248 Tm (OCR is CPU-heavy and synchronous, so it runs in a background executor while FastAPI stays async.) Tj
+/F1 12 Tf
+1 0 0 1 54 220 Tm (Field Extraction) Tj
+/F1 9 Tf
+1 0 0 1 54 178 Tm (flexible_pattern = r'[\\u0966-\\u096F]+\(?:[\\s\\-\\/]+[\\u0966-\\u096F]+\)+') Tj
+/F1 9 Tf
+1 0 0 1 54 165 Tm (match = re.search\(flexible_pattern, raw_text\)) Tj
+/F1 10 Tf
+1 0 0 1 54 138 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 110 Tm (This regex looks for Nepali digit patterns that may represent a citizenship number.) Tj
+/F1 12 Tf
+1 0 0 1 54 82 Tm (Mock/Fallback) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 26) Tj
+ET
+endstream
+endobj
+55 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 54 0 R >>
+endobj
+56 0 obj
+<< /Length 2024 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 730 Tm (if not OCR_AVAILABLE or engine is None:) Tj
+/F1 9 Tf
+1 0 0 1 54 717 Tm (    return {"raw_text": "", "boxes": [], "_is_mock": True}) Tj
+/F1 10 Tf
+1 0 0 1 54 690 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 662 Tm (If OCR engine is unavailable, the system returns a safe mock/unavailable result instead of) Tj
+/F1 10 Tf
+1 0 0 1 54 648 Tm (crashing.) Tj
+/F1 10 Tf
+1 0 0 1 54 620 Tm (Important note:) Tj
+/F1 10 Tf
+1 0 0 1 54 592 Tm (This file writes debug images diagnostic_processed.jpg and ocr_input_debug.jpg. These are useful) Tj
+/F1 10 Tf
+1 0 0 1 54 578 Tm (during OCR development, but production should write them only in debug mode.) Tj
+/F1 9 Tf
+1 0 0 1 54 550 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 523 Tm (5.20 `utils/income_parsers.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 479 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 437 Tm (Converts different income data formats into one standard signal format, then calculates monthly) Tj
+/F1 10 Tf
+1 0 0 1 54 423 Tm (income and confidence.) Tj
+/F1 12 Tf
+1 0 0 1 54 395 Tm (eSewa Parser) Tj
+/F1 9 Tf
+1 0 0 1 54 353 Tm (INCOME_TYPES = {) Tj
+/F1 9 Tf
+1 0 0 1 54 340 Tm (    "receive",) Tj
+/F1 9 Tf
+1 0 0 1 54 327 Tm (    "salary",) Tj
+/F1 9 Tf
+1 0 0 1 54 314 Tm (    "transfer_in",) Tj
+/F1 9 Tf
+1 0 0 1 54 301 Tm (    "business_income",) Tj
+/F1 9 Tf
+1 0 0 1 54 288 Tm (    "freelance",) Tj
+/F1 9 Tf
+1 0 0 1 54 275 Tm (}) Tj
+/F1 10 Tf
+1 0 0 1 54 248 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 220 Tm (Only money-coming-in transaction types are counted as income. Expenses are ignored.) Tj
+/F1 12 Tf
+1 0 0 1 54 192 Tm (Remittance Parser) Tj
+/F1 9 Tf
+1 0 0 1 54 150 Tm (amount_npr = round\(amount_usd * exchange_rate, 2\)) Tj
+/F1 10 Tf
+1 0 0 1 54 123 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 95 Tm (Foreign remittance is converted into Nepali rupees using the exchange rate.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 27) Tj
+ET
+endstream
+endobj
+57 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 56 0 R >>
+endobj
+58 0 obj
+<< /Length 2118 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (Cooperative Parser) Tj
+/F1 9 Tf
+1 0 0 1 54 702 Tm (signals.append\({) Tj
+/F1 9 Tf
+1 0 0 1 54 689 Tm (    "date": date_str,) Tj
+/F1 9 Tf
+1 0 0 1 54 676 Tm (    "amount_npr": amount,) Tj
+/F1 9 Tf
+1 0 0 1 54 663 Tm (    "source": "cooperative",) Tj
+/F1 9 Tf
+1 0 0 1 54 650 Tm (    "type": "regular",) Tj
+/F1 9 Tf
+1 0 0 1 54 637 Tm (}\)) Tj
+/F1 10 Tf
+1 0 0 1 54 610 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 582 Tm (Cooperative monthly deposits are treated as regular financial capacity signals.) Tj
+/F1 12 Tf
+1 0 0 1 54 554 Tm (Normalization) Tj
+/F1 9 Tf
+1 0 0 1 54 512 Tm (coverage_score = min\(1.0, all_months / 6\)) Tj
+/F1 9 Tf
+1 0 0 1 54 499 Tm (stability_score = 1.0 - cv) Tj
+/F1 9 Tf
+1 0 0 1 54 486 Tm (diversity_score = min\(1.0, source_count / 2\)) Tj
+/F1 9 Tf
+1 0 0 1 54 473 Tm (confidence = \() Tj
+/F1 9 Tf
+1 0 0 1 54 460 Tm (    coverage_score * 0.45) Tj
+/F1 9 Tf
+1 0 0 1 54 447 Tm (    + stability_score * 0.35) Tj
+/F1 9 Tf
+1 0 0 1 54 434 Tm (    + diversity_score * 0.20) Tj
+/F1 9 Tf
+1 0 0 1 54 421 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 394 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 366 Tm (Confidence depends on:) Tj
+/F1 10 Tf
+1 0 0 1 54 338 Tm (- How many months of data exist.) Tj
+/F1 10 Tf
+1 0 0 1 54 324 Tm (- How stable income is.) Tj
+/F1 10 Tf
+1 0 0 1 54 310 Tm (- Whether multiple sources confirm income.) Tj
+/F1 10 Tf
+1 0 0 1 54 282 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 254 Tm ("We do not trust income blindly. We score its reliability using coverage, stability, and source) Tj
+/F1 10 Tf
+1 0 0 1 54 240 Tm (diversity.") Tj
+/F1 12 Tf
+1 0 0 1 54 212 Tm (Jaccard Name Matching) Tj
+/F1 9 Tf
+1 0 0 1 54 170 Tm (intersection = len\(doc_tokens & income_tokens\)) Tj
+/F1 9 Tf
+1 0 0 1 54 157 Tm (union = len\(doc_tokens | income_tokens\)) Tj
+/F1 9 Tf
+1 0 0 1 54 144 Tm (score = intersection / union) Tj
+/F1 10 Tf
+1 0 0 1 54 117 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 89 Tm (This compares overlapping words in names. It handles cases where a middle name is missing.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 28) Tj
+ET
+endstream
+endobj
+59 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 58 0 R >>
+endobj
+60 0 obj
+<< /Length 2251 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm ("Jaccard matching is better than exact matching for Nepali names because documents often include) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (different name lengths or spellings.") Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 647 Tm (5.21 `utils/shap_formatter.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 603 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 561 Tm (Converts technical feature contributions into human-readable explanation sentences.) Tj
+/F1 12 Tf
+1 0 0 1 54 533 Tm (Feature Translation) Tj
+/F1 9 Tf
+1 0 0 1 54 491 Tm (mapping = {) Tj
+/F1 9 Tf
+1 0 0 1 54 478 Tm (    "loan_amount_npr": "Requested Loan Amount",) Tj
+/F1 9 Tf
+1 0 0 1 54 465 Tm (    "monthly_income_npr": "Normalized Monthly Income",) Tj
+/F1 9 Tf
+1 0 0 1 54 452 Tm (    "income_confidence": "Income Data Reliability Score",) Tj
+/F1 9 Tf
+1 0 0 1 54 439 Tm (    "doc_confidence": "Document Verification Confidence") Tj
+/F1 9 Tf
+1 0 0 1 54 426 Tm (}) Tj
+/F1 10 Tf
+1 0 0 1 54 399 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 371 Tm (This changes database-style names into readable labels.) Tj
+/F1 12 Tf
+1 0 0 1 54 343 Tm (Explanation Sentence) Tj
+/F1 9 Tf
+1 0 0 1 54 301 Tm (if impact < 0:) Tj
+/F1 9 Tf
+1 0 0 1 54 288 Tm (    sentence = f"CRITICAL RISK: {readable_title} actively dragged down...") Tj
+/F1 9 Tf
+1 0 0 1 54 275 Tm (else:) Tj
+/F1 9 Tf
+1 0 0 1 54 262 Tm (    sentence = f"POSITIVE SIGNAL: {readable_title} provided strong verification...") Tj
+/F1 10 Tf
+1 0 0 1 54 235 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 207 Tm (If a factor hurts the score, it is called a risk. If it helps, it is called a positive signal.) Tj
+/F1 10 Tf
+1 0 0 1 54 179 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 151 Tm ("Explainability matters because loan officers and applicants need understandable reasons, not) Tj
+/F1 10 Tf
+1 0 0 1 54 137 Tm (just a score.") Tj
+/F1 9 Tf
+1 0 0 1 54 109 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 82 Tm (5.22 `ml/train_model.py`) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 29) Tj
+ET
+endstream
+endobj
+61 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 60 0 R >>
+endobj
+62 0 obj
+<< /Length 2080 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 718 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (Creates synthetic training data and trains the XGBoost model.) Tj
+/F1 12 Tf
+1 0 0 1 54 648 Tm (Synthetic Data) Tj
+/F1 9 Tf
+1 0 0 1 54 606 Tm (loan_amount_npr = np.random.uniform\(50000, 500000, num_samples\)) Tj
+/F1 9 Tf
+1 0 0 1 54 593 Tm (monthly_income_npr = np.random.uniform\(15000, 90000, num_samples\)) Tj
+/F1 9 Tf
+1 0 0 1 54 580 Tm (income_confidence = np.random.uniform\(0.4, 1.0, num_samples\)) Tj
+/F1 9 Tf
+1 0 0 1 54 567 Tm (doc_confidence = np.random.uniform\(0.5, 1.0, num_samples\)) Tj
+/F1 10 Tf
+1 0 0 1 54 540 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 512 Tm (The script creates fake but realistic applicant profiles for prototype training.) Tj
+/F1 12 Tf
+1 0 0 1 54 484 Tm (Risk Formula) Tj
+/F1 9 Tf
+1 0 0 1 54 442 Tm (base_risk = \() Tj
+/F1 9 Tf
+1 0 0 1 54 429 Tm (    \(loan_amount_npr / \(monthly_income_npr * 12\)\) * 0.5) Tj
+/F1 9 Tf
+1 0 0 1 54 416 Tm (    - \(income_confidence * 0.3\)) Tj
+/F1 9 Tf
+1 0 0 1 54 403 Tm (    - \(doc_confidence * 0.2\)) Tj
+/F1 9 Tf
+1 0 0 1 54 390 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 363 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 335 Tm (Higher loan relative to income increases risk. Better income confidence and document confidence) Tj
+/F1 10 Tf
+1 0 0 1 54 321 Tm (reduce risk.) Tj
+/F1 12 Tf
+1 0 0 1 54 293 Tm (Pipeline) Tj
+/F1 9 Tf
+1 0 0 1 54 251 Tm (credit_pipeline = Pipeline\([) Tj
+/F1 9 Tf
+1 0 0 1 54 238 Tm (    \("scaler", StandardScaler\(\)\),) Tj
+/F1 9 Tf
+1 0 0 1 54 225 Tm (    \("xgboost", XGBClassifier\(...\)\)) Tj
+/F1 9 Tf
+1 0 0 1 54 212 Tm (]\)) Tj
+/F1 10 Tf
+1 0 0 1 54 185 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 157 Tm (The pipeline first scales numbers, then applies XGBoost. Scaling prevents large rupee values) Tj
+/F1 10 Tf
+1 0 0 1 54 143 Tm (from overwhelming small confidence values.) Tj
+/F1 12 Tf
+1 0 0 1 54 115 Tm (Save Model) Tj
+/F1 9 Tf
+1 0 0 1 54 73 Tm (joblib.dump\(credit_pipeline, "ml/credit_model.joblib"\)) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 30) Tj
+ET
+endstream
+endobj
+63 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 62 0 R >>
+endobj
+64 0 obj
+<< /Length 1915 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (The trained model is saved so the API can load it later without retraining every time.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm ("For mid-defense, synthetic data proves the architecture. Production requires retraining and) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (validation using real historical repayment data.") Tj
+/F1 9 Tf
+1 0 0 1 54 604 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 577 Tm (5.23 `ml/credit_model.joblib`) Tj
+/F1 12 Tf
+1 0 0 1 54 533 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (Binary saved trained model.) Tj
+/F1 10 Tf
+1 0 0 1 54 463 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 435 Tm ("This is the serialized ML pipeline loaded by Score Agent. It contains the scaler plus XGBoost) Tj
+/F1 10 Tf
+1 0 0 1 54 421 Tm (classifier.") Tj
+/F1 10 Tf
+1 0 0 1 54 393 Tm (Do not try to open it as text during defense.) Tj
+/F1 9 Tf
+1 0 0 1 54 365 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 338 Tm (5.24 `db/models.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 294 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 252 Tm (Defines database tables using SQLAlchemy ORM.) Tj
+/F1 12 Tf
+1 0 0 1 54 224 Tm (Enums) Tj
+/F1 9 Tf
+1 0 0 1 54 182 Tm (class LoanStatus\(str, enum.Enum\):) Tj
+/F1 9 Tf
+1 0 0 1 54 169 Tm (    PENDING = "pending") Tj
+/F1 9 Tf
+1 0 0 1 54 156 Tm (    APPROVED = "approved") Tj
+/F1 9 Tf
+1 0 0 1 54 143 Tm (    REJECTED = "rejected") Tj
+/F1 9 Tf
+1 0 0 1 54 130 Tm (    REFERRED = "referred") Tj
+/F1 10 Tf
+1 0 0 1 54 103 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 75 Tm (Enums restrict status values so the database does not get random strings.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 31) Tj
+ET
+endstream
+endobj
+65 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 64 0 R >>
+endobj
+66 0 obj
+<< /Length 2363 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (Applicant Table) Tj
+/F1 9 Tf
+1 0 0 1 54 688 Tm (class Applicant\(Base\):) Tj
+/F1 9 Tf
+1 0 0 1 54 675 Tm (    __tablename__ = "applicants") Tj
+/F1 9 Tf
+1 0 0 1 54 662 Tm (    id = Column\(UUID\(as_uuid=True\), primary_key=True, default=uuid.uuid4\)) Tj
+/F1 9 Tf
+1 0 0 1 54 649 Tm (    full_name = Column\(String\(255\), nullable=False\)) Tj
+/F1 9 Tf
+1 0 0 1 54 636 Tm (    loan_amount_npr = Column\(Float, nullable=False\)) Tj
+/F1 9 Tf
+1 0 0 1 54 623 Tm (    sector = Column\(String\(100\), nullable=False\)) Tj
+/F1 10 Tf
+1 0 0 1 54 596 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 568 Tm (Stores the main applicant and loan request information.) Tj
+/F1 12 Tf
+1 0 0 1 54 540 Tm (Document Table) Tj
+/F1 9 Tf
+1 0 0 1 54 498 Tm (class Document\(Base\):) Tj
+/F1 9 Tf
+1 0 0 1 54 485 Tm (    extracted_fields = Column\(JSONB, nullable=True\)) Tj
+/F1 9 Tf
+1 0 0 1 54 472 Tm (    doc_confidence = Column\(Float, nullable=True\)) Tj
+/F1 9 Tf
+1 0 0 1 54 459 Tm (    manual_review_required = Column\(Boolean, default=False\)) Tj
+/F1 10 Tf
+1 0 0 1 54 432 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 404 Tm (Stores OCR output and confidence. JSONB is used because extracted fields can vary by document) Tj
+/F1 10 Tf
+1 0 0 1 54 390 Tm (type.) Tj
+/F1 12 Tf
+1 0 0 1 54 362 Tm (AuditLog Table) Tj
+/F1 9 Tf
+1 0 0 1 54 320 Tm (class AuditLog\(Base\):) Tj
+/F1 9 Tf
+1 0 0 1 54 307 Tm (    event_type = Column\(String\(100\), nullable=False\)) Tj
+/F1 9 Tf
+1 0 0 1 54 294 Tm (    agent_name = Column\(String\(100\), nullable=True\)) Tj
+/F1 9 Tf
+1 0 0 1 54 281 Tm (    details = Column\(JSONB, nullable=True\)) Tj
+/F1 10 Tf
+1 0 0 1 54 254 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 226 Tm (Stores a record of what happened in the system. This is important for financial auditability.) Tj
+/F1 10 Tf
+1 0 0 1 54 198 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 170 Tm ("Our database schema separates applicants, documents, roles, and audit logs. JSONB lets us store) Tj
+/F1 10 Tf
+1 0 0 1 54 156 Tm (flexible OCR and audit details while keeping relational structure for core records.") Tj
+/F1 9 Tf
+1 0 0 1 54 128 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 101 Tm (5.25 `db/session.py`) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 32) Tj
+ET
+endstream
+endobj
+67 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 66 0 R >>
+endobj
+68 0 obj
+<< /Length 1887 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (Creates the database engine and session factory.) Tj
+/F1 12 Tf
+1 0 0 1 54 674 Tm (Async URL Conversion) Tj
+/F1 9 Tf
+1 0 0 1 54 632 Tm (_url = make_url\(settings.DATABASE_URL\)) Tj
+/F1 9 Tf
+1 0 0 1 54 619 Tm (ASYNC_URL = _url.set\(drivername="postgresql+asyncpg"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 592 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 564 Tm (This converts a normal PostgreSQL URL into an async PostgreSQL URL so FastAPI can use async) Tj
+/F1 10 Tf
+1 0 0 1 54 550 Tm (database operations.) Tj
+/F1 12 Tf
+1 0 0 1 54 522 Tm (Engine) Tj
+/F1 9 Tf
+1 0 0 1 54 480 Tm (engine = create_async_engine\() Tj
+/F1 9 Tf
+1 0 0 1 54 467 Tm (    ASYNC_URL,) Tj
+/F1 9 Tf
+1 0 0 1 54 454 Tm (    pool_size=5,) Tj
+/F1 9 Tf
+1 0 0 1 54 441 Tm (    max_overflow=10,) Tj
+/F1 9 Tf
+1 0 0 1 54 428 Tm (    connect_args={"ssl": "require"}) Tj
+/F1 9 Tf
+1 0 0 1 54 415 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 388 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 360 Tm (The engine manages database connections. Pooling means the app reuses connections instead of) Tj
+/F1 10 Tf
+1 0 0 1 54 346 Tm (opening a new one every request.) Tj
+/F1 12 Tf
+1 0 0 1 54 318 Tm (Session Factory) Tj
+/F1 9 Tf
+1 0 0 1 54 276 Tm (AsyncSessionLocal = sessionmaker\() Tj
+/F1 9 Tf
+1 0 0 1 54 263 Tm (    engine,) Tj
+/F1 9 Tf
+1 0 0 1 54 250 Tm (    class_=AsyncSession,) Tj
+/F1 9 Tf
+1 0 0 1 54 237 Tm (    expire_on_commit=False,) Tj
+/F1 9 Tf
+1 0 0 1 54 224 Tm (\)) Tj
+/F1 10 Tf
+1 0 0 1 54 197 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 169 Tm (This creates database sessions for routes.) Tj
+/F1 12 Tf
+1 0 0 1 54 141 Tm (Create Tables) Tj
+/F1 9 Tf
+1 0 0 1 54 99 Tm (await conn.run_sync\(Base.metadata.create_all\)) Tj
+/F1 10 Tf
+1 0 0 1 54 72 Tm (Layman explanation:) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 33) Tj
+ET
+endstream
+endobj
+69 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 68 0 R >>
+endobj
+70 0 obj
+<< /Length 2356 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (Creates missing tables at startup.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (Important codebase note:) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (This file currently defines engine twice. The second definition overrides the first. This should) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (be consolidated.) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (Professional answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm ("The active sprint has duplicate engine setup in db/session.py. The production cleanup is to) Tj
+/F1 10 Tf
+1 0 0 1 54 590 Tm (keep one engine configuration that supports Supabase SSL and transaction-pooling settings) Tj
+/F1 10 Tf
+1 0 0 1 54 576 Tm (consistently.") Tj
+/F1 9 Tf
+1 0 0 1 54 548 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 521 Tm (5.26 `db/migration/env.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 477 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 435 Tm (Alembic runtime environment. It tells Alembic how to run migrations offline or online.) Tj
+/F1 12 Tf
+1 0 0 1 54 407 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 365 Tm (def run_migrations_online\(\) -> None:) Tj
+/F1 9 Tf
+1 0 0 1 54 352 Tm (    connectable = engine_from_config\(...\)) Tj
+/F1 9 Tf
+1 0 0 1 54 339 Tm (    with connectable.connect\(\) as connection:) Tj
+/F1 9 Tf
+1 0 0 1 54 326 Tm (        context.configure\(connection=connection, target_metadata=target_metadata\)) Tj
+/F1 10 Tf
+1 0 0 1 54 299 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 271 Tm (When Alembic applies migrations, it connects to the database and runs schema changes.) Tj
+/F1 10 Tf
+1 0 0 1 54 243 Tm (Important note:) Tj
+/F1 10 Tf
+1 0 0 1 54 215 Tm (target_metadata = None means autogeneration is not yet connected to SQLAlchemy models. Future) Tj
+/F1 10 Tf
+1 0 0 1 54 201 Tm (cleanup should set it to Base.metadata.) Tj
+/F1 10 Tf
+1 0 0 1 54 173 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 145 Tm ("Alembic migration scaffolding is present. For final production hardening, we will connect) Tj
+/F1 10 Tf
+1 0 0 1 54 131 Tm (metadata for autogenerate and create versioned migrations.") Tj
+/F1 9 Tf
+1 0 0 1 54 103 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 76 Tm (5.27 `db/migration/README`) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 34) Tj
+ET
+endstream
+endobj
+71 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 70 0 R >>
+endobj
+72 0 obj
+<< /Length 1792 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 718 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (Default Alembic note saying this is a generic single-database migration setup.) Tj
+/F1 9 Tf
+1 0 0 1 54 648 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 621 Tm (5.28 `db/migration/script.py.mako`) Tj
+/F1 12 Tf
+1 0 0 1 54 577 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 535 Tm (Template used by Alembic when generating new migration files.) Tj
+/F1 12 Tf
+1 0 0 1 54 507 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 465 Tm (def upgrade\(\) -> None:) Tj
+/F1 9 Tf
+1 0 0 1 54 452 Tm (    ${upgrades if upgrades else "pass"}) Tj
+/F1 9 Tf
+1 0 0 1 54 426 Tm (def downgrade\(\) -> None:) Tj
+/F1 9 Tf
+1 0 0 1 54 413 Tm (    ${downgrades if downgrades else "pass"}) Tj
+/F1 10 Tf
+1 0 0 1 54 386 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 358 Tm (Every migration has an upgrade step and a downgrade step. Upgrade applies schema changes;) Tj
+/F1 10 Tf
+1 0 0 1 54 344 Tm (downgrade reverses them.) Tj
+/F1 9 Tf
+1 0 0 1 54 316 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 289 Tm (5.29 `frontend/templates/login.html`) Tj
+/F1 12 Tf
+1 0 0 1 54 245 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 203 Tm (Login/portal entry page served at /.) Tj
+/F1 12 Tf
+1 0 0 1 54 175 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 133 Tm (<form onsubmit="event.preventDefault\(\); window.location.href='/dashboard';">) Tj
+/F1 10 Tf
+1 0 0 1 54 106 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 78 Tm (This is currently demo navigation. It does not validate real credentials yet; it redirects to) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 35) Tj
+ET
+endstream
+endobj
+73 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 72 0 R >>
+endobj
+74 0 obj
+<< /Length 2007 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (dashboard.) Tj
+/F1 12 Tf
+1 0 0 1 54 716 Tm (Tailwind CDN) Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>) Tj
+/F1 10 Tf
+1 0 0 1 54 647 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 619 Tm (Tailwind provides utility CSS classes directly in the browser for fast UI development.) Tj
+/F1 10 Tf
+1 0 0 1 54 591 Tm (Professional caveat:) Tj
+/F1 10 Tf
+1 0 0 1 54 563 Tm ("For production, frontend assets should be bundled locally and real authentication should be) Tj
+/F1 10 Tf
+1 0 0 1 54 549 Tm (wired to JWT.") Tj
+/F1 10 Tf
+1 0 0 1 54 521 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 493 Tm ("The login page is the portal UI. Authentication backend is a planned hardening step; the) Tj
+/F1 10 Tf
+1 0 0 1 54 479 Tm (current version focuses on pipeline demonstration.") Tj
+/F1 9 Tf
+1 0 0 1 54 451 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 424 Tm (5.30 `frontend/templates/apply.html`) Tj
+/F1 12 Tf
+1 0 0 1 54 380 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 338 Tm (Income verification console served at /apply.) Tj
+/F1 12 Tf
+1 0 0 1 54 310 Tm (Alpine State) Tj
+/F1 9 Tf
+1 0 0 1 54 268 Tm (x-data="{) Tj
+/F1 9 Tf
+1 0 0 1 54 255 Tm (  applicantId: '00000000-0000-0000-0000-000000000001',) Tj
+/F1 9 Tf
+1 0 0 1 54 242 Tm (  useMock: false,) Tj
+/F1 9 Tf
+1 0 0 1 54 229 Tm (  esewaRawText: '',) Tj
+/F1 9 Tf
+1 0 0 1 54 216 Tm (  incomeResponse: null,) Tj
+/F1 9 Tf
+1 0 0 1 54 203 Tm (  loading: false,) Tj
+/F1 9 Tf
+1 0 0 1 54 190 Tm (  errorMessage: '',) Tj
+/F1 9 Tf
+1 0 0 1 54 177 Tm (}") Tj
+/F1 10 Tf
+1 0 0 1 54 150 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 122 Tm (This stores frontend state: applicant ID, mock mode, pasted JSON, API response, loading state,) Tj
+/F1 10 Tf
+1 0 0 1 54 108 Tm (and errors.) Tj
+/F1 12 Tf
+1 0 0 1 54 80 Tm (Submit Function) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 36) Tj
+ET
+endstream
+endobj
+75 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 74 0 R >>
+endobj
+76 0 obj
+<< /Length 2173 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 718 Tm (let response = await fetch\('/api/v1/income/analyze', {) Tj
+/F1 9 Tf
+1 0 0 1 54 705 Tm (  method: 'POST',) Tj
+/F1 9 Tf
+1 0 0 1 54 692 Tm (  headers: { 'Content-Type': 'application/json' },) Tj
+/F1 9 Tf
+1 0 0 1 54 679 Tm (  body: JSON.stringify\(payload\)) Tj
+/F1 9 Tf
+1 0 0 1 54 666 Tm (}\);) Tj
+/F1 10 Tf
+1 0 0 1 54 639 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 611 Tm (The page sends JSON to the income analysis endpoint and displays the result.) Tj
+/F1 12 Tf
+1 0 0 1 54 583 Tm (Presets) Tj
+/F1 10 Tf
+1 0 0 1 54 541 Tm (The page has sample salary/agriculture JSON templates to help demo income parsing.) Tj
+/F1 10 Tf
+1 0 0 1 54 513 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 485 Tm ("The income console lets us test the Income Agent separately from the full pipeline, which is) Tj
+/F1 10 Tf
+1 0 0 1 54 471 Tm (useful for debugging and demonstration.") Tj
+/F1 9 Tf
+1 0 0 1 54 443 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 416 Tm (5.31 `frontend/templates/dashboard.html`) Tj
+/F1 12 Tf
+1 0 0 1 54 372 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 330 Tm (Main underwriting dashboard served at /dashboard.) Tj
+/F1 12 Tf
+1 0 0 1 54 302 Tm (Form Fields) Tj
+/F1 9 Tf
+1 0 0 1 54 260 Tm (<input type="number" id="loan_amount_npr" value="150000" required>) Tj
+/F1 9 Tf
+1 0 0 1 54 247 Tm (<select id="sector">) Tj
+/F1 9 Tf
+1 0 0 1 54 234 Tm (<input type="checkbox" id="use_mock_income" checked>) Tj
+/F1 9 Tf
+1 0 0 1 54 221 Tm (<input type="file" id="document" accept="image/jpeg,image/jpg,image/png" required>) Tj
+/F1 10 Tf
+1 0 0 1 54 194 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 166 Tm (The user enters loan amount, selects sector, chooses mock income, and uploads a document.) Tj
+/F1 12 Tf
+1 0 0 1 54 138 Tm (FormData Request) Tj
+/F1 9 Tf
+1 0 0 1 54 96 Tm (const formDataPayload = new FormData\(\);) Tj
+/F1 9 Tf
+1 0 0 1 54 83 Tm (formDataPayload.append\('loan_amount_npr', loan_amount_npr\);) Tj
+/F1 9 Tf
+1 0 0 1 54 70 Tm (formDataPayload.append\('sector', sector\);) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 37) Tj
+ET
+endstream
+endobj
+77 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 76 0 R >>
+endobj
+78 0 obj
+<< /Length 2050 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (formDataPayload.append\('use_mock_income', use_mock_income\);) Tj
+/F1 9 Tf
+1 0 0 1 54 731 Tm (formDataPayload.append\('document', documentFile\);) Tj
+/F1 10 Tf
+1 0 0 1 54 704 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (FormData is used because the request contains both text fields and a file upload.) Tj
+/F1 12 Tf
+1 0 0 1 54 648 Tm (API Call) Tj
+/F1 9 Tf
+1 0 0 1 54 606 Tm (const response = await fetch\('http://127.0.0.1:8000/api/v1/loan/apply', {) Tj
+/F1 9 Tf
+1 0 0 1 54 593 Tm (  method: 'POST',) Tj
+/F1 9 Tf
+1 0 0 1 54 580 Tm (  body: formDataPayload) Tj
+/F1 9 Tf
+1 0 0 1 54 567 Tm (}\);) Tj
+/F1 10 Tf
+1 0 0 1 54 540 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 512 Tm (The dashboard calls the full backend loan pipeline.) Tj
+/F1 12 Tf
+1 0 0 1 54 484 Tm (Result Binding) Tj
+/F1 9 Tf
+1 0 0 1 54 442 Tm (document.getElementById\('txtFinalDecision'\).innerText = data.final_decision;) Tj
+/F1 9 Tf
+1 0 0 1 54 429 Tm (document.getElementById\('txtDecisionReason'\).innerText = data.decision_reason;) Tj
+/F1 10 Tf
+1 0 0 1 54 402 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 374 Tm (The returned JSON values are displayed in the UI.) Tj
+/F1 10 Tf
+1 0 0 1 54 346 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 318 Tm ("The dashboard is not just static UI. It calls the live FastAPI endpoint and renders actual) Tj
+/F1 10 Tf
+1 0 0 1 54 304 Tm (pipeline output.") Tj
+/F1 9 Tf
+1 0 0 1 54 276 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 249 Tm (5.32 `test_ocr.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 205 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 163 Tm (Development test for OCR behavior. It likely uploads or reads a test image and checks OCR) Tj
+/F1 10 Tf
+1 0 0 1 54 149 Tm (extraction.) Tj
+/F1 10 Tf
+1 0 0 1 54 121 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 93 Tm ("This is a developer test helper for validating OCR behavior outside the full app.") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 38) Tj
+ET
+endstream
+endobj
+79 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 78 0 R >>
+endobj
+80 0 obj
+<< /Length 1833 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 717 Tm (5.33 `test_native_ocr.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 673 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 631 Tm (Tests native PaddleOCR initialization/runtime. Useful because OCR libraries can behave) Tj
+/F1 10 Tf
+1 0 0 1 54 617 Tm (differently on Windows.) Tj
+/F1 10 Tf
+1 0 0 1 54 589 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 561 Tm ("This helped us isolate whether OCR problems came from PaddleOCR itself or from our agent) Tj
+/F1 10 Tf
+1 0 0 1 54 547 Tm (pipeline.") Tj
+/F1 9 Tf
+1 0 0 1 54 519 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 492 Tm (5.34 `test_score.html`) Tj
+/F1 12 Tf
+1 0 0 1 54 448 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 406 Tm (Frontend experiment/test page for score display.) Tj
+/F1 10 Tf
+1 0 0 1 54 378 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 350 Tm ("This was used during development to test how credit score outputs could be visualized before) Tj
+/F1 10 Tf
+1 0 0 1 54 336 Tm (final dashboard integration.") Tj
+/F1 9 Tf
+1 0 0 1 54 308 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 281 Tm (5.35 `test_image.jpg`) Tj
+/F1 12 Tf
+1 0 0 1 54 237 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 195 Tm (Sample image used for OCR testing.) Tj
+/F1 10 Tf
+1 0 0 1 54 167 Tm (Do not treat it as source code.) Tj
+/F1 9 Tf
+1 0 0 1 54 139 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 112 Tm (5.36 `diagnostic_processed.jpg` and `ocr_input_debug.jpg`) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 39) Tj
+ET
+endstream
+endobj
+81 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 80 0 R >>
+endobj
+82 0 obj
+<< /Length 2129 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (What These Files Do) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (Generated debug images from OCR preprocessing.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm ("These are debug artifacts that show what the OCR pipeline sees after preprocessing. They are) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (useful for improving OCR accuracy.") Tj
+/F1 9 Tf
+1 0 0 1 54 604 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 577 Tm (5.37 `fix_ocr.py`, `fix_income_agent.py`, `fix_files.py`, `fix_compliance_decision.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 533 Tm (What These Files Do) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (These are development repair scripts used while stabilizing the project. They are not core) Tj
+/F1 10 Tf
+1 0 0 1 54 477 Tm (runtime modules.) Tj
+/F1 10 Tf
+1 0 0 1 54 449 Tm (How to explain professionally:) Tj
+/F1 10 Tf
+1 0 0 1 54 421 Tm ("During sprint work, we used helper scripts to patch or test specific modules quickly. The final) Tj
+/F1 10 Tf
+1 0 0 1 54 407 Tm (runtime path is through main.py, api/routes, agents, utils, db, and frontend/templates. The) Tj
+/F1 10 Tf
+1 0 0 1 54 393 Tm (fix_*.py files are development artifacts and can be archived after final cleanup.") Tj
+/F1 10 Tf
+1 0 0 1 54 365 Tm (Do not present these as production architecture.) Tj
+/F1 9 Tf
+1 0 0 1 54 337 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 310 Tm (5.38 `docs/reference.pdf`) Tj
+/F1 12 Tf
+1 0 0 1 54 266 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 224 Tm (Reference handbook PDF used as formatting/style inspiration.) Tj
+/F1 9 Tf
+1 0 0 1 54 196 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 169 Tm (5.39 `docs/mid_defense_handbook.md`) Tj
+/F1 12 Tf
+1 0 0 1 54 125 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 83 Tm (This editable handbook source. If the team wants changes, edit this file first.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 40) Tj
+ET
+endstream
+endobj
+83 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 82 0 R >>
+endobj
+84 0 obj
+<< /Length 1996 >>
+stream
+BT
+/F1 10 Tf
+/F1 9 Tf
+1 0 0 1 54 744 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 717 Tm (5.40 `docs/generate_handbook_pdf.py`) Tj
+/F1 12 Tf
+1 0 0 1 54 673 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 631 Tm (Local PDF generator that converts this Markdown handbook into a PDF without external packages.) Tj
+/F1 12 Tf
+1 0 0 1 54 603 Tm (Main Code Portion) Tj
+/F1 9 Tf
+1 0 0 1 54 561 Tm (SOURCE = ROOT / "mid_defense_handbook.md") Tj
+/F1 9 Tf
+1 0 0 1 54 548 Tm (OUTPUT = ROOT / "RinSathi_Mid_Defense_Handbook.pdf") Tj
+/F1 10 Tf
+1 0 0 1 54 521 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 493 Tm (It reads the Markdown file and writes the final PDF.) Tj
+/F1 12 Tf
+1 0 0 1 54 465 Tm (PDF Building) Tj
+/F1 9 Tf
+1 0 0 1 54 423 Tm (pdf.extend\(b"%PDF-1.4\\n"\)) Tj
+/F1 10 Tf
+1 0 0 1 54 396 Tm (Layman explanation:) Tj
+/F1 10 Tf
+1 0 0 1 54 368 Tm (This script manually creates a simple PDF file. It was used because PDF libraries were not) Tj
+/F1 10 Tf
+1 0 0 1 54 354 Tm (installed in the environment.) Tj
+/F1 10 Tf
+1 0 0 1 54 326 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 298 Tm ("This is documentation tooling, not part of the product runtime.") Tj
+/F1 9 Tf
+1 0 0 1 54 270 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 243 Tm (5.41 Generated PDF Files In `docs/`) Tj
+/F1 10 Tf
+1 0 0 1 54 199 Tm (RinSathi_Mid_Defense_Handbook.pdf is the exported final handbook.) Tj
+/F1 10 Tf
+1 0 0 1 54 171 Tm (If asked:) Tj
+/F1 10 Tf
+1 0 0 1 54 143 Tm ("The PDF is generated from the Markdown handbook so we can maintain one editable source and) Tj
+/F1 10 Tf
+1 0 0 1 54 129 Tm (regenerate a final shareable file.") Tj
+/F1 9 Tf
+1 0 0 1 54 101 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 74 Tm (5.42 `.gitignore`) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 41) Tj
+ET
+endstream
+endobj
+85 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 84 0 R >>
+endobj
+86 0 obj
+<< /Length 1762 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 718 Tm (What This File Does) Tj
+/F1 10 Tf
+1 0 0 1 54 676 Tm (Tells Git which files/folders to ignore, such as environment folders, cache files, and secrets.) Tj
+/F1 10 Tf
+1 0 0 1 54 648 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 620 Tm (".gitignore prevents generated files and sensitive/local environment files from polluting) Tj
+/F1 10 Tf
+1 0 0 1 54 606 Tm (version control.") Tj
+/F1 9 Tf
+1 0 0 1 54 578 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 551 Tm (5.43 `.git/`) Tj
+/F1 12 Tf
+1 0 0 1 54 507 Tm (What This Folder Does) Tj
+/F1 10 Tf
+1 0 0 1 54 465 Tm (Stores Git history and metadata. Not application code.) Tj
+/F1 9 Tf
+1 0 0 1 54 437 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 410 Tm (5.44 `venv/`) Tj
+/F1 12 Tf
+1 0 0 1 54 366 Tm (What This Folder Does) Tj
+/F1 10 Tf
+1 0 0 1 54 324 Tm (Python virtual environment containing installed dependencies.) Tj
+/F1 10 Tf
+1 0 0 1 54 296 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 268 Tm ("venv isolates dependencies so this project does not interfere with other Python projects on the) Tj
+/F1 10 Tf
+1 0 0 1 54 254 Tm (same computer.") Tj
+/F1 10 Tf
+1 0 0 1 54 226 Tm (Do not discuss internal package files inside venv; they are third-party library files.) Tj
+/F1 9 Tf
+1 0 0 1 54 198 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 171 Tm (5.45 `__pycache__/`) Tj
+/F1 12 Tf
+1 0 0 1 54 127 Tm (What This Folder Does) Tj
+/F1 10 Tf
+1 0 0 1 54 85 Tm (Python-generated compiled cache files.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 42) Tj
+ET
+endstream
+endobj
+87 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 86 0 R >>
+endobj
+88 0 obj
+<< /Length 2138 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (Defense line:) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm ("__pycache__ improves Python import performance. It is generated automatically and is not) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (handwritten code.") Tj
+/F1 9 Tf
+1 0 0 1 54 674 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 647 Tm (6. Swagger Docs: What To Show And What To Say) Tj
+/F1 10 Tf
+1 0 0 1 54 603 Tm (Swagger URL:) Tj
+/F1 9 Tf
+1 0 0 1 54 575 Tm (http://127.0.0.1:8000/docs) Tj
+/F1 12 Tf
+1 0 0 1 54 548 Tm (What Swagger Is) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm (Swagger is an interactive API documentation page automatically generated by FastAPI.) Tj
+/F1 10 Tf
+1 0 0 1 54 478 Tm (It is built from:) Tj
+/F1 10 Tf
+1 0 0 1 54 450 Tm (- Route decorators like @router.post\(...\).) Tj
+/F1 10 Tf
+1 0 0 1 54 436 Tm (- Pydantic request models.) Tj
+/F1 10 Tf
+1 0 0 1 54 422 Tm (- Pydantic response models.) Tj
+/F1 10 Tf
+1 0 0 1 54 408 Tm (- Endpoint tags, summaries, and descriptions.) Tj
+/F1 12 Tf
+1 0 0 1 54 380 Tm (Why It Matters) Tj
+/F1 10 Tf
+1 0 0 1 54 338 Tm (Swagger proves that the backend is not a hidden black box. Anyone can inspect endpoints, see) Tj
+/F1 10 Tf
+1 0 0 1 54 324 Tm (required inputs, test requests, and view responses directly.) Tj
+/F1 12 Tf
+1 0 0 1 54 296 Tm (What To Demo) Tj
+/F1 10 Tf
+1 0 0 1 54 254 Tm (1. Open /docs.) Tj
+/F1 10 Tf
+1 0 0 1 54 240 Tm (2. Expand GET /api/v1/income/mock-data.) Tj
+/F1 10 Tf
+1 0 0 1 54 226 Tm (3. Click "Try it out".) Tj
+/F1 10 Tf
+1 0 0 1 54 212 Tm (4. Click "Execute".) Tj
+/F1 10 Tf
+1 0 0 1 54 198 Tm (5. Show response JSON.) Tj
+/F1 10 Tf
+1 0 0 1 54 184 Tm (6. Expand POST /api/v1/income/analyze.) Tj
+/F1 10 Tf
+1 0 0 1 54 170 Tm (7. Show request schema.) Tj
+/F1 10 Tf
+1 0 0 1 54 156 Tm (8. Explain that frontend developers can use this as API contract.) Tj
+/F1 10 Tf
+1 0 0 1 54 142 Tm (9. Expand POST /api/v1/loan/apply.) Tj
+/F1 10 Tf
+1 0 0 1 54 128 Tm (10. Show that it accepts form data and file upload.) Tj
+/F1 12 Tf
+1 0 0 1 54 100 Tm (Defense Answer) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 43) Tj
+ET
+endstream
+endobj
+89 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 88 0 R >>
+endobj
+90 0 obj
+<< /Length 1991 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm ("Swagger is our live API contract. It improves collaboration because frontend developers,) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (testers, and evaluators can test endpoints without reading backend code. Since it is generated) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (from FastAPI and Pydantic, it stays close to the actual implementation.") Tj
+/F1 12 Tf
+1 0 0 1 54 688 Tm (If Asked Why Some HTML Pages Are Not In Swagger) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm ("Swagger is mainly for APIs, not web pages. Some frontend routes are hidden using) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (include_in_schema=False because they serve HTML, not JSON API contracts.") Tj
+/F1 9 Tf
+1 0 0 1 54 604 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 577 Tm (7. Important Engineering Concepts In Layman Terms) Tj
+/F1 12 Tf
+1 0 0 1 54 533 Tm (FastAPI) Tj
+/F1 10 Tf
+1 0 0 1 54 491 Tm (Python framework for building APIs quickly. It receives HTTP requests and returns JSON or HTML.) Tj
+/F1 12 Tf
+1 0 0 1 54 463 Tm (Endpoint) Tj
+/F1 10 Tf
+1 0 0 1 54 421 Tm (A URL function. Example: /api/v1/loan/apply is an endpoint that receives loan applications.) Tj
+/F1 12 Tf
+1 0 0 1 54 393 Tm (Router) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm (A group of related endpoints. income.py groups income endpoints; loan.py groups loan endpoints.) Tj
+/F1 12 Tf
+1 0 0 1 54 323 Tm (Pydantic) Tj
+/F1 10 Tf
+1 0 0 1 54 281 Tm (Data validation tool. It checks whether data has the right shape and type.) Tj
+/F1 12 Tf
+1 0 0 1 54 253 Tm (SharedState) Tj
+/F1 10 Tf
+1 0 0 1 54 211 Tm (Central loan file folder passed through all agents.) Tj
+/F1 12 Tf
+1 0 0 1 54 183 Tm (Async/Await) Tj
+/F1 10 Tf
+1 0 0 1 54 141 Tm (Lets slow tasks run without freezing the whole server.) Tj
+/F1 12 Tf
+1 0 0 1 54 113 Tm (`asyncio.gather`) Tj
+/F1 10 Tf
+1 0 0 1 54 71 Tm (Runs multiple async tasks concurrently.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 44) Tj
+ET
+endstream
+endobj
+91 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 90 0 R >>
+endobj
+92 0 obj
+<< /Length 1439 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 730 Tm (OCR) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (Optical Character Recognition. It reads text from images.) Tj
+/F1 12 Tf
+1 0 0 1 54 660 Tm (OpenCV) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (Image-processing library used to clean document images before OCR.) Tj
+/F1 12 Tf
+1 0 0 1 54 590 Tm (XGBoost) Tj
+/F1 10 Tf
+1 0 0 1 54 548 Tm (Machine learning algorithm good for table-like data.) Tj
+/F1 12 Tf
+1 0 0 1 54 520 Tm (SHAP / Explainability) Tj
+/F1 10 Tf
+1 0 0 1 54 478 Tm (Explains which input factors helped or hurt the score.) Tj
+/F1 12 Tf
+1 0 0 1 54 450 Tm (Compliance Agent) Tj
+/F1 10 Tf
+1 0 0 1 54 408 Tm (Rule checklist. It ensures risky cases are not auto-approved.) Tj
+/F1 12 Tf
+1 0 0 1 54 380 Tm (Refer) Tj
+/F1 10 Tf
+1 0 0 1 54 338 Tm (Send to human review. It is a safety mechanism, not an error.) Tj
+/F1 12 Tf
+1 0 0 1 54 310 Tm (JSONB) Tj
+/F1 10 Tf
+1 0 0 1 54 268 Tm (PostgreSQL type for storing JSON in a searchable way.) Tj
+/F1 12 Tf
+1 0 0 1 54 240 Tm (UUID) Tj
+/F1 10 Tf
+1 0 0 1 54 198 Tm (Unique identifier. Safer than simple numbers for financial records.) Tj
+/F1 9 Tf
+1 0 0 1 54 170 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 143 Tm (8. Known Limitations And Honest Professional Answers) Tj
+/F1 12 Tf
+1 0 0 1 54 99 Tm (Limitation 1: Synthetic ML Data) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 45) Tj
+ET
+endstream
+endobj
+93 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 92 0 R >>
+endobj
+94 0 obj
+<< /Length 2240 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (The model is trained on synthetic data.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm ("For mid-defense, synthetic data demonstrates the architecture and feature pipeline. A) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (production system must retrain on real historical MFI repayment data and be validated for) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (accuracy and fairness.") Tj
+/F1 12 Tf
+1 0 0 1 54 632 Tm (Limitation 2: OCR Accuracy) Tj
+/F1 10 Tf
+1 0 0 1 54 590 Tm (OCR may fail on low-quality Nepali document scans.) Tj
+/F1 10 Tf
+1 0 0 1 54 562 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 534 Tm ("We handle this safely using confidence thresholds. Low-confidence OCR does not auto-approve; it) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (routes to manual review.") Tj
+/F1 12 Tf
+1 0 0 1 54 492 Tm (Limitation 3: Score Agent Method Mismatch) Tj
+/F1 10 Tf
+1 0 0 1 54 450 Tm (ScoreAgent defines run_inference, while route code tries run.) Tj
+/F1 10 Tf
+1 0 0 1 54 422 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 394 Tm ("This is a sprint integration naming issue. The design is clear, and the route currently has) Tj
+/F1 10 Tf
+1 0 0 1 54 380 Tm (fallback logic. Before final defense, we will align the method contract.") Tj
+/F1 12 Tf
+1 0 0 1 54 352 Tm (Limitation 4: Decision Agent Variable Naming Issue) Tj
+/F1 10 Tf
+1 0 0 1 54 310 Tm (Some variables in decision_agent.py should use state and settings.) Tj
+/F1 10 Tf
+1 0 0 1 54 282 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 254 Tm ("The intended priority logic is correct: compliance first, missing score second, thresholds) Tj
+/F1 10 Tf
+1 0 0 1 54 240 Tm (third. We have identified a variable naming issue in implementation and will fix it in final) Tj
+/F1 10 Tf
+1 0 0 1 54 226 Tm (hardening.") Tj
+/F1 12 Tf
+1 0 0 1 54 198 Tm (Limitation 5: Duplicate Income Route) Tj
+/F1 10 Tf
+1 0 0 1 54 156 Tm (/api/v1/income/analyze exists in both main.py and api/routes/income.py.) Tj
+/F1 10 Tf
+1 0 0 1 54 128 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 100 Tm ("This came from sprint integration. We will keep the modular route file version and remove the) Tj
+/F1 10 Tf
+1 0 0 1 54 86 Tm (duplicate from main.py.") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 46) Tj
+ET
+endstream
+endobj
+95 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 94 0 R >>
+endobj
+96 0 obj
+<< /Length 1739 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (Limitation 6: Duplicate DB Engine) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (db/session.py defines engine twice.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm ("The final active engine works, but we will consolidate it into one clean configuration for) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (Supabase.") Tj
+/F1 12 Tf
+1 0 0 1 54 604 Tm (Limitation 7: Authentication Not Fully Wired) Tj
+/F1 10 Tf
+1 0 0 1 54 562 Tm (Login UI exists, JWT config exists, but route protection is not complete.) Tj
+/F1 10 Tf
+1 0 0 1 54 534 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm ("Authentication is planned for the next sprint. Mid-defense focuses on proving the loan pipeline) Tj
+/F1 10 Tf
+1 0 0 1 54 492 Tm (and API architecture.") Tj
+/F1 12 Tf
+1 0 0 1 54 464 Tm (Limitation 8: In-Memory OCR Jobs) Tj
+/F1 10 Tf
+1 0 0 1 54 422 Tm (Document job status is stored in memory.) Tj
+/F1 10 Tf
+1 0 0 1 54 394 Tm (Answer:) Tj
+/F1 10 Tf
+1 0 0 1 54 366 Tm ("This is acceptable for demo, but production should move job tracking to Redis or PostgreSQL so) Tj
+/F1 10 Tf
+1 0 0 1 54 352 Tm (status survives server restart.") Tj
+/F1 9 Tf
+1 0 0 1 54 324 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 297 Tm (9. Live Demo Script) Tj
+/F1 12 Tf
+1 0 0 1 54 253 Tm (Demo Preparation) Tj
+/F1 10 Tf
+1 0 0 1 54 211 Tm (Run:) Tj
+/F1 9 Tf
+1 0 0 1 54 183 Tm (.\\venv\\Scripts\\Activate.ps1) Tj
+/F1 9 Tf
+1 0 0 1 54 170 Tm (uvicorn main:app --reload) Tj
+/F1 10 Tf
+1 0 0 1 54 143 Tm (Open:) Tj
+/F1 9 Tf
+1 0 0 1 54 115 Tm (http://127.0.0.1:8000/) Tj
+/F1 12 Tf
+1 0 0 1 54 88 Tm (Demo Flow) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 47) Tj
+ET
+endstream
+endobj
+97 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 96 0 R >>
+endobj
+98 0 obj
+<< /Length 2436 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (1. Show login page.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (2. Click dashboard.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (3. Explain loan amount, sector, mock income toggle, and document upload.) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (4. Upload sample image if available.) Tj
+/F1 10 Tf
+1 0 0 1 54 674 Tm (5. Submit application.) Tj
+/F1 10 Tf
+1 0 0 1 54 660 Tm (6. Explain pipeline progress:) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm (   - Document and Income run together.) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (   - Score, Compliance, Decision run after.) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (7. Show final decision.) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm (8. Open /docs.) Tj
+/F1 10 Tf
+1 0 0 1 54 590 Tm (9. Test /income/mock-data.) Tj
+/F1 10 Tf
+1 0 0 1 54 576 Tm (10. Show /loan/apply request schema.) Tj
+/F1 12 Tf
+1 0 0 1 54 548 Tm (What To Say During Demo) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm ("The dashboard calls the live backend endpoint. The backend creates SharedState, runs agents,) Tj
+/F1 10 Tf
+1 0 0 1 54 492 Tm (checks compliance, and returns JSON. The UI simply visualizes that response.") Tj
+/F1 9 Tf
+1 0 0 1 54 464 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 437 Tm (10. Defense Q&A Bank) Tj
+/F1 12 Tf
+1 0 0 1 54 393 Tm (Q: What is the main innovation?) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm (A: The main innovation is combining alternative income signals with OCR and compliance) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (guardrails in one structured multi-agent pipeline for rural microfinance.) Tj
+/F1 12 Tf
+1 0 0 1 54 309 Tm (Q: Why not just use a normal loan form?) Tj
+/F1 10 Tf
+1 0 0 1 54 267 Tm (A: A normal form only collects user-entered data. RinSathi processes documents, normalizes) Tj
+/F1 10 Tf
+1 0 0 1 54 253 Tm (financial records, scores risk, checks rules, and explains the result.) Tj
+/F1 12 Tf
+1 0 0 1 54 225 Tm (Q: What is SharedState?) Tj
+/F1 10 Tf
+1 0 0 1 54 183 Tm (A: SharedState is a Pydantic model that acts like a loan file folder passed through all agents.) Tj
+/F1 10 Tf
+1 0 0 1 54 169 Tm (Each agent writes its result into it.) Tj
+/F1 12 Tf
+1 0 0 1 54 141 Tm (Q: Why use Pydantic?) Tj
+/F1 10 Tf
+1 0 0 1 54 99 Tm (A: It validates data types and shapes, preventing incorrect data from moving silently through) Tj
+/F1 10 Tf
+1 0 0 1 54 85 Tm (the financial decision pipeline.) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 48) Tj
+ET
+endstream
+endobj
+99 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 98 0 R >>
+endobj
+100 0 obj
+<< /Length 2222 >>
+stream
+BT
+/F1 10 Tf
+/F1 12 Tf
+1 0 0 1 54 744 Tm (Q: Why use OCR?) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (A: Rural loan documents often exist as physical images. OCR converts those images into text that) Tj
+/F1 10 Tf
+1 0 0 1 54 688 Tm (the system can process.) Tj
+/F1 12 Tf
+1 0 0 1 54 660 Tm (Q: Can OCR detect fake documents?) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (A: Not by itself. OCR extracts fields and confidence. Fraud resistance comes from cross-checking) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm (document names with income records and routing low-confidence cases to manual review.) Tj
+/F1 12 Tf
+1 0 0 1 54 576 Tm (Q: Why use alternative income?) Tj
+/F1 10 Tf
+1 0 0 1 54 534 Tm (A: Many rural borrowers do not have formal salary slips but still have income through wallets,) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (remittances, cooperatives, and small businesses.) Tj
+/F1 12 Tf
+1 0 0 1 54 492 Tm (Q: Why use XGBoost?) Tj
+/F1 10 Tf
+1 0 0 1 54 450 Tm (A: XGBoost works well for tabular data and is widely used for risk scoring because it is fast,) Tj
+/F1 10 Tf
+1 0 0 1 54 436 Tm (accurate, and explainable with feature contribution techniques.) Tj
+/F1 12 Tf
+1 0 0 1 54 408 Tm (Q: Why not neural networks?) Tj
+/F1 10 Tf
+1 0 0 1 54 366 Tm (A: Neural networks are better for images, text, or huge datasets. Our risk features are tabular,) Tj
+/F1 10 Tf
+1 0 0 1 54 352 Tm (so XGBoost is more practical and easier to explain.) Tj
+/F1 12 Tf
+1 0 0 1 54 324 Tm (Q: What is SHAP?) Tj
+/F1 10 Tf
+1 0 0 1 54 282 Tm (A: SHAP explains how each feature contributed to the model output. It helps convert black-box) Tj
+/F1 10 Tf
+1 0 0 1 54 268 Tm (scores into understandable reasons.) Tj
+/F1 12 Tf
+1 0 0 1 54 240 Tm (Q: Why does compliance override ML?) Tj
+/F1 10 Tf
+1 0 0 1 54 198 Tm (A: Regulations are mandatory. A high ML score cannot override KYC or policy violations.) Tj
+/F1 12 Tf
+1 0 0 1 54 170 Tm (Q: What does "Refer" mean?) Tj
+/F1 10 Tf
+1 0 0 1 54 128 Tm (A: Refer means the system needs a human loan officer to review the case. It is used for) Tj
+/F1 10 Tf
+1 0 0 1 54 114 Tm (uncertain, incomplete, or compliance-sensitive cases.) Tj
+/F1 12 Tf
+1 0 0 1 54 86 Tm (Q: Why use Swagger?) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 49) Tj
+ET
+endstream
+endobj
+101 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 100 0 R >>
+endobj
+102 0 obj
+<< /Length 2111 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 730 Tm (A: Swagger documents and tests the API automatically. It proves the backend endpoints are) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (structured and usable beyond the frontend.) Tj
+/F1 12 Tf
+1 0 0 1 54 688 Tm (Q: What database are you using?) Tj
+/F1 10 Tf
+1 0 0 1 54 646 Tm (A: The project is designed for Supabase PostgreSQL using SQLAlchemy async access.) Tj
+/F1 12 Tf
+1 0 0 1 54 618 Tm (Q: What would you improve before final defense?) Tj
+/F1 10 Tf
+1 0 0 1 54 576 Tm (A: Clean duplicate routes and DB engine setup, align Score Agent method names, fix Decision) Tj
+/F1 10 Tf
+1 0 0 1 54 562 Tm (Agent variable references, add JWT route protection, persist audit logs, and add automated) Tj
+/F1 10 Tf
+1 0 0 1 54 548 Tm (tests.) Tj
+/F1 9 Tf
+1 0 0 1 54 520 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 493 Tm (11. Team Study Plan) Tj
+/F1 12 Tf
+1 0 0 1 54 449 Tm (Everyone Must Know) Tj
+/F1 10 Tf
+1 0 0 1 54 407 Tm (- One-line pitch.) Tj
+/F1 10 Tf
+1 0 0 1 54 393 Tm (- Five agents in order.) Tj
+/F1 10 Tf
+1 0 0 1 54 379 Tm (- What SharedState means.) Tj
+/F1 10 Tf
+1 0 0 1 54 365 Tm (- What /api/v1/loan/apply does.) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm (- How Swagger works.) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (- Why compliance overrides ML.) Tj
+/F1 10 Tf
+1 0 0 1 54 323 Tm (- Known limitations and honest answers.) Tj
+/F1 12 Tf
+1 0 0 1 54 295 Tm (Backend Presenter Must Know) Tj
+/F1 10 Tf
+1 0 0 1 54 253 Tm (- main.py) Tj
+/F1 10 Tf
+1 0 0 1 54 239 Tm (- api/routes/loan.py) Tj
+/F1 10 Tf
+1 0 0 1 54 225 Tm (- agents/shared_state.py) Tj
+/F1 10 Tf
+1 0 0 1 54 211 Tm (- all agents/*.py) Tj
+/F1 10 Tf
+1 0 0 1 54 197 Tm (- utils/ocr.py) Tj
+/F1 10 Tf
+1 0 0 1 54 183 Tm (- utils/income_parsers.py) Tj
+/F1 10 Tf
+1 0 0 1 54 169 Tm (- db/session.py) Tj
+/F1 10 Tf
+1 0 0 1 54 155 Tm (- db/models.py) Tj
+/F1 12 Tf
+1 0 0 1 54 127 Tm (Frontend Presenter Must Know) Tj
+/F1 10 Tf
+1 0 0 1 54 85 Tm (- login.html) Tj
+/F1 10 Tf
+1 0 0 1 54 71 Tm (- dashboard.html) Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 50) Tj
+ET
+endstream
+endobj
+103 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 102 0 R >>
+endobj
+104 0 obj
+<< /Length 2163 >>
+stream
+BT
+/F1 10 Tf
+/F1 10 Tf
+1 0 0 1 54 744 Tm (- apply.html) Tj
+/F1 10 Tf
+1 0 0 1 54 730 Tm (- Fetch API calls.) Tj
+/F1 10 Tf
+1 0 0 1 54 716 Tm (- FormData for file upload.) Tj
+/F1 10 Tf
+1 0 0 1 54 702 Tm (- How dashboard displays JSON response.) Tj
+/F1 12 Tf
+1 0 0 1 54 674 Tm (Business Presenter Must Know) Tj
+/F1 10 Tf
+1 0 0 1 54 632 Tm (- Rural lending problem.) Tj
+/F1 10 Tf
+1 0 0 1 54 618 Tm (- Alternative income importance.) Tj
+/F1 10 Tf
+1 0 0 1 54 604 Tm (- Nepal microfinance context.) Tj
+/F1 10 Tf
+1 0 0 1 54 590 Tm (- Why human review remains important.) Tj
+/F1 12 Tf
+1 0 0 1 54 562 Tm (Testing Presenter Must Know) Tj
+/F1 10 Tf
+1 0 0 1 54 520 Tm (- OCR tests.) Tj
+/F1 10 Tf
+1 0 0 1 54 506 Tm (- Income mock-data endpoint.) Tj
+/F1 10 Tf
+1 0 0 1 54 492 Tm (- Swagger testing.) Tj
+/F1 10 Tf
+1 0 0 1 54 478 Tm (- Edge cases: blurry document, no income, high loan, agriculture cap, missing score.) Tj
+/F1 9 Tf
+1 0 0 1 54 450 Tm (----------------------------------------------------------------------------------------) Tj
+/F1 14 Tf
+1 0 0 1 54 423 Tm (12. Final Professional Closing) Tj
+/F1 10 Tf
+1 0 0 1 54 379 Tm (Use this when wrapping up:) Tj
+/F1 10 Tf
+1 0 0 1 54 351 Tm ("RinSathi demonstrates a practical path toward faster and more inclusive rural credit) Tj
+/F1 10 Tf
+1 0 0 1 54 337 Tm (assessment. The project combines OCR, alternative data, machine learning, compliance rules, and) Tj
+/F1 10 Tf
+1 0 0 1 54 323 Tm (explainability in a modular FastAPI pipeline. For mid-defense, our focus is proving the) Tj
+/F1 10 Tf
+1 0 0 1 54 309 Tm (architecture and working flow. Before final defense, our focus will be hardening: cleaning) Tj
+/F1 10 Tf
+1 0 0 1 54 295 Tm (integration issues, improving persistence, adding authentication, adding tests, and preparing) Tj
+/F1 10 Tf
+1 0 0 1 54 281 Tm (production-grade audit trails.") Tj
+/F1 10 Tf
+1 0 0 1 54 253 Tm (One-sentence final line:) Tj
+/F1 10 Tf
+1 0 0 1 54 225 Tm ("RinSathi is not just a loan form; it is an explainable, compliance-aware underwriting assistant) Tj
+/F1 10 Tf
+1 0 0 1 54 211 Tm (for Nepal's microfinance context.") Tj
+/F1 8 Tf
+1 0 0 1 54 30 Tm (RinSathi Mid-Defense Handbook | Page 51) Tj
+ET
+endstream
+endobj
+105 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 104 0 R >>
+endobj
+xref
+0 106
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000473 00000 n 
+0000000543 00000 n 
+0000003587 00000 n 
+0000003713 00000 n 
+0000006997 00000 n 
+0000007123 00000 n 
+0000009803 00000 n 
+0000009929 00000 n 
+0000011888 00000 n 
+0000012016 00000 n 
+0000014119 00000 n 
+0000014247 00000 n 
+0000016517 00000 n 
+0000016645 00000 n 
+0000019156 00000 n 
+0000019284 00000 n 
+0000021644 00000 n 
+0000021772 00000 n 
+0000024164 00000 n 
+0000024292 00000 n 
+0000026356 00000 n 
+0000026484 00000 n 
+0000028733 00000 n 
+0000028861 00000 n 
+0000031160 00000 n 
+0000031288 00000 n 
+0000033626 00000 n 
+0000033754 00000 n 
+0000035754 00000 n 
+0000035882 00000 n 
+0000038186 00000 n 
+0000038314 00000 n 
+0000040727 00000 n 
+0000040855 00000 n 
+0000042891 00000 n 
+0000043019 00000 n 
+0000045146 00000 n 
+0000045274 00000 n 
+0000047390 00000 n 
+0000047518 00000 n 
+0000049622 00000 n 
+0000049750 00000 n 
+0000051905 00000 n 
+0000052033 00000 n 
+0000054312 00000 n 
+0000054440 00000 n 
+0000056611 00000 n 
+0000056739 00000 n 
+0000058845 00000 n 
+0000058973 00000 n 
+0000061253 00000 n 
+0000061381 00000 n 
+0000063709 00000 n 
+0000063837 00000 n 
+0000065914 00000 n 
+0000066042 00000 n 
+0000068213 00000 n 
+0000068341 00000 n 
+0000070645 00000 n 
+0000070773 00000 n 
+0000072906 00000 n 
+0000073034 00000 n 
+0000075002 00000 n 
+0000075130 00000 n 
+0000077546 00000 n 
+0000077674 00000 n 
+0000079614 00000 n 
+0000079742 00000 n 
+0000082151 00000 n 
+0000082279 00000 n 
+0000084124 00000 n 
+0000084252 00000 n 
+0000086312 00000 n 
+0000086440 00000 n 
+0000088666 00000 n 
+0000088794 00000 n 
+0000090897 00000 n 
+0000091025 00000 n 
+0000092911 00000 n 
+0000093039 00000 n 
+0000095221 00000 n 
+0000095349 00000 n 
+0000097398 00000 n 
+0000097526 00000 n 
+0000099341 00000 n 
+0000099469 00000 n 
+0000101660 00000 n 
+0000101788 00000 n 
+0000103832 00000 n 
+0000103960 00000 n 
+0000105452 00000 n 
+0000105580 00000 n 
+0000107873 00000 n 
+0000108001 00000 n 
+0000109793 00000 n 
+0000109921 00000 n 
+0000112410 00000 n 
+0000112538 00000 n 
+0000114814 00000 n 
+0000114944 00000 n 
+0000117109 00000 n 
+0000117239 00000 n 
+0000119456 00000 n 
+trailer
+<< /Size 106 /Root 1 0 R >>
+startxref
+119586
+%%EOF
