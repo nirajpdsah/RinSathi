@@ -83,20 +83,26 @@ class DecisionAgent:
             income  = state.monthly_income_npr or 0.0
             loan    = state.loan_amount_npr    or 0.0
 
-            # Inside your final Decision Agent evaluation block
-            if credit_score >= APPROVE_THRESHOLD and not compliance_flags:
+            if score >= settings.APPROVE_THRESHOLD:
                 state.final_decision = "Recommend"
                 state.decision_reason = (
-                    f"Recommended for bank approval. Repayment probability is {credit_score * 100:.1f}%. "
-                    f"Verified monthly alternative data streams support this loan size. "
-                    f"Forwarded to bank loan officer for final customer contact and disbursement."
+                    f"Credit rating is {score * 100:.1f}%. The applicant is in a good position "
+                    f"for this loan based on verified monthly income of NPR {income:,.0f} "
+                    f"against a requested amount of NPR {loan:,.0f}. Final confirmation must "
+                    f"come from the loan officer."
                 )
-            elif compliance_flags:
+            elif score < settings.REFER_THRESHOLD:
                 state.final_decision = "Reject"
-                state.decision_reason = f"Autonomous rejection triggered: Fails strict regulatory thresholds. Flags: {', '.join(compliance_flags)}."
+                state.decision_reason = (
+                    f"Rejected. Credit rating is {score * 100:.1f}%, below the minimum "
+                    f"acceptable threshold of {settings.REFER_THRESHOLD * 100:.0f}%."
+                )
             else:
                 state.final_decision = "Refer"
-                state.decision_reason = "Referred to bank loan officer for manual case assessment and documentation audit."
+                state.decision_reason = (
+                    f"Credit rating is {score * 100:.1f}%. The case needs loan officer "
+                    f"review before any approval decision."
+                )
 
         except Exception:
             # Safety net — unknown error → route to human, never auto-approve

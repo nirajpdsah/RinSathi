@@ -67,8 +67,8 @@ class SharedState(BaseModel):
     # regardless of what the credit_score says — compliance overrides everything
 
     # ── Decision Agent outputs ── None until Decision Agent runs ─────────────
-    final_decision:  Optional[Literal["Approve", "Reject", "Refer"]] = None
-    # Literal type means only these 3 strings are valid — Pydantic rejects anything else
+    final_decision:  Optional[Literal["Recommend", "Reject", "Refer"]] = None
+    # Recommend means the applicant is in a good position, but the loan officer makes final approval
 
     decision_reason:          Optional[str]   = None
     # Human-readable explanation of the decision — shown to loan officer and applicant

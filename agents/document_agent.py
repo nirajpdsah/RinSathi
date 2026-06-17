@@ -80,7 +80,10 @@ class DocumentAgent:
             # ── Step 7: Apply KYC confidence threshold ────────────────────────
             # MIN_KYC_CONFIDENCE = 0.70 from config (set 0.60 in .env for demo)
             # Below threshold = document quality too low to trust for KYC
-            if mean_confidence < settings.MIN_KYC_CONFIDENCE:
+            required_identity_fields = {"name", "dob", "citizenship_no"}
+            has_core_identity = required_identity_fields.issubset(fields.keys())
+
+            if mean_confidence < settings.MIN_KYC_CONFIDENCE and not has_core_identity:
                 state.document_verified      = False
                 state.manual_review_required = True
                 # Note: this is not fraud detection — it is quality control.

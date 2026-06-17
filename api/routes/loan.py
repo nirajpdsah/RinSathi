@@ -5,7 +5,7 @@
 # Score → Compliance → Decision run sequentially (each depends on prior).
 
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 import asyncio      # For parallel agent execution
 import time         # For pipeline timing
@@ -30,13 +30,14 @@ decision_agent   = DecisionAgent()
 
 class LoanDecisionResponse(BaseModel):
     applicant_id:       uuid.UUID
-    final_decision:     str           # Approve | Reject | Refer
+    final_decision:     str           # Recommend | Reject | Refer
     decision_reason:    str           # Human-readable explanation
     credit_score:       Optional[float] = None    # XGBoost repayment probability
     compliance_flags:   list[str]     # NRB rule violations (empty = clean)
     monthly_income_npr: Optional[float] = None    # Verified monthly income
     income_sources:     list[str]     # Which income signals contributed
     doc_confidence:     Optional[float] = None    # Document scan quality
+    applicant_details:  dict[str, Optional[str]] = Field(default_factory=dict)
     pipeline_time_ms:   int           # Total processing time
 
 
@@ -170,6 +171,14 @@ async def apply_for_loan(
     state = await decision_agent.run(state)
 
     pipeline_ms = int((time.perf_counter() - pipeline_start) * 1000)
+    extracted_fields = state.extracted_fields or {}
+
+    def field_value(field_name: str) -> Optional[str]:
+        field = extracted_fields.get(field_name)
+        if isinstance(field, dict):
+            value = field.get("value")
+            return str(value) if value else None
+        return None
 
     # ── Step 9: Return structured response ───────────────────────────────────
     return LoanDecisionResponse(
@@ -181,5 +190,10 @@ async def apply_for_loan(
         monthly_income_npr = state.monthly_income_npr,
         income_sources     = state.income_sources     or [],
         doc_confidence     = state.doc_confidence,
+        applicant_details  = {
+            "name": field_value("name"),
+            "dob": field_value("dob"),
+            "citizenship_no": field_value("citizenship_no"),
+        },
         pipeline_time_ms   = pipeline_ms,
     )
