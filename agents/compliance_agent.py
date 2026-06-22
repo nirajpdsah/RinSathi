@@ -58,6 +58,9 @@ class ComplianceAgent:
             if income_conf < 0.25:
                 state.compliance_flags.append("INCOME_UNVERIFIABLE")
 
+            if state.name_mismatch_detected:
+                state.compliance_flags.append("NAME_MISMATCH")
+
             # ── Check 3: Loan-to-asset ratio ──────────────────────────────────
             # NRB Unified Directive: loan cannot exceed 75% of asset value.
             # loan_to_asset = loan_amount / estimated_asset_value

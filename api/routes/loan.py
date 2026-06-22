@@ -10,6 +10,7 @@ from typing import Optional
 import asyncio      # For parallel agent execution
 import time         # For pipeline timing
 import uuid
+from datetime import date
 
 from agents.shared_state    import SharedState
 from agents.document_agent  import DocumentAgent
@@ -20,6 +21,7 @@ from config import get_settings
 
 settings = get_settings()
 router   = APIRouter()
+MOCK_OCR_NAME = "Niraj Prasad Sah"
 
 # Instantiate all agents once at module load — not per-request
 doc_agent        = DocumentAgent()
@@ -57,21 +59,31 @@ async def apply_for_loan(
     # Form fields — sent as multipart/form-data alongside the image file
     loan_amount_npr: float      = Form(...,  description="Requested loan amount in NPR"),
     sector:          str        = Form(...,  description="Business sector (e.g. agriculture)"),
+    use_mock_ocr:    bool       = Form(False,description="Use mock OCR identity data (for demo)"),
     use_mock_income: bool       = Form(False,description="Use mock income data (for demo)"),
+    cashflow_name:   Optional[str] = Form(None, description="Name on cashflow records"),
+    esewa_monthly_npr: Optional[float] = Form(None, description="Monthly eSewa/Khalti income in NPR"),
+    remittance_monthly_npr: Optional[float] = Form(None, description="Monthly remittance income in NPR"),
+    coop_monthly_npr: Optional[float] = Form(None, description="Monthly cooperative deposit in NPR"),
     # File upload — the citizenship certificate or Lalpurja image
-    document:        UploadFile = File(...,  description="Citizenship cert or Lalpurja (JPG/PNG)"),
+    document:        Optional[UploadFile] = File(None,  description="Citizenship cert or Lalpurja (JPG/PNG)"),
 ):
     # ── Step 1: Validate inputs ────────────────────────────────────────────────
     if loan_amount_npr <= 0:
         raise HTTPException(status_code=422, detail="loan_amount_npr must be greater than 0")
 
+    image_bytes = b""
+    if not use_mock_ocr and document is None:
+        raise HTTPException(status_code=422, detail="Upload a document or enable mock OCR")
+
     allowed_types = {"image/jpeg", "image/jpg", "image/png"}
-    if document.content_type not in allowed_types:
+    if document and document.content_type not in allowed_types:
         raise HTTPException(status_code=400, detail="Document must be JPG or PNG")
 
     # ── Step 2: Read file bytes ────────────────────────────────────────────────
-    image_bytes = await document.read()
-    if len(image_bytes) == 0:
+    if document:
+        image_bytes = await document.read()
+    if not use_mock_ocr and len(image_bytes) == 0:
         raise HTTPException(status_code=400, detail="Uploaded document file is empty")
 
     # ── Step 3: Initialise SharedState ────────────────────────────────────────
@@ -88,14 +100,86 @@ async def apply_for_loan(
         generate_mock_remittance_data,
         generate_mock_coop_data,
     )
-    # In Sprint 3 demo, use_mock_income=True generates realistic income signals.
-    # In production: accept esewa_data, remittance_data, coop_data as form fields.
+    def recent_months(count: int = 3) -> list[str]:
+        today = date.today()
+        months = []
+        year = today.year
+        month = today.month
+        for _ in range(count):
+            months.append(f"{year:04d}-{month:02d}")
+            month -= 1
+            if month == 0:
+                month = 12
+                year -= 1
+        return months
+
+    def positive_amount(value: Optional[float], field_name: str) -> float:
+        if value is None:
+            return 0.0
+        if value < 0:
+            raise HTTPException(status_code=422, detail=f"{field_name} cannot be negative")
+        return float(value)
+
+    def build_income_payloads() -> tuple[Optional[dict], Optional[dict], Optional[dict]]:
+        name = (cashflow_name or "Applicant").strip()
+        months = recent_months()
+
+        esewa_amount = positive_amount(esewa_monthly_npr, "esewa_monthly_npr")
+        remittance_amount = positive_amount(remittance_monthly_npr, "remittance_monthly_npr")
+        coop_amount = positive_amount(coop_monthly_npr, "coop_monthly_npr")
+
+        esewa_payload = None
+        if esewa_amount > 0:
+            esewa_payload = {
+                "account_name": name,
+                "transactions": [
+                    {"date": f"{month}-10", "amount": esewa_amount, "type": "salary"}
+                    for month in months
+                ],
+            }
+
+        remittance_payload = None
+        if remittance_amount > 0:
+            remittance_payload = {
+                "records": [
+                    {
+                        "sender_country": "Unknown",
+                        "amount_usd": round(remittance_amount / 133.0, 2),
+                        "exchange_rate": 133.0,
+                        "received_date": f"{month}-20",
+                        "receiver_name": name,
+                    }
+                    for month in months
+                ],
+            }
+
+        coop_payload = None
+        if coop_amount > 0:
+            coop_payload = {
+                "member_name": name,
+                "savings_balance_npr": 0.0,
+                "monthly_deposits": [
+                    {"month": month, "amount": coop_amount}
+                    for month in months
+                    if coop_amount > 0
+                ],
+            }
+
+        return esewa_payload, remittance_payload, coop_payload
+
     if use_mock_income:
-        esewa_data      = generate_mock_esewa_data()
-        remittance_data = generate_mock_remittance_data()
-        coop_data       = generate_mock_coop_data()
+        mock_income_name = MOCK_OCR_NAME if use_mock_ocr else "BIKRAM PRASAD SHRESTHA"
+        parsed_esewa_data      = generate_mock_esewa_data(mock_income_name)
+        parsed_remittance_data = generate_mock_remittance_data(mock_income_name)
+        parsed_coop_data       = generate_mock_coop_data(mock_income_name)
     else:
-        esewa_data = remittance_data = coop_data = None
+        parsed_esewa_data, parsed_remittance_data, parsed_coop_data = build_income_payloads()
+
+        if not any([parsed_esewa_data, parsed_remittance_data, parsed_coop_data]):
+            raise HTTPException(
+                status_code=422,
+                detail="Enter at least one cashflow source or enable mock income data."
+            )
 
     # ── Step 5: Run Document + Income agents IN PARALLEL ──────────────────────
     # asyncio.gather() runs both coroutines concurrently on the same event loop.
@@ -105,6 +189,17 @@ async def apply_for_loan(
     pipeline_start = time.perf_counter()
 
     async def run_document():
+        if use_mock_ocr:
+            state.document_verified = True
+            state.doc_confidence = 0.94
+            state.manual_review_required = False
+            state.extracted_fields = {
+                "name": {"value": MOCK_OCR_NAME, "confidence": 0.96},
+                "dob": {"value": "2062-01-10", "confidence": 0.94},
+                "citizenship_no": {"value": "15-01-79-02604", "confidence": 0.95},
+            }
+            return state
+
         # Wraps document agent with timeout — protects 30-second SLA
         return await asyncio.wait_for(
             doc_agent.run(state, image_bytes),
@@ -114,9 +209,9 @@ async def apply_for_loan(
     async def run_income():
         return await income_agent.run(
             state,
-            esewa_data      = esewa_data,
-            remittance_data = remittance_data,
-            coop_data       = coop_data,
+            esewa_data      = parsed_esewa_data,
+            remittance_data = parsed_remittance_data,
+            coop_data       = parsed_coop_data,
         )
 
     try:

@@ -101,10 +101,9 @@ def parse_remittance(data: dict) -> tuple[list[dict], str | None]:
         ]
     }
 
-    IMPORTANT: Remittances are ANNUALIZED, not monthly-averaged.
-    A worker in Qatar sends NPR 60,000 every 3 months.
-    Monthly average would show NPR 0 for 2 months — penalising a creditworthy applicant.
-    Annualizing: sum all 12 months, divide by 12 = fair monthly estimate.
+    Remittances are normalized by calendar month.
+    If several transfers arrive in one month, they are summed for that month.
+    The monthly estimate is the average of months where remittance arrived.
     """
     if not data:
         return [], None
@@ -199,8 +198,8 @@ def normalize_to_monthly_estimate(all_signals: list[dict]) -> dict:
 
     Algorithm:
     1. Separate regular vs irregular_periodic signals
-    2. For regular signals: rolling 6-month mean and std deviation
-    3. For irregular/remittance signals: annualize (sum 12m / 12)
+    2. For each source: group records by calendar month
+    3. Estimate each source's monthly contribution from those monthly totals
     4. Combine both estimates
     5. Confidence = data_coverage_score × income_stability_score
 
@@ -224,17 +223,15 @@ def normalize_to_monthly_estimate(all_signals: list[dict]) -> dict:
     df["month"]     = df["date"].dt.to_period("M")       # Extract YYYY-MM period
     df["amount_npr"]= pd.to_numeric(df["amount_npr"], errors="coerce").fillna(0)
 
-    # ── Handle remittances separately (annualized) ────────────────────────────
+    # ── Handle remittances separately ─────────────────────────────────────────
     remittance_monthly = 0.0
     remit_df = df[df["source"] == "remittance"]
     if not remit_df.empty:
-        # Sum all remittance amounts across all months
-        total_remittance = remit_df["amount_npr"].sum()
-        # Determine date range covered by remittance data
-        months_covered   = max(1, (remit_df["date"].max() - remit_df["date"].min()).days / 30)
-        months_covered   = min(months_covered, 12)   # Cap at 12 months
-        # Annualize: total / months_covered, capped at 12-month equivalent
-        remittance_monthly = total_remittance / max(months_covered, 1)
+        # Group by calendar month and average only the months where money arrived.
+        # This matches the officer-facing form: a monthly remittance amount remains
+        # that monthly amount, while real records still support multiple transfers.
+        remittance_monthly_totals = remit_df.groupby("month")["amount_npr"].sum()
+        remittance_monthly = float(remittance_monthly_totals.mean())
 
     # ── Handle regular signals (eSewa + cooperative) ──────────────────────────
     regular_df = df[df["source"] != "remittance"]

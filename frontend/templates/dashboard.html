@@ -91,10 +91,45 @@
           <!-- Demo Toggle -->
           <div class="bg-indigo-950/20 border border-indigo-500/10 p-4 rounded-xl flex items-center justify-between">
             <div class="pr-4">
-              <span class="block text-xs font-bold text-indigo-300">Alternative Cashflow Preset</span>
-              <span class="text-[11px] text-gray-500 block mt-0.5">Loads mock digital transaction ledger models to speed up assessment.</span>
+              <span class="block text-xs font-bold text-indigo-300">Use Mock Cashflow Data</span>
+              <span class="text-[11px] text-gray-500 block mt-0.5">Tick this for demo data, or untick to enter real eSewa, remittance, and cooperative records.</span>
             </div>
             <input type="checkbox" id="use_mock_income" checked class="w-5 h-5 rounded accent-indigo-500 bg-black/40 border-white/10">
+          </div>
+
+          <div class="bg-emerald-950/20 border border-emerald-500/10 p-4 rounded-xl flex items-center justify-between">
+            <div class="pr-4">
+              <span class="block text-xs font-bold text-emerald-300">Use Mock OCR</span>
+              <span class="text-[11px] text-gray-500 block mt-0.5">Skip document OCR and use fixed demo identity details.</span>
+            </div>
+            <input type="checkbox" id="use_mock_ocr" class="w-5 h-5 rounded accent-emerald-500 bg-black/40 border-white/10">
+          </div>
+
+          <div id="cashflowFields" class="space-y-4 rounded-xl border border-white/10 bg-[#131926]/35 p-4">
+            <div>
+              <h3 class="text-xs font-bold uppercase tracking-wider text-gray-300">Cashflow Sources</h3>
+              <p class="text-[11px] text-gray-500 mt-1">Enter the monthly cashflow amounts you have. Leave unavailable sources blank.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Applicant Name on Cashflow Records</label>
+              <input type="text" id="cashflow_name" class="cashflow-input w-full bg-[#0b0f19] border border-white/5 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-45 disabled:cursor-not-allowed" placeholder="Ram Bahadur Thapa">
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">eSewa Monthly NPR</label>
+                <input type="number" id="esewa_monthly_npr" min="0" step="100" class="cashflow-input w-full bg-[#0b0f19] border border-white/5 rounded-xl px-4 py-3 text-sm text-emerald-300 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-45 disabled:cursor-not-allowed" placeholder="35000">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Remittance Monthly NPR</label>
+                <input type="number" id="remittance_monthly_npr" min="0" step="100" class="cashflow-input w-full bg-[#0b0f19] border border-white/5 rounded-xl px-4 py-3 text-sm text-sky-300 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-45 disabled:cursor-not-allowed" placeholder="60000">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">Coop Monthly NPR</label>
+                <input type="number" id="coop_monthly_npr" min="0" step="100" class="cashflow-input w-full bg-[#0b0f19] border border-white/5 rounded-xl px-4 py-3 text-sm text-amber-300 font-semibold focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all disabled:opacity-45 disabled:cursor-not-allowed" placeholder="2500">
+              </div>
+            </div>
           </div>
 
           <!-- Drag & Drop Upload Zone -->
@@ -303,6 +338,32 @@
       placeholder.innerText = file ? file.name : "Drag & drop image file or browse";
     }
 
+    const mockIncomeToggle = document.getElementById('use_mock_income');
+    const mockOcrToggle = document.getElementById('use_mock_ocr');
+    const cashflowInputs = Array.from(document.querySelectorAll('.cashflow-input'));
+
+    function syncCashflowInputs() {
+      const usingMock = mockIncomeToggle.checked;
+      cashflowInputs.forEach(input => {
+        input.disabled = usingMock;
+      });
+    }
+
+    function syncMockOcr() {
+      const usingMockOcr = mockOcrToggle.checked;
+      docInput.required = !usingMockOcr;
+      dropZone.classList.toggle('opacity-50', usingMockOcr);
+      dropZone.classList.toggle('border-emerald-500/30', usingMockOcr);
+      placeholder.innerText = usingMockOcr
+        ? "Mock OCR enabled - upload skipped"
+        : (docInput.files[0] ? docInput.files[0].name : "Drag & drop image file or browse");
+    }
+
+    mockIncomeToggle.addEventListener('change', syncCashflowInputs);
+    mockOcrToggle.addEventListener('change', syncMockOcr);
+    syncCashflowInputs();
+    syncMockOcr();
+
     function normalizeOcrDisplay(value) {
       if (!value) return "";
 
@@ -407,13 +468,41 @@
       const loan_amount_npr = document.getElementById('loan_amount_npr').value;
       const sector = document.getElementById('sector').value;
       const use_mock_income = document.getElementById('use_mock_income').checked;
+      const use_mock_ocr = document.getElementById('use_mock_ocr').checked;
       const documentFile = docInput.files[0];
 
       const formDataPayload = new FormData();
       formDataPayload.append('loan_amount_npr', loan_amount_npr);
       formDataPayload.append('sector', sector);
       formDataPayload.append('use_mock_income', use_mock_income);
-      formDataPayload.append('document', documentFile);
+      formDataPayload.append('use_mock_ocr', use_mock_ocr);
+      if (!use_mock_income) {
+        const cashflowName = document.getElementById('cashflow_name').value.trim();
+        const esewaMonthly = document.getElementById('esewa_monthly_npr').value;
+        const remittanceMonthly = document.getElementById('remittance_monthly_npr').value;
+        const coopMonthly = document.getElementById('coop_monthly_npr').value;
+
+        if (!esewaMonthly && !remittanceMonthly && !coopMonthly) {
+          trackerBlock.classList.add('hidden');
+          document.getElementById('welcomeBlock').classList.remove('hidden');
+          alert('Enter at least one cashflow amount or tick mock data.');
+          return;
+        }
+
+        if (cashflowName) formDataPayload.append('cashflow_name', cashflowName);
+        if (esewaMonthly) formDataPayload.append('esewa_monthly_npr', esewaMonthly);
+        if (remittanceMonthly) formDataPayload.append('remittance_monthly_npr', remittanceMonthly);
+        if (coopMonthly) formDataPayload.append('coop_monthly_npr', coopMonthly);
+      }
+      if (!use_mock_ocr) {
+        if (!documentFile) {
+          trackerBlock.classList.add('hidden');
+          document.getElementById('welcomeBlock').classList.remove('hidden');
+          alert('Upload a document or tick mock OCR.');
+          return;
+        }
+        formDataPayload.append('document', documentFile);
+      }
 
       // Simulation steps
       let currentProgress = 5;
@@ -485,12 +574,12 @@
         const decisionDisplay = {
           Recommend: "Recommend to Loan Officer",
           Refer: "Refer for Manual Review",
-          Reject: "Loan Rejected"
+          Reject: "Rejected"
         };
         const authorityCopy = {
-          Recommend: "System recommends that the loan officer accept this application based on the listed factors. Final approval must be made by the loan officer.",
-          Refer: "System needs loan officer review before any approval decision can be made.",
-          Reject: "System has authority to reject this application based on risk or compliance constraints."
+          Recommend: "The assessment looks positive based on the listed factors. The loan officer still makes the final approval decision.",
+          Refer: "The assessment needs a loan officer to review the details before a final decision is made.",
+          Reject: "The application has been rejected based on the current risk or rule checks. The reason below explains what needs attention."
         };
 
         document.getElementById('txtFinalDecision').innerText = decisionDisplay[finalDecision] || finalDecision;
@@ -516,13 +605,13 @@
         circle.style.strokeDashoffset = circumference - (scoreFraction * circumference);
 
         const creditPercent = (scoreFraction * 100).toFixed(1);
-        let creditPositionText = `Credit rating is ${creditScore}/1000 (${creditPercent}%). `;
+        let creditPositionText = `Repayment rating is ${creditScore}/1000 (${creditPercent}%). `;
         if (finalDecision === "Recommend") {
-          creditPositionText += "You are in a good position to get this loan, subject to final confirmation by the loan officer.";
+          creditPositionText += "The application looks supportable, subject to final confirmation by the loan officer.";
         } else if (finalDecision === "Refer") {
-          creditPositionText += "Your file needs loan officer review before the final decision.";
+          creditPositionText += "A loan officer should review the file before the final decision.";
         } else {
-          creditPositionText += "This application does not currently meet the required risk or compliance threshold.";
+          creditPositionText += "The application did not pass the current risk or rule checks. Stronger supporting records may help in a future review.";
         }
         document.getElementById('txtCreditPosition').innerText = creditPositionText;
 

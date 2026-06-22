@@ -13,10 +13,10 @@ class ShapFormatter:
         """
         # Dictionary mapping the internal code terms to clean, readable labels
         mapping = {
-            "loan_amount_npr": "Requested Loan Amount",
-            "monthly_income_npr": "Normalized Monthly Income",
-            "income_confidence": "Income Data Reliability Score",
-            "doc_confidence": "Document Verification Confidence"
+            "loan_amount_npr": "Requested loan amount",
+            "monthly_income_npr": "Estimated monthly income",
+            "income_confidence": "Income record reliability",
+            "doc_confidence": "Document verification quality"
         }
         
         # Get the clean name from our map; if it's not found, default back to the original name
@@ -48,12 +48,50 @@ class ShapFormatter:
             # Translate the technical column name to human terms using our function above
             readable_title = ShapFormatter.translate_features(name, val)
             
-            # Scenario A: The factor had a negative mathematical impact on the credit decision
             if impact < 0:
-                sentence = f"CRITICAL RISK: {readable_title} actively dragged down the repayment score by pushing it lower."
-            # Scenario B: The factor had a positive mathematical impact on the credit decision
+                templates = {
+                    "loan_amount_npr": (
+                        f"{readable_title} is high for the available profile, so it lowered "
+                        "the repayment estimate."
+                    ),
+                    "monthly_income_npr": (
+                        f"{readable_title} was not strong enough for the requested loan, so it "
+                        "lowered the repayment estimate."
+                    ),
+                    "income_confidence": (
+                        f"{readable_title} is low, which means the income records need closer "
+                        "checking."
+                    ),
+                    "doc_confidence": (
+                        f"{readable_title} is low, so the identity documents need clearer "
+                        "verification."
+                    ),
+                }
+                sentence = templates.get(
+                    name,
+                    f"{readable_title} lowered the repayment estimate."
+                )
             else:
-                sentence = f"POSITIVE SIGNAL: {readable_title} provided strong verification, pushing the repayment score higher."
+                templates = {
+                    "loan_amount_npr": (
+                        f"{readable_title} fits better with the available profile and helped "
+                        "the repayment estimate."
+                    ),
+                    "monthly_income_npr": (
+                        f"{readable_title} supports the requested loan and helped the repayment "
+                        "estimate."
+                    ),
+                    "income_confidence": (
+                        f"{readable_title} is strong, so the income estimate is easier to trust."
+                    ),
+                    "doc_confidence": (
+                        f"{readable_title} is strong, so the identity check is easier to trust."
+                    ),
+                }
+                sentence = templates.get(
+                    name,
+                    f"{readable_title} helped improve the repayment estimate."
+                )
                 
             # Add the newly built sentence to our final report collection
             narrative_report.append(sentence)

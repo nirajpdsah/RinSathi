@@ -48,6 +48,7 @@ class SharedState(BaseModel):
     # Low if fewer than 3 months of data, or if data is highly irregular
 
     income_sources:           list[str]       = []
+    name_mismatch_detected:   bool            = False
     # Which income signals were available, e.g. ["esewa", "remittance"]
 
     # ── Score Agent outputs ── None until Score Agent runs ────────────────────

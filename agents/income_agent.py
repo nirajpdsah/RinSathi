@@ -87,8 +87,11 @@ class IncomeAgent:
                 adjusted_confidence = round(estimate["confidence"] * 0.6, 4)
                 estimate["confidence"]     = adjusted_confidence
                 estimate["low_confidence"] = True
+                state.name_mismatch_detected = True
                 # The Compliance Agent will see the low income_confidence
                 # and can add a NAME_MISMATCH flag if needed
+            else:
+                state.name_mismatch_detected = False
 
             # ── Step 6: Write results to SharedState ──────────────────────────
             state.monthly_income_npr = estimate["mean_monthly_npr"]

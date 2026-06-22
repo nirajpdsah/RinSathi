@@ -371,15 +371,21 @@ def extract_fields(ocr_result: dict) -> dict:
         }
     elif "dob" not in extracted:
         nepali_parts_match = re.search(
-            r"(?:जन्म|यन्म)\s*मि?ति?.{0,40}?(?:साल|साम)\D*([0-9]{4}).{0,25}?(?:महिना)\D*([0-9]{1,2}).{0,25}?(?:गते|पते)\D*([0-9]{1,2})",
+            r"(?:जन्म|यन्म)(?:(?!आमाको|बाबुको|नागरिकता).){0,140}?(?:साल|साम)\D*([0-9]{4}).{0,35}?(?:महिना)\D*([0-9]{1,2}).{0,35}?(?:गते|पते)\D*([0-9]{1,2})",
             normalized_raw_text,
             flags=re.IGNORECASE,
         )
+        if not nepali_parts_match:
+            nepali_parts_match = re.search(
+                r"(?:साल|साम)\D*([0-9]{4}).{0,35}?(?:महिना)\D*([0-9]{1,2}).{0,35}?(?:गते|पते)\D*([0-9]{1,2})",
+                normalized_raw_text,
+                flags=re.IGNORECASE,
+            )
         if nepali_parts_match:
             year, month, day = nepali_parts_match.groups()
             extracted["dob"] = {
                 "value": f"{year}-{month.zfill(2)}-{day.zfill(2)}",
-                "confidence": 0.86
+                "confidence": 0.86 if "जन्म" in nepali_parts_match.group(0) or "यन्म" in nepali_parts_match.group(0) else 0.78
             }
 
     raw_citizenship = first_raw_match([

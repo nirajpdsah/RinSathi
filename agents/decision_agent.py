@@ -44,12 +44,13 @@ class DecisionAgent:
             if state.compliance_flags:
                 # Build a readable summary of which rules were violated
                 flag_descriptions = {
-                    "KYC_INCOMPLETE":        "Identity document quality below KYC threshold",
-                    "INCOME_UNVERIFIABLE":   "Income data insufficient for reliable assessment",
-                    "LOAN_TO_ASSET_BREACH":  "Loan amount exceeds NRB 75% loan-to-asset limit",
-                    "SECTOR_EXPOSURE_LIMIT": "Agricultural loan amount exceeds NRB sector cap",
-                    "AML_FLAG":              "Income pattern flagged for AML review",
-                    "NO_INCOME_SIGNALS":     "No income data provided for non-trivial loan",
+                    "KYC_INCOMPLETE":        "the identity document is not clear enough to verify automatically",
+                    "INCOME_UNVERIFIABLE":   "the income records are not strong enough for an automatic decision",
+                    "LOAN_TO_ASSET_BREACH":  "the requested loan is too high compared with the estimated asset value",
+                    "SECTOR_EXPOSURE_LIMIT": "the requested agriculture loan is above the current sector limit",
+                    "AML_FLAG":              "the income amount is unusually high and needs a standard financial safety review",
+                    "NO_INCOME_SIGNALS":     "no usable income record was found for this loan request",
+                    "NAME_MISMATCH":         "the name on the cashflow record does not match the identity document",
                     "SYSTEM_ERROR":          "Pipeline error — manual verification required",
                 }
                 # Build reason string from all flags found
@@ -57,11 +58,27 @@ class DecisionAgent:
                     flag_descriptions.get(flag, flag)   # Use description or raw flag code
                     for flag in state.compliance_flags
                 ]
-                state.final_decision  = "Refer"
-                state.decision_reason = (
-                    f"Referred for manual review. "
-                    f"Compliance flags: {'; '.join(reasons)}."
-                )
+                hard_reject_flags = {
+                    "AML_FLAG",
+                    "NO_INCOME_SIGNALS",
+                    "LOAN_TO_ASSET_BREACH",
+                    "NAME_MISMATCH",
+                }
+                state.final_decision  = "Reject" if any(
+                    flag in hard_reject_flags for flag in state.compliance_flags
+                ) else "Refer"
+                if state.final_decision == "Reject":
+                    state.decision_reason = (
+                        "This application has been rejected because "
+                        f"{'; '.join(reasons)}. A loan officer should review the documents "
+                        "and supporting records before the applicant reapplies or proceeds."
+                    )
+                else:
+                    state.decision_reason = (
+                        "This application needs manual review because "
+                        f"{'; '.join(reasons)}. A loan officer can verify the details and "
+                        "decide the next step."
+                    )
                 return state   # Stop here — no further checks needed
 
             # ── PRIORITY 2: Missing credit score → cannot auto-decide ──────────
@@ -70,8 +87,9 @@ class DecisionAgent:
             if state.credit_score is None:
                 state.final_decision  = "Refer"
                 state.decision_reason = (
-                    "Referred: credit score could not be calculated. "
-                    "Manual assessment required."
+                    "This application needs manual review because the repayment rating could "
+                    "not be calculated from the available information. A loan officer should "
+                    "check the documents and income records."
                 )
                 return state
 
@@ -86,22 +104,25 @@ class DecisionAgent:
             if score >= settings.APPROVE_THRESHOLD:
                 state.final_decision = "Recommend"
                 state.decision_reason = (
-                    f"Credit rating is {score * 100:.1f}%. The applicant is in a good position "
-                    f"for this loan based on verified monthly income of NPR {income:,.0f} "
-                    f"against a requested amount of NPR {loan:,.0f}. Final confirmation must "
-                    f"come from the loan officer."
+                    f"The repayment rating is {score * 100:.1f}%. The applicant appears able "
+                    f"to support this request, with estimated monthly income of NPR {income:,.0f} "
+                    f"and a requested loan amount of NPR {loan:,.0f}. This is a recommendation "
+                    "for the loan officer, not a final approval."
                 )
             elif score < settings.REFER_THRESHOLD:
                 state.final_decision = "Reject"
                 state.decision_reason = (
-                    f"Rejected. Credit rating is {score * 100:.1f}%, below the minimum "
-                    f"acceptable threshold of {settings.REFER_THRESHOLD * 100:.0f}%."
+                    f"This application has been rejected because the repayment "
+                    f"rating is {score * 100:.1f}%, which is below the minimum required level "
+                    f"of {settings.REFER_THRESHOLD * 100:.0f}%. Stronger or clearer income "
+                    "records may improve a future assessment."
                 )
             else:
                 state.final_decision = "Refer"
                 state.decision_reason = (
-                    f"Credit rating is {score * 100:.1f}%. The case needs loan officer "
-                    f"review before any approval decision."
+                    f"The repayment rating is {score * 100:.1f}%. This is close to the review "
+                    "range, so a loan officer should look at the supporting documents before "
+                    "making a final decision."
                 )
 
         except Exception:
