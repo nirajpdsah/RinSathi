@@ -24,6 +24,7 @@ class Settings(BaseSettings):               # Inheriting BaseSettings auto-reads
     AML_TXN_LIMIT_NPR:     float = 1_000_000  # Single transaction AML flag threshold
     AGRI_SECTOR_LIMIT_NPR: float = 500_000  # Agricultural sector exposure cap (NPR)
     OCR_TIMEOUT_SECONDS:   float = 10.0     # Hard timeout for OCR — protects 30s SLA
+    google_client_id: str
 
     class Config:
         env_file = ".env"                   # Tell Pydantic: read from the .env file

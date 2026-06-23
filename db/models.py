@@ -1,113 +1,268 @@
 # db/models.py
-# SQLAlchemy ORM models -- each class is one table in Supabase PostgreSQL.
-# SQLAlchemy reads these class definitions and creates matching SQL tables.
+#
+# SQLAlchemy ORM models — each class maps to one table in Supabase.
+#
+# MODELS IN THIS FILE:
+#   Role        → roles table (client, officer)
+#   User        → users table (everyone who can log in)
+#   Applicant   → applicants table (loan applications)
+#   Document    → documents table (uploaded files + OCR results)
+#   AuditLog    → audit_logs table (every system action, for NRB compliance)
+#
+# RELATIONSHIPS:
+#   User belongs to one Role
+#   Applicant belongs to one User (the client who submitted it)
+#   Applicant is reviewed by one User (the officer)
+#   Document belongs to one Applicant
+#   AuditLog belongs to one Applicant
 
 from sqlalchemy import (
-    Column, String, Float, Boolean,   # Basic SQL column types
-    DateTime, Text, ForeignKey,        # Timestamps, long text, foreign key links
-    Enum as SQLEnum                    # SQL ENUM for fixed-choice string columns
+    Column, String, Float, Boolean,
+    DateTime, Text, ForeignKey,
+    Enum as SQLEnum
 )
 from sqlalchemy.dialects.postgresql import UUID, JSONB
-# UUID: universally unique identifiers -- safer than sequential integers for financial records
-# JSONB: binary JSON in PostgreSQL -- used to store SHAP explanation data, fast to query
+from sqlalchemy.orm import relationship
 
-import uuid                            # Python UUID generator
-import enum                            # Python enum for status choices
-from datetime import datetime, timezone  # UTC-aware timestamps
-from db.session import Base            # Declarative base -- all models inherit from this
+import uuid
+import enum
+from datetime import datetime, timezone
+from db.session import Base
 
 
-# ── Enum types -- define allowed values for status columns ────────────────────
+# ── Enums: fixed-choice values ────────────────────────────────────────────────
+
 class LoanStatus(str, enum.Enum):
-    # str mixin makes the enum JSON serializable (important for API responses)
-    PENDING  = "pending"   # Application submitted, pipeline not yet run
-    APPROVED = "approved"  # Decision Agent output: Approve
-    REJECTED = "rejected"  # Decision Agent output: Reject
-    REFERRED = "referred"  # Decision Agent output: Refer (manual human review needed)
+    PENDING  = "pending"   # Submitted, pipeline not yet run
+    APPROVED = "approved"  # Officer approved
+    REJECTED = "rejected"  # Officer rejected
+    REFERRED = "referred"  # AI flagged for manual review
+
 
 class DocumentType(str, enum.Enum):
-    CITIZENSHIP = "citizenship"  # Nepal citizenship certificate (nagarikta)
+    CITIZENSHIP = "citizenship"  # Nepal citizenship certificate
     LALPURJA    = "lalpurja"     # Land ownership document
-    PAN         = "pan"          # PAN card for tax identification
+    PAN         = "pan"          # PAN card
 
 
 # ── Table 1: roles ────────────────────────────────────────────────────────────
 class Role(Base):
-    __tablename__ = "roles"  # This string becomes the actual table name in PostgreSQL
+    """
+    Stores the two roles in the system: 'client' and 'officer'.
+    
+    We keep roles in a separate table instead of hardcoding "client"/"officer"
+    strings everywhere. This means if we ever add a new role (e.g. "admin"),
+    we add one row here — no code changes needed anywhere else.
+    """
+    __tablename__ = "roles"
 
     id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    # as_uuid=True: SQLAlchemy handles UUID as Python uuid.UUID object, not a string
-    # default=uuid.uuid4: auto-generates a unique ID if none is provided
+    name        = Column(String(50), unique=True, nullable=False)  # "client" or "officer"
+    description = Column(Text, nullable=True)
 
-    name        = Column(String(50),  unique=True, nullable=False)  # e.g. "loan_officer"
-    description = Column(Text, nullable=True)  # Optional human-readable description
+    # One role can belong to many users
+    # backref creates a shortcut: user.role → the Role object
+    users = relationship("User", back_populates="role")
 
 
-# ── Table 2: applicants ───────────────────────────────────────────────────────
+# ── Table 2: users ────────────────────────────────────────────────────────────
+class User(Base):
+    """
+    Every person who can log into RinSathi has one row here.
+    
+    Clients:  google_id is filled, password_hash is NULL
+    Officers: password_hash is filled, google_id is NULL
+    
+    We use one table for both because the JWT system only needs
+    to ask one question: "Is this person in our system and what's their role?"
+    One table = one query. Simple and fast.
+    """
+    __tablename__ = "users"
+
+    id            = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    email         = Column(String(255), nullable=False, unique=True, index=True)
+    full_name     = Column(String(255), nullable=False)
+
+    # Foreign key to roles table
+    # ON DELETE RESTRICT means: you cannot delete a role that has users attached
+    # This prevents accidentally breaking user accounts
+    role_id       = Column(
+        UUID(as_uuid=True),
+        ForeignKey("roles.id", ondelete="RESTRICT"),
+        nullable=False
+    )
+
+    # Google's unique ID for this person — only for clients
+    # index=True because we look this up on every Google login
+    google_id     = Column(String(255), unique=True, index=True, nullable=True)
+
+    # Bcrypt-hashed password — only for officers
+    # We NEVER store plain text passwords
+    password_hash = Column(Text, nullable=True)
+
+    # Soft disable — when an officer leaves, set this to False
+    # We never delete users because that would break the audit trail
+    is_active     = Column(Boolean, nullable=False, default=True)
+
+    created_at    = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    # Relationships
+    role = relationship("Role", back_populates="users")
+
+    # All loan applications this user submitted (as a client)
+    applications = relationship(
+        "Applicant",
+        foreign_keys="Applicant.user_id",
+        back_populates="client"
+    )
+
+    # All applications this user reviewed (as an officer)
+    reviewed_applications = relationship(
+        "Applicant",
+        foreign_keys="Applicant.reviewed_by",
+        back_populates="reviewing_officer"
+    )
+
+
+# ── Table 3: applicants ───────────────────────────────────────────────────────
 class Applicant(Base):
+    """
+    One row per loan application.
+    
+    This is the central table — everything connects to it.
+    The client submits it. The AI pipeline fills the score fields.
+    The officer updates the status and adds remarks.
+    """
     __tablename__ = "applicants"
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    full_name       = Column(String(255), nullable=False)    # Applicant full name
-    citizenship_no  = Column(String(50),  nullable=True)     # Extracted by Document Agent
-    district        = Column(String(100), nullable=True)     # District of residence
-    phone           = Column(String(20),  nullable=True)     # Contact number
-    loan_amount_npr = Column(Float,       nullable=False)    # Requested loan amount in NPR
-    sector          = Column(String(100), nullable=False)    # Business sector
+    full_name       = Column(String(255), nullable=False)
+    citizenship_no  = Column(String(50),  nullable=True)
+    district        = Column(String(100), nullable=True)
+    phone           = Column(String(20),  nullable=True)
+    loan_amount_npr = Column(Float,       nullable=False)
+    sector          = Column(String(100), nullable=False)
+
     status = Column(
         SQLEnum(LoanStatus),
-        default=LoanStatus.PENDING,   # New applications start as pending
+        default=LoanStatus.PENDING,
         nullable=False
     )
+
+    # ── NEW: Link to the user who submitted this application ──────────────────
+    # When a client submits a loan, we store their user ID here.
+    # This is how the client dashboard knows which applications belong to them.
+    # SET NULL means: if a user account is deleted, the application stays
+    # (we keep financial records even if the account is gone)
+    user_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True   # Index for fast "show me all applications by user X" queries
+    )
+
+    # ── NEW: Link to the officer who reviewed this application ────────────────
+    # Filled when an officer clicks Approve or Reject
+    # NULL means "not yet reviewed"
+    reviewed_by = Column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True
+    )
+
+    # ── NEW: Officer's written remarks ────────────────────────────────────────
+    # The officer types a reason when approving or rejecting
+    # Required for NRB compliance — decisions must be justified in writing
+    officer_remarks = Column(Text, nullable=True)
+
+    # ── NEW: When the officer made their decision ─────────────────────────────
+    reviewed_at = Column(DateTime(timezone=True), nullable=True)
+
     created_at = Column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc)  # Stored in UTC, not local time
+        default=lambda: datetime.now(timezone.utc)
     )
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc)  # Auto-updates on every save
+        onupdate=lambda: datetime.now(timezone.utc)
     )
 
+    # Relationships
+    client = relationship(
+        "User",
+        foreign_keys=[user_id],
+        back_populates="applications"
+    )
+    reviewing_officer = relationship(
+        "User",
+        foreign_keys=[reviewed_by],
+        back_populates="reviewed_applications"
+    )
+    documents = relationship("Document", back_populates="applicant")
+    audit_logs = relationship("AuditLog", back_populates="applicant")
 
-# ── Table 3: documents ────────────────────────────────────────────────────────
+
+# ── Table 4: documents ────────────────────────────────────────────────────────
 class Document(Base):
+    """
+    One row per uploaded document.
+    One applicant can have multiple documents (citizenship + lalpurja + PAN).
+    The Document Agent fills extracted_fields and doc_confidence after OCR.
+    """
     __tablename__ = "documents"
 
     id             = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     applicant_id   = Column(
         UUID(as_uuid=True),
-        ForeignKey("applicants.id"),  # Links to the applicants table
+        ForeignKey("applicants.id"),
         nullable=False
     )
     document_type  = Column(SQLEnum(DocumentType), nullable=False)
 
-    extracted_fields = Column(JSONB, nullable=True)
-    # Stores OCR results as JSON -- example:
-    # {"name": {"value": "Ram Thapa", "confidence": 0.91},
-    #  "citizenship_no": {"value": "23-02-51-12345", "confidence": 0.88}}
+    # OCR output stored as JSON
+    # Example: {"name": {"value": "Ram Thapa", "confidence": 0.91}}
+    extracted_fields       = Column(JSONB,    nullable=True)
+    doc_confidence         = Column(Float,    nullable=True)
+    manual_review_required = Column(Boolean,  default=False)
+    ocr_raw_text           = Column(Text,     nullable=True)
+    created_at             = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc)
+    )
 
-    doc_confidence = Column(Float,   nullable=True)   # Mean confidence across all fields (0-1)
-    manual_review_required = Column(Boolean, default=False)  # True if quality too low for KYC
-    ocr_raw_text   = Column(Text,    nullable=True)   # Raw OCR output stored for audit trail
-    created_at     = Column(DateTime(timezone=True),
-                            default=lambda: datetime.now(timezone.utc))
+    applicant = relationship("Applicant", back_populates="documents")
 
 
-# ── Table 4: audit_logs ───────────────────────────────────────────────────────
+# ── Table 5: audit_logs ───────────────────────────────────────────────────────
 class AuditLog(Base):
+    """
+    Every system action is recorded here.
+    
+    NRB requires full audit traceability for lending decisions.
+    This means: who did what, when, and to which application.
+    
+    We never delete audit logs. Ever.
+    """
     __tablename__ = "audit_logs"
-    # Every system action is recorded here -- NRB requires full audit traceability
 
     id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     applicant_id = Column(
         UUID(as_uuid=True),
         ForeignKey("applicants.id"),
-        nullable=True     # Nullable -- some events are system-level, not applicant-specific
+        nullable=True  # Some events are system-level, not applicant-specific
     )
-    event_type   = Column(String(100), nullable=False)   # e.g. "DOCUMENT_UPLOADED"
-    agent_name   = Column(String(100), nullable=True)    # Which agent triggered this log
-    details      = Column(JSONB,       nullable=True)    # Extra context as flexible JSON
-    performed_by = Column(String(255), nullable=True)    # User ID or "system"
-    created_at   = Column(DateTime(timezone=True),
-                          default=lambda: datetime.now(timezone.utc))
+    event_type   = Column(String(100), nullable=False)  # e.g. "OFFICER_APPROVED"
+    agent_name   = Column(String(100), nullable=True)   # Which agent or user triggered this
+    details      = Column(JSONB,       nullable=True)   # Extra context as flexible JSON
+    performed_by = Column(String(255), nullable=True)   # user UUID or "system"
+    created_at   = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc)
+    )
+
+    applicant = relationship("Applicant", back_populates="audit_logs")

@@ -13,11 +13,13 @@ from db.session import create_tables
 from api.routes import documents, income, loan
 from config import get_settings
 from agents.score_agent import ScoreAgent
+from routers import auth as auth_router
+from routers.auth import router as auth_router
 
 settings = get_settings()
 
 # Serve HTML templates (Jinja2)
-templates = Jinja2Templates(directory="frontend/templates")
+templates = Jinja2Templates(directory="frontend")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -69,6 +71,7 @@ app.add_middleware(
 app.include_router(documents.router, prefix="/api/v1")
 app.include_router(income.router,    prefix="/api/v1")
 app.include_router(loan.router,      prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
 
 
 # ── FRONTEND CONTROLLERS ───────────────────────────────────────────────────
