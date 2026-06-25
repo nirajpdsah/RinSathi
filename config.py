@@ -26,6 +26,13 @@ class Settings(BaseSettings):               # Inheriting BaseSettings auto-reads
     OCR_TIMEOUT_SECONDS:   float = 10.0     # Hard timeout for OCR — protects 30s SLA
     google_client_id: str
 
+    # ── Mock Government API URLs ──────────────────────────────────────────────────
+    # In development: points to local mock endpoints
+    # In production:  change to real DoNIDCR and NeLIS government API URLs
+    # Zero code changes needed in agents — only these values change
+    DONIDCR_URL: str = "http://localhost:8000/api/v1/mock/donidcr/verify"
+    NELIS_URL:   str = "http://localhost:8000/api/v1/mock/nelis/lookup"
+
     class Config:
         env_file = ".env"                   # Tell Pydantic: read from the .env file
 

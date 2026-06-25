@@ -22,20 +22,49 @@ class SharedState(BaseModel):
     loan_amount_npr:  float       # Requested loan amount in Nepali Rupees
     sector:           str         # Business sector (e.g. "agriculture", "retail")
 
-    # ── Document Agent outputs ── None until Document Agent runs ─────────────
+    # ── Identity Agent outputs ── None until Identity Agent runs ──────────────
+    # (Replaces Document Agent — same fields preserved for downstream compatibility)
+
     document_verified:        Optional[bool]  = None
-    # True if OCR confidence meets threshold; False if scan quality is too low
+    # True if NIN verified successfully against DoNIDCR
+    # False if NIN not found, deceased, or API error
+    # Named 'document_verified' to maintain compatibility with Compliance Agent
 
     extracted_fields:         Optional[dict]  = None
-    # Dict of field name → {value, confidence}
-    # Example: {"name": {"value": "Ram Thapa", "confidence": 0.91}}
+    # Structured identity data from DoNIDCR + asset data from NeLIS
+    # Same shape as before: {"field": {"value": ..., "confidence": ...}}
+    # Confidence is 1.0 for government-verified data (authoritative source)
 
     doc_confidence:           Optional[float] = None
-    # Mean OCR confidence score across all extracted fields (0.0 – 1.0)
+    # Identity verification confidence
+    # 1.0 = NIN verified against DoNIDCR (authoritative)
+    # 0.0 = verification failed
 
     manual_review_required:   bool            = False
-    # Set True when doc_confidence < MIN_KYC_CONFIDENCE
-    # Compliance Agent detects this and adds KYC_INCOMPLETE flag
+    # True if identity verification fails — triggers KYC_INCOMPLETE in Compliance Agent
+
+    # ── NEW: NIN verification results ─────────────────────────────────────────
+    nin:                      Optional[str]   = None
+    # The NIN provided by the applicant e.g. "NID-001"
+
+    verified_full_name:       Optional[str]   = None
+    # Full name as returned by DoNIDCR — authoritative source
+    # Used by Income Agent for name_mismatch_detected check
+
+    citizenship_no:           Optional[str]   = None
+    # Citizenship number from DoNIDCR — the bridge to NeLIS
+    # Also stored in applicants table for audit trail
+
+    date_of_birth:            Optional[str]   = None
+    permanent_address:        Optional[str]   = None
+    sex:                      Optional[str]   = None
+
+    # ── NEW: NeLIS asset verification results ─────────────────────────────────
+    total_land_ropani:        Optional[int]   = None
+    total_land_aana:          Optional[int]   = None
+    total_land_parcels:       Optional[int]   = None
+    # Number of Lalpurja entries found under this citizenship_no
+    # Zero is valid — some applicants own no land
 
     # ── Income Agent outputs ── None until Income Agent runs ──────────────────
     monthly_income_npr:       Optional[float] = None

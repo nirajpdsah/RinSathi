@@ -15,6 +15,7 @@ from config import get_settings
 from agents.score_agent import ScoreAgent
 from routers import auth as auth_router
 from routers.auth import router as auth_router
+from routers.mock_gov import router as mock_gov_router
 
 settings = get_settings()
 
@@ -72,6 +73,7 @@ app.include_router(documents.router, prefix="/api/v1")
 app.include_router(income.router,    prefix="/api/v1")
 app.include_router(loan.router,      prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
+app.include_router(mock_gov_router, prefix="/api/v1")
 
 
 # ── FRONTEND CONTROLLERS ───────────────────────────────────────────────────
