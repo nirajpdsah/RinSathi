@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<!--
+    frontend/templates/client/apply.html
+
+    Loan Application Form — RinSathi ACLO
+    Client fills this form to submit a loan application.
+
+    On submit:
+      1. Validates all fields
+      2. POST /api/v1/loan/apply with JWT in header
+      3. Shows AI pipeline result immediately
+      4. Redirects to dashboard after 3 seconds
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply for Loan — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .navbar {
+            background:    var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding:       0 32px;
+            height:        64px;
+            display:       flex;
+            align-items:   center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size:   22px;
+            font-weight: 700;
+            color:       white;
+        }
+
+        .navbar-brand span { color: var(--accent); }
+
+        .navbar-back {
+            background:  none;
+            border:      none;
+            color:       rgba(255,255,255,0.75);
+            font-size:   14px;
+            cursor:      pointer;
+            padding:     0;
+        }
+
+        .navbar-back:hover { color: white; }
+
+        .page-body {
+            max-width: 680px;
+            margin:    0 auto;
+            padding:   36px 24px 60px;
+        }
+
+        .page-title {
+            font-size:     24px;
+            font-weight:   700;
+            color:         var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .page-desc {
+            color:         var(--subtle);
+            font-size:     14px;
+            margin-bottom: 32px;
+            line-height:   1.6;
+        }
+
+        /* Form sections */
+        .form-section {
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            margin-bottom: 20px;
+            overflow:      hidden;
+        }
+
+        .form-section-header {
+            padding:       16px 24px;
+            border-bottom: 1px solid var(--border);
+            font-size:     15px;
+            font-weight:   700;
+            color:         var(--primary);
+            display:       flex;
+            align-items:   center;
+            gap:           8px;
+        }
+
+        .form-section-body {
+            padding: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap:     16px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group:last-child { margin-bottom: 0; }
+
+        /* NIN input special styling */
+        .nin-input-wrapper {
+            position: relative;
+        }
+
+        .nin-verify-badge {
+            position:    absolute;
+            right:       12px;
+            top:         50%;
+            transform:   translateY(-50%);
+            font-size:   12px;
+            font-weight: 600;
+            padding:     3px 8px;
+            border-radius: 999px;
+            display:     none;
+        }
+
+        .nin-verify-badge.verified {
+            display:    block;
+            background: #DCFCE7;
+            color:      #166534;
+        }
+
+        /* Income source toggles */
+        .income-toggle {
+            display:       flex;
+            align-items:   center;
+            gap:           10px;
+            padding:       12px 0;
+            border-bottom: 1px solid var(--border);
+            cursor:        pointer;
+        }
+
+        .income-toggle:last-child { border-bottom: none; }
+
+        .toggle-switch {
+            width:         36px;
+            height:        20px;
+            background:    var(--border);
+            border-radius: 999px;
+            position:      relative;
+            transition:    background 0.2s;
+            flex-shrink:   0;
+        }
+
+        .toggle-switch::after {
+            content:       '';
+            position:      absolute;
+            width:         14px;
+            height:        14px;
+            background:    white;
+            border-radius: 50%;
+            top:           3px;
+            left:          3px;
+            transition:    left 0.2s;
+        }
+
+        .toggle-switch.on {
+            background: var(--success);
+        }
+
+        .toggle-switch.on::after { left: 19px; }
+
+        .toggle-label {
+            font-size:   14px;
+            font-weight: 600;
+            color:       var(--text);
+            flex:        1;
+        }
+
+        .toggle-sublabel {
+            font-size: 12px;
+            color:     var(--subtle);
+        }
+
+        .income-amount-field {
+            margin-top:  10px;
+            display:     none;
+            padding-left: 46px;
+        }
+
+        .income-amount-field.visible { display: block; }
+
+        /* Submit button */
+        .submit-section {
+            margin-top: 8px;
+        }
+
+        /* Result card — shown after submission */
+        .result-card {
+            display:       none;
+            background:    white;
+            border-radius: 14px;
+            box-shadow:    0 4px 24px rgba(15,32,68,0.12);
+            overflow:      hidden;
+            margin-top:    28px;
+        }
+
+        .result-card.visible { display: block; }
+
+        .result-header {
+            padding:    24px;
+            text-align: center;
+        }
+
+        .result-header.recommend { background: #DCFCE7; }
+        .result-header.reject    { background: #FEE2E2; }
+        .result-header.refer     { background: #FEF9C3; }
+
+        .result-icon   { font-size: 40px; margin-bottom: 8px; }
+        .result-title  { font-size: 20px; font-weight: 700; }
+        .result-reason { font-size: 13px; margin-top: 6px; opacity: 0.8; }
+
+        .result-body { padding: 20px 24px; }
+
+        .result-stat {
+            display:         flex;
+            justify-content: space-between;
+            align-items:     center;
+            padding:         10px 0;
+            border-bottom:   1px solid var(--border);
+            font-size:       14px;
+        }
+
+        .result-stat:last-child { border-bottom: none; }
+
+        .result-stat-label { color: var(--subtle); font-weight: 500; }
+        .result-stat-value { font-weight: 700; color: var(--primary); }
+
+        .redirect-notice {
+            text-align:  center;
+            padding:     16px;
+            font-size:   13px;
+            color:       var(--subtle);
+            border-top:  1px solid var(--border);
+        }
+
+        @media (max-width: 600px) {
+            .form-row { grid-template-columns: 1fr; }
+            .navbar   { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div style="display:flex; align-items:center; gap:20px;">
+        <div class="navbar-brand">Rin<span>Sathi</span></div>
+        <button class="navbar-back"
+                onclick="window.location.href='/templates/client/dashboard.html'">
+            ← Back to Dashboard
+        </button>
+    </div>
+</nav>
+
+<div class="page-body">
+
+    <div class="page-title">Loan Application</div>
+    <div class="page-desc">
+        Enter your National Identity Number and loan details.
+        Our AI pipeline will assess your application in seconds.
+    </div>
+
+    <!-- Section 1: Identity -->
+    <div class="form-section">
+        <div class="form-section-header">
+            👤 Identity Verification
+        </div>
+        <div class="form-section-body">
+            <div class="form-group">
+                <label class="form-label" for="nin">
+                    National Identity Number (NIN)
+                </label>
+                <div class="nin-input-wrapper">
+                    <input class="form-input"
+                           type="text"
+                           id="nin"
+                           placeholder="e.g. NID-001"
+                           style="padding-right: 90px;"
+                           autocomplete="off"/>
+                    <span class="nin-verify-badge verified"
+                          id="ninBadge">✓ Valid NIN</span>
+                </div>
+                <div style="font-size:12px; color:var(--subtle); margin-top:6px;">
+                    Your NIN will be verified against DoNIDCR.
+                    Enter your number exactly as it appears on your NID card.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Loan Details -->
+    <div class="form-section">
+        <div class="form-section-header">
+            💰 Loan Details
+        </div>
+        <div class="form-section-body">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="loanAmount">
+                        Loan Amount (NPR)
+                    </label>
+                    <input class="form-input"
+                           type="number"
+                           id="loanAmount"
+                           placeholder="e.g. 250000"
+                           min="1000"
+                           max="2000000"/>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sector">
+                        Business Sector
+                    </label>
+                    <select class="form-input" id="sector">
+                        <option value="">Select sector...</option>
+                        <option value="agriculture">Agriculture</option>
+                        <option value="retail">Retail</option>
+                        <option value="services">Services</option>
+                        <option value="manufacturing">Manufacturing</option>
+                        <option value="livestock">Livestock</option>
+                        <option value="construction">Construction</option>
+                        <option value="transport">Transport</option>
+                        <option value="education">Education</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 3: Income Sources -->
+    <div class="form-section">
+        <div class="form-section-header">
+            📊 Income Sources
+        </div>
+        <div class="form-section-body">
+            <div style="font-size:13px; color:var(--subtle);
+                        margin-bottom:16px; line-height:1.6;">
+                Enable all income sources that apply.
+                At least one is required.
+            </div>
+
+            <!-- eSewa / Khalti -->
+            <div class="income-toggle"
+                 onclick="toggleIncome('esewa')">
+                <div class="toggle-switch" id="toggleEsewa"></div>
+                <div>
+                    <div class="toggle-label">eSewa / Khalti</div>
+                    <div class="toggle-sublabel">
+                        Digital wallet monthly income
+                    </div>
+                </div>
+            </div>
+            <div class="income-amount-field" id="fieldEsewa">
+                <label class="form-label" for="esewaAmount">
+                    Monthly Amount (NPR)
+                </label>
+                <input class="form-input" type="number"
+                       id="esewaAmount" placeholder="e.g. 25000"/>
+            </div>
+
+            <!-- Remittance -->
+            <div class="income-toggle"
+                 onclick="toggleIncome('remittance')">
+                <div class="toggle-switch" id="toggleRemittance"></div>
+                <div>
+                    <div class="toggle-label">Remittance</div>
+                    <div class="toggle-sublabel">
+                        Foreign remittance received monthly
+                    </div>
+                </div>
+            </div>
+            <div class="income-amount-field" id="fieldRemittance">
+                <label class="form-label" for="remittanceAmount">
+                    Monthly Amount (NPR)
+                </label>
+                <input class="form-input" type="number"
+                       id="remittanceAmount" placeholder="e.g. 40000"/>
+            </div>
+
+            <!-- Cooperative -->
+            <div class="income-toggle"
+                 onclick="toggleIncome('coop')">
+                <div class="toggle-switch" id="toggleCoop"></div>
+                <div>
+                    <div class="toggle-label">Cooperative / Savings</div>
+                    <div class="toggle-sublabel">
+                        Monthly cooperative deposit
+                    </div>
+                </div>
+            </div>
+            <div class="income-amount-field" id="fieldCoop">
+                <label class="form-label" for="coopAmount">
+                    Monthly Amount (NPR)
+                </label>
+                <input class="form-input" type="number"
+                       id="coopAmount" placeholder="e.g. 15000"/>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div class="error-msg" id="formError"
+         style="font-size:14px; margin-bottom:12px;"></div>
+
+    <!-- Submit -->
+    <div class="submit-section">
+        <button class="btn-primary" id="submitBtn"
+                onclick="submitApplication()">
+            Submit Application
+        </button>
+        <div style="font-size:12px; color:var(--subtle);
+                    text-align:center; margin-top:10px;">
+            Your NIN will be verified against DoNIDCR and
+            your land assets against NeLIS before scoring.
+        </div>
+    </div>
+
+    <!-- Result card — shown after pipeline completes -->
+    <div class="result-card" id="resultCard">
+        <div class="result-header" id="resultHeader">
+            <div class="result-icon"  id="resultIcon"></div>
+            <div class="result-title" id="resultTitle"></div>
+            <div class="result-reason" id="resultReason"></div>
+        </div>
+        <div class="result-body">
+            <div class="result-stat">
+                <span class="result-stat-label">Credit Score</span>
+                <span class="result-stat-value" id="rScore">—</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-label">Monthly Income</span>
+                <span class="result-stat-value" id="rIncome">—</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-label">Land Assets</span>
+                <span class="result-stat-value" id="rLand">—</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-label">Compliance</span>
+                <span class="result-stat-value" id="rCompliance">—</span>
+            </div>
+            <div class="result-stat">
+                <span class="result-stat-label">Processing Time</span>
+                <span class="result-stat-value" id="rTime">—</span>
+            </div>
+        </div>
+        <div class="redirect-notice" id="redirectNotice">
+            Redirecting to your dashboard in
+            <strong id="countdown">3</strong> seconds...
+        </div>
+    </div>
+
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/guard.js"></script>
+<script>
+    // ── Guard ─────────────────────────────────────────────────────────────────
+    guardPage('client');
+
+    // ── Income toggle state ───────────────────────────────────────────────────
+    const incomeToggles = { esewa: false, remittance: false, coop: false };
+
+    function toggleIncome(source) {
+        incomeToggles[source] = !incomeToggles[source];
+        const sw    = document.getElementById(`toggle${capitalize(source)}`);
+        const field = document.getElementById(`field${capitalize(source)}`);
+        sw.classList.toggle('on', incomeToggles[source]);
+        field.classList.toggle('visible', incomeToggles[source]);
+    }
+
+    // ── Submit application ────────────────────────────────────────────────────
+    async function submitApplication() {
+        const errorEl = document.getElementById('formError');
+        const btn     = document.getElementById('submitBtn');
+        errorEl.classList.remove('visible');
+
+        // Collect values
+        const nin        = document.getElementById('nin').value.trim().toUpperCase();
+        const loanAmount = document.getElementById('loanAmount').value;
+        const sector     = document.getElementById('sector').value;
+
+        const esewaAmt      = parseFloat(document.getElementById('esewaAmount').value)      || 0;
+        const remittanceAmt = parseFloat(document.getElementById('remittanceAmount').value) || 0;
+        const coopAmt       = parseFloat(document.getElementById('coopAmount').value)       || 0;
+
+        // Validate
+        if (!nin) {
+            return showError('Please enter your National Identity Number.');
+        }
+        if (!loanAmount || parseFloat(loanAmount) <= 0) {
+            return showError('Please enter a valid loan amount.');
+        }
+        if (!sector) {
+            return showError('Please select a business sector.');
+        }
+
+        const hasIncome = (incomeToggles.esewa      && esewaAmt > 0)
+                       || (incomeToggles.remittance  && remittanceAmt > 0)
+                       || (incomeToggles.coop        && coopAmt > 0);
+
+        if (!hasIncome) {
+            return showError(
+                'Please enable at least one income source and enter an amount.'
+            );
+        }
+
+        // Show loading
+        btn.disabled  = true;
+        btn.innerHTML = '<span class="spinner"></span>Processing your application...';
+
+        // Build form data — loan/apply uses multipart/form-data
+        const formData = new FormData();
+        formData.append('nin',             nin);
+        formData.append('loan_amount_npr', loanAmount);
+        formData.append('sector',          sector);
+        formData.append('use_mock_income', 'false');
+
+        if (incomeToggles.esewa && esewaAmt > 0) {
+            formData.append('esewa_monthly_npr', esewaAmt);
+        }
+        if (incomeToggles.remittance && remittanceAmt > 0) {
+            formData.append('remittance_monthly_npr', remittanceAmt);
+        }
+        if (incomeToggles.coop && coopAmt > 0) {
+            formData.append('coop_monthly_npr', coopAmt);
+        }
+
+        try {
+            // Note: for FormData, do NOT set Content-Type header
+            // The browser sets it automatically with the correct boundary
+            const token = getToken();
+            const response = await fetch(
+                `${API_BASE}/loan/apply`,
+                {
+                    method:  'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body:    formData,
+                }
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showResult(data);
+            } else {
+                showError(data.detail || 'Application failed. Please try again.');
+                resetButton();
+            }
+
+        } catch (err) {
+            showError('Cannot connect to server. Please try again.');
+            resetButton();
+        }
+    }
+
+    // ── Show pipeline result ──────────────────────────────────────────────────
+    function showResult(data) {
+        const decision  = data.final_decision;
+        const resultMap = {
+            'Recommend': { cls: 'recommend', icon: '✓', title: 'Application Recommended' },
+            'Reject':    { cls: 'reject',    icon: '✗', title: 'Application Not Recommended' },
+            'Refer':     { cls: 'refer',     icon: '⚠', title: 'Application Under Review' },
+        };
+        const r = resultMap[decision] || resultMap['Refer'];
+
+        document.getElementById('resultHeader').className = `result-header ${r.cls}`;
+        document.getElementById('resultIcon').textContent   = r.icon;
+        document.getElementById('resultTitle').textContent  = r.title;
+        document.getElementById('resultReason').textContent = data.decision_reason || '';
+
+        document.getElementById('rScore').textContent =
+            data.credit_score !== null
+                ? (data.credit_score * 100).toFixed(1) + '%'
+                : 'N/A';
+
+        document.getElementById('rIncome').textContent =
+            data.monthly_income_npr
+                ? 'NPR ' + formatNPR(data.monthly_income_npr)
+                : 'N/A';
+
+        document.getElementById('rLand').textContent =
+            data.land_parcels !== null
+                ? `${data.land_parcels} parcel(s) · ${data.total_land_ropani}R ${data.total_land_aana}A`
+                : 'Not verified';
+
+        document.getElementById('rCompliance').textContent =
+            data.compliance_flags && data.compliance_flags.length > 0
+                ? data.compliance_flags.join(', ')
+                : '✓ No violations';
+
+        document.getElementById('rTime').textContent =
+            data.pipeline_time_ms + ' ms';
+
+        document.getElementById('resultCard').classList.add('visible');
+
+        // Scroll to result
+        document.getElementById('resultCard').scrollIntoView({
+            behavior: 'smooth', block: 'start'
+        });
+
+        // Countdown redirect to dashboard
+        let count = 3;
+        const interval = setInterval(() => {
+            count--;
+            document.getElementById('countdown').textContent = count;
+            if (count <= 0) {
+                clearInterval(interval);
+                window.location.href = '/templates/client/dashboard.html';
+            }
+        }, 1000);
+    }
+
+    // ── Utilities ─────────────────────────────────────────────────────────────
+    function showError(msg) {
+        const el = document.getElementById('formError');
+        el.textContent = msg;
+        el.classList.add('visible');
+    }
+
+    function resetButton() {
+        const btn    = document.getElementById('submitBtn');
+        btn.disabled = false;
+        btn.innerHTML = 'Submit Application';
+    }
+
+    function formatNPR(amount) {
+        return new Intl.NumberFormat('ne-NP').format(Math.round(amount));
+    }
+
+    function capitalize(str) {
+        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+</script>
+
+</body>
+</html>

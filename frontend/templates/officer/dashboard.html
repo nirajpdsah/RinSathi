@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<!--
+    frontend/templates/officer/dashboard.html
+
+    Officer Dashboard — RinSathi ACLO
+    Shows the queue of all loan applications.
+    Officer can filter by status and click any application to review it.
+
+    On load:
+      1. guard.js verifies JWT and role = "officer"
+      2. Fetches all applications from GET /api/v1/officer/applications
+      3. Renders one card per application
+      4. Clicking a card goes to review.html?id={application_id}
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Officer Dashboard — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .navbar {
+            background:  var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding:     0 32px;
+            height:      64px;
+            display:     flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size:   22px;
+            font-weight: 700;
+            color:       white;
+        }
+
+        .navbar-brand span { color: var(--accent); }
+
+        .navbar-right {
+            display:     flex;
+            align-items: center;
+            gap:         20px;
+        }
+
+        .navbar-user {
+            color:       rgba(255,255,255,0.80);
+            font-size:   14px;
+        }
+
+        .navbar-user strong {
+            color:       white;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            background:  transparent;
+            border:      1.5px solid rgba(255,255,255,0.30);
+            color:       white;
+            padding:     8px 18px;
+            border-radius: 8px;
+            font-size:   13px;
+            font-weight: 600;
+            cursor:      pointer;
+            transition:  all 0.2s;
+            width:       auto;
+        }
+
+        .btn-logout:hover {
+            background:  rgba(255,255,255,0.10);
+            border-color: white;
+        }
+
+        .page-body {
+            max-width: 1100px;
+            margin:    0 auto;
+            padding:   36px 24px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-title {
+            font-size:   26px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .page-subtitle {
+            color:     var(--subtle);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        /* Filter tabs */
+        .filter-tabs {
+            display:       flex;
+            gap:           8px;
+            margin-bottom: 24px;
+            flex-wrap:     wrap;
+        }
+
+        .filter-tab {
+            padding:       8px 20px;
+            border-radius: 999px;
+            border:        1.5px solid var(--border);
+            background:    white;
+            font-size:     13px;
+            font-weight:   600;
+            color:         var(--subtle);
+            cursor:        pointer;
+            transition:    all 0.2s;
+        }
+
+        .filter-tab:hover {
+            border-color: var(--accent);
+            color:        var(--primary);
+        }
+
+        .filter-tab.active {
+            background:   var(--primary);
+            border-color: var(--primary);
+            color:        white;
+        }
+
+        /* Stats row */
+        .stats-row {
+            display:               grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap:                   16px;
+            margin-bottom:         28px;
+        }
+
+        .stat-card {
+            background:    white;
+            border-radius: 12px;
+            padding:       20px;
+            text-align:    center;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            border-top:    3px solid var(--border);
+        }
+
+        .stat-card.pending  { border-top-color: var(--warning); }
+        .stat-card.approved { border-top-color: var(--success); }
+        .stat-card.rejected { border-top-color: var(--danger);  }
+        .stat-card.referred { border-top-color: #8B5CF6;        }
+
+        .stat-number {
+            font-size:   32px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .stat-label {
+            font-size:   12px;
+            font-weight: 600;
+            color:       var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top:  4px;
+        }
+
+        /* Application cards */
+        .applications-grid {
+            display:               grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap:                   16px;
+        }
+
+        .app-card {
+            background:    white;
+            border-radius: 12px;
+            border-left:   4px solid var(--accent);
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            padding:       20px 24px;
+            cursor:        pointer;
+            transition:    all 0.2s;
+            text-decoration: none;
+            display:       block;
+        }
+
+        .app-card:hover {
+            box-shadow: 0 4px 16px rgba(15,32,68,0.12);
+            transform:  translateY(-2px);
+        }
+
+        .app-card.status-pending  { border-left-color: var(--warning); }
+        .app-card.status-approved { border-left-color: var(--success); }
+        .app-card.status-rejected { border-left-color: var(--danger);  }
+        .app-card.status-referred { border-left-color: #8B5CF6;        }
+
+        .app-card-header {
+            display:         flex;
+            justify-content: space-between;
+            align-items:     flex-start;
+            margin-bottom:   12px;
+        }
+
+        .app-name {
+            font-size:   16px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .app-citizenship {
+            font-size:  12px;
+            color:      var(--subtle);
+            margin-top: 2px;
+        }
+
+        .app-card-body {
+            display:               grid;
+            grid-template-columns: 1fr 1fr;
+            gap:                   8px;
+            margin-bottom:         14px;
+        }
+
+        .app-field-label {
+            font-size:  11px;
+            font-weight: 600;
+            color:       var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .app-field-value {
+            font-size:   14px;
+            font-weight: 600;
+            color:       var(--text);
+            margin-top:  2px;
+        }
+
+        .app-card-footer {
+            display:         flex;
+            justify-content: space-between;
+            align-items:     center;
+            padding-top:     12px;
+            border-top:      1px solid var(--border);
+        }
+
+        .app-date {
+            font-size: 12px;
+            color:     var(--subtle);
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align:    center;
+            padding:       80px 24px;
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+        }
+
+        .empty-icon {
+            font-size:     48px;
+            margin-bottom: 16px;
+        }
+
+        .empty-title {
+            font-size:   18px;
+            font-weight: 700;
+            color:       var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-desc {
+            color:     var(--subtle);
+            font-size: 14px;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background:     linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation:      shimmer 1.2s infinite;
+            border-radius:  6px;
+        }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (max-width: 768px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .navbar { padding: 0 16px; }
+            .page-body { padding: 20px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-brand">Rin<span>Sathi</span></div>
+    <div class="navbar-right">
+        <div class="navbar-user">
+            Logged in as <strong id="officerName">Officer</strong>
+        </div>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+</nav>
+
+<!-- Page body -->
+<div class="page-body">
+
+    <div class="page-header">
+        <div class="page-title">Loan Application Queue</div>
+        <div class="page-subtitle">
+            Review AI-assessed applications and submit your decision
+        </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="stats-row">
+        <div class="stat-card pending">
+            <div class="stat-number" id="countPending">—</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card referred">
+            <div class="stat-number" id="countReferred">—</div>
+            <div class="stat-label">Referred</div>
+        </div>
+        <div class="stat-card approved">
+            <div class="stat-number" id="countApproved">—</div>
+            <div class="stat-label">Approved</div>
+        </div>
+        <div class="stat-card rejected">
+            <div class="stat-number" id="countRejected">—</div>
+            <div class="stat-label">Rejected</div>
+        </div>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterApps('all', this)">All</button>
+        <button class="filter-tab" onclick="filterApps('pending', this)">Pending</button>
+        <button class="filter-tab" onclick="filterApps('referred', this)">Referred</button>
+        <button class="filter-tab" onclick="filterApps('approved', this)">Approved</button>
+        <button class="filter-tab" onclick="filterApps('rejected', this)">Rejected</button>
+    </div>
+
+    <!-- Application cards -->
+    <div class="applications-grid" id="applicationsGrid">
+        <!-- Filled by JavaScript -->
+    </div>
+
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/guard.js"></script>
+<script>
+    // ── Guard: officer only ───────────────────────────────────────────────────
+    guardPage('officer');
+    showUserInfo('officerName');
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let allApplications = [];
+    let currentFilter   = 'all';
+
+    // ── Load applications on page load ────────────────────────────────────────
+    async function loadApplications() {
+        const grid = document.getElementById('applicationsGrid');
+
+        // Show loading skeleton
+        grid.innerHTML = Array(6).fill(`
+            <div class="app-card" style="cursor:default">
+                <div class="skeleton" style="height:20px; width:60%; margin-bottom:8px"></div>
+                <div class="skeleton" style="height:14px; width:40%; margin-bottom:16px"></div>
+                <div class="skeleton" style="height:14px; width:80%; margin-bottom:8px"></div>
+                <div class="skeleton" style="height:14px; width:50%"></div>
+            </div>
+        `).join('');
+
+        try {
+            const response = await apiFetch('/officer/applications');
+            if (!response.ok) throw new Error('Failed to load');
+
+            allApplications = await response.json();
+            updateStats();
+            renderCards(allApplications);
+
+        } catch (err) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">Failed to load applications</div>
+                    <div class="empty-desc">${err.message}</div>
+                </div>
+            `;
+        }
+    }
+
+    // ── Update stats counters ─────────────────────────────────────────────────
+    function updateStats() {
+        const count = (status) =>
+            allApplications.filter(a => a.status === status).length;
+
+        document.getElementById('countPending').textContent  = count('pending');
+        document.getElementById('countReferred').textContent = count('referred');
+        document.getElementById('countApproved').textContent = count('approved');
+        document.getElementById('countRejected').textContent = count('rejected');
+    }
+
+    // ── Filter applications by status ─────────────────────────────────────────
+    function filterApps(status, btn) {
+        currentFilter = status;
+
+        // Update active tab
+        document.querySelectorAll('.filter-tab').forEach(t =>
+            t.classList.remove('active')
+        );
+        btn.classList.add('active');
+
+        const filtered = status === 'all'
+            ? allApplications
+            : allApplications.filter(a => a.status === status);
+
+        renderCards(filtered);
+    }
+
+    // ── Render application cards ──────────────────────────────────────────────
+    function renderCards(apps) {
+        const grid = document.getElementById('applicationsGrid');
+
+        if (apps.length === 0) {
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1">
+                    <div class="empty-icon">📋</div>
+                    <div class="empty-title">No applications found</div>
+                    <div class="empty-desc">
+                        No applications match the current filter.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = apps.map(app => `
+            <a class="app-card status-${app.status}"
+               href="/templates/officer/review.html?id=${app.id}">
+
+                <div class="app-card-header">
+                    <div>
+                        <div class="app-name">${escHtml(app.full_name)}</div>
+                        <div class="app-citizenship">
+                            ${app.citizenship_no
+                                ? 'Citizenship: ' + escHtml(app.citizenship_no)
+                                : 'Citizenship not recorded'}
+                        </div>
+                    </div>
+                    <span class="badge-${app.status}">${capitalize(app.status)}</span>
+                </div>
+
+                <div class="app-card-body">
+                    <div>
+                        <div class="app-field-label">Loan Amount</div>
+                        <div class="app-field-value">
+                            NPR ${formatNPR(app.loan_amount_npr)}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="app-field-label">Sector</div>
+                        <div class="app-field-value">${capitalize(app.sector)}</div>
+                    </div>
+                </div>
+
+                <div class="app-card-footer">
+                    <span class="app-date">
+                        Submitted ${formatDate(app.submitted_at)}
+                    </span>
+                    <span style="font-size:13px; color:var(--accent); font-weight:600;">
+                        Review →
+                    </span>
+                </div>
+            </a>
+        `).join('');
+    }
+
+    // ── Utility functions ─────────────────────────────────────────────────────
+
+    function formatNPR(amount) {
+        // Nepal number formatting: 1,00,000 style
+        return new Intl.NumberFormat('ne-NP').format(Math.round(amount));
+    }
+
+    function formatDate(isoString) {
+        const d = new Date(isoString);
+        return d.toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
+    }
+
+    function capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function escHtml(str) {
+        // Prevent XSS — always escape user-supplied strings before innerHTML
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // ── Start ─────────────────────────────────────────────────────────────────
+    loadApplications();
+</script>
+
+</body>
+</html>

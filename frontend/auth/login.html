@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<!--
+    frontend/auth/login.html
+
+    Client Login Page — RinSathi ACLO
+    Google OAuth login for loan applicants.
+
+    Flow:
+    1. User clicks "Continue with Google"
+    2. Google popup appears
+    3. User selects their Google account
+    4. Google returns a credential (ID token) to our callback
+    5. We send that token to POST /api/v1/auth/google
+    6. Backend verifies with Google, creates/finds user, returns JWT
+    7. We store JWT and redirect to client dashboard
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+
+    <!-- Google Identity Services library -->
+    <!-- This is Google's official OAuth library — loads their sign-in button -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <style>
+        .login-wrapper {
+            min-height:      100vh;
+            display:         flex;
+            align-items:     center;
+            justify-content: center;
+            background:      var(--background);
+            padding:         24px;
+        }
+
+        .login-box {
+            width:         100%;
+            max-width:     440px;
+            background:    var(--surface);
+            border-radius: 16px;
+            box-shadow:    0 4px 24px rgba(15,32,68,0.10);
+            overflow:      hidden;
+        }
+
+        .login-header {
+            background:  var(--primary);
+            padding:     36px 40px 28px;
+            text-align:  center;
+            border-top:  4px solid var(--accent);
+        }
+
+        .brand {
+            font-size:   28px;
+            font-weight: 700;
+            color:       white;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span { color: var(--accent); }
+
+        .brand-sub {
+            color:       rgba(255,255,255,0.65);
+            font-size:   13px;
+            margin-top:  6px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .login-body {
+            padding: 36px 40px 40px;
+        }
+
+        .login-title {
+            font-size:     20px;
+            font-weight:   700;
+            color:         var(--primary);
+            margin-bottom: 6px;
+        }
+
+        .login-desc {
+            font-size:     14px;
+            color:         var(--subtle);
+            margin-bottom: 32px;
+            line-height:   1.6;
+        }
+
+        /* Google button container */
+        .google-btn-wrapper {
+            display:         flex;
+            justify-content: center;
+            margin-bottom:   24px;
+        }
+
+        /* Divider */
+        .divider {
+            display:     flex;
+            align-items: center;
+            gap:         12px;
+            margin:      24px 0;
+            color:       var(--subtle);
+            font-size:   12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content:    '';
+            flex:       1;
+            height:     1px;
+            background: var(--border);
+        }
+
+        /* Info box */
+        .info-box {
+            background:    #F0F7FF;
+            border:        1px solid #BFDBFE;
+            border-radius: 10px;
+            padding:       14px 16px;
+            font-size:     13px;
+            color:         #1E40AF;
+            line-height:   1.6;
+        }
+
+        .info-box strong { color: #1E3A8A; }
+
+        /* Error banner */
+        .error-banner {
+            background:    #FEE2E2;
+            border:        1px solid #FECACA;
+            border-radius: 8px;
+            padding:       12px 16px;
+            font-size:     14px;
+            color:         #991B1B;
+            margin-bottom: 20px;
+            display:       none;
+        }
+
+        /* Loading overlay */
+        .loading-overlay {
+            display:         none;
+            position:        fixed;
+            inset:           0;
+            background:      rgba(15,32,68,0.6);
+            z-index:         100;
+            align-items:     center;
+            justify-content: center;
+            flex-direction:  column;
+            gap:             16px;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .loading-text {
+            color:       white;
+            font-size:   16px;
+            font-weight: 600;
+        }
+
+        .loading-spinner {
+            width:         48px;
+            height:        48px;
+            border:        4px solid rgba(255,255,255,0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation:     spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .login-footer {
+            text-align:  center;
+            margin-top:  28px;
+            font-size:   12px;
+            color:       var(--subtle);
+            line-height: 1.6;
+        }
+
+        .officer-link {
+            display:     block;
+            margin-top:  12px;
+            color:       var(--primary);
+            font-weight: 600;
+            font-size:   13px;
+            text-decoration: none;
+        }
+
+        .officer-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<!-- Loading overlay — shown while verifying with backend -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Verifying your identity...</div>
+</div>
+
+<div class="login-wrapper">
+    <div class="login-box">
+
+        <!-- Header -->
+        <div class="login-header">
+            <div class="brand">Rin<span>Sathi</span></div>
+            <div class="brand-sub">Autonomous Credit and Lending Orchestrator</div>
+        </div>
+
+        <!-- Body -->
+        <div class="login-body">
+
+            <div class="login-title">Apply for a Loan</div>
+            <div class="login-desc">
+                Sign in with your Google account to access RinSathi
+                and submit your loan application.
+            </div>
+
+            <!-- Error banner — shown if backend rejects -->
+            <div class="error-banner" id="errorBanner"></div>
+
+            <!-- Google Sign In button -->
+            <!-- Google renders their official button inside this div -->
+            <div class="google-btn-wrapper">
+                <div id="g_id_onload"
+                     data-client_id="250502761363-j0d5cddfbdttijngviihsgl5gj84s4c2.apps.googleusercontent.com"
+                     data-callback="handleGoogleLogin"
+                     data-auto_prompt="false">
+                </div>
+                <div class="g_id_signin"
+                     data-type="standard"
+                     data-size="large"
+                     data-theme="outline"
+                     data-text="continue_with"
+                     data-shape="rectangular"
+                     data-logo_alignment="left"
+                     data-width="320">
+                </div>
+            </div>
+
+            <div class="divider">secure login</div>
+
+            <div class="info-box">
+                <strong>First time?</strong> Your account will be created
+                automatically when you sign in with Google.
+                No registration form required.
+            </div>
+
+            <div class="login-footer">
+                Your data is protected under NRB digital lending guidelines.<br>
+                RinSathi does not store your Google password.
+                <a class="officer-link"
+                   href="/auth/officer_login.html">
+                    Loan Officer? Sign in here →
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script>
+    // ── If already logged in as client, go straight to dashboard ─────────────
+    if (isLoggedIn() && getUserRole() === 'client') {
+        window.location.href = '/templates/client/dashboard.html';
+    }
+
+    // ── Google OAuth callback ─────────────────────────────────────────────────
+    // Google calls this function automatically after the user selects
+    // their account in the Google popup.
+    //
+    // The 'response' object contains:
+    //   response.credential → the Google ID token (a JWT from Google)
+    //
+    // We send this token to our backend, which verifies it with Google
+    // and returns our own JWT token.
+    async function handleGoogleLogin(response) {
+        const googleToken = response.credential;
+
+        // Show loading overlay
+        document.getElementById('loadingOverlay').classList.add('visible');
+        document.getElementById('errorBanner').style.display = 'none';
+
+        try {
+            // Send Google token to our backend
+            const apiResponse = await apiFetch('/auth/google', {
+                method: 'POST',
+                body:   JSON.stringify({ google_token: googleToken }),
+            });
+
+            const data = await apiResponse.json();
+
+            if (apiResponse.ok) {
+                // Backend verified the token and returned our own JWT
+                // Save auth state and redirect to client dashboard
+                saveAuth(data.jwt_token, data.user);
+                window.location.href = '/templates/client/dashboard.html';
+
+            } else {
+                // Backend rejected — show error
+                showError(data.detail || 'Login failed. Please try again.');
+            }
+
+        } catch (err) {
+            showError('Cannot connect to server. Please try again.');
+        } finally {
+            document.getElementById('loadingOverlay').classList.remove('visible');
+        }
+    }
+
+    function showError(message) {
+        const banner = document.getElementById('errorBanner');
+        banner.textContent  = message;
+        banner.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>     

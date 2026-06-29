@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<!--
+    frontend/templates/client/dashboard.html
+
+    Client Dashboard — RinSathi ACLO
+    Shows the logged-in client's loan application history and status.
+
+    On load:
+      1. guard.js verifies JWT and role = "client"
+      2. Fetches applications from GET /api/v1/client/applications
+      3. Renders status cards — one per application
+      4. Client can see AI decision and officer remarks
+      5. "Apply for Loan" button goes to apply.html
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .navbar {
+            background:    var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding:       0 32px;
+            height:        64px;
+            display:       flex;
+            align-items:   center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size:   22px;
+            font-weight: 700;
+            color:       white;
+        }
+
+        .navbar-brand span { color: var(--accent); }
+
+        .navbar-right {
+            display:     flex;
+            align-items: center;
+            gap:         16px;
+        }
+
+        .navbar-user {
+            color:     rgba(255,255,255,0.75);
+            font-size: 14px;
+        }
+
+        .navbar-user strong { color: white; }
+
+        .btn-logout {
+            background:    transparent;
+            border:        1.5px solid rgba(255,255,255,0.30);
+            color:         white;
+            padding:       8px 18px;
+            border-radius: 8px;
+            font-size:     13px;
+            font-weight:   600;
+            cursor:        pointer;
+            width:         auto;
+            transition:    all 0.2s;
+        }
+
+        .btn-logout:hover { background: rgba(255,255,255,0.10); }
+
+        .page-body {
+            max-width: 860px;
+            margin:    0 auto;
+            padding:   36px 24px 60px;
+        }
+
+        /* Welcome banner */
+        .welcome-banner {
+            background:    var(--primary);
+            border-radius: 14px;
+            padding:       28px 32px;
+            margin-bottom: 28px;
+            display:       flex;
+            align-items:   center;
+            justify-content: space-between;
+            gap:           20px;
+        }
+
+        .welcome-text h2 {
+            font-size:   22px;
+            font-weight: 700;
+            color:       white;
+            margin-bottom: 6px;
+        }
+
+        .welcome-text p {
+            color:     rgba(255,255,255,0.65);
+            font-size: 14px;
+        }
+
+        .btn-apply {
+            background:    var(--accent);
+            color:         var(--primary);
+            border:        none;
+            padding:       13px 28px;
+            border-radius: 10px;
+            font-weight:   700;
+            font-size:     15px;
+            cursor:        pointer;
+            white-space:   nowrap;
+            transition:    opacity 0.2s;
+            width:         auto;
+            flex-shrink:   0;
+        }
+
+        .btn-apply:hover { opacity: 0.88; }
+
+        /* Section title */
+        .section-title {
+            font-size:     18px;
+            font-weight:   700;
+            color:         var(--primary);
+            margin-bottom: 16px;
+        }
+
+        /* Application cards */
+        .app-list {
+            display:        flex;
+            flex-direction: column;
+            gap:            14px;
+        }
+
+        .app-card {
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            overflow:      hidden;
+            transition:    box-shadow 0.2s;
+        }
+
+        .app-card:hover { box-shadow: 0 4px 16px rgba(15,32,68,0.10); }
+
+        .app-card-main {
+            display:     flex;
+            align-items: center;
+            padding:     20px 24px;
+            gap:         20px;
+        }
+
+        /* Status indicator — left colored bar */
+        .status-bar {
+            width:         4px;
+            height:        56px;
+            border-radius: 999px;
+            flex-shrink:   0;
+        }
+
+        .status-bar.pending  { background: var(--warning); }
+        .status-bar.approved { background: var(--success); }
+        .status-bar.rejected { background: var(--danger);  }
+        .status-bar.referred { background: #8B5CF6;        }
+
+        .app-info { flex: 1; }
+
+        .app-amount {
+            font-size:   18px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .app-meta {
+            font-size:  13px;
+            color:      var(--subtle);
+            margin-top: 3px;
+        }
+
+        .app-right {
+            text-align:  right;
+            flex-shrink: 0;
+        }
+
+        .app-date {
+            font-size:     12px;
+            color:         var(--subtle);
+            margin-top:    6px;
+        }
+
+        /* Officer remarks section */
+        .app-remarks {
+            border-top: 1px solid var(--border);
+            padding:    14px 24px 14px 52px;
+            font-size:  13px;
+            color:      var(--text);
+            line-height: 1.6;
+            background: #FAFAFA;
+        }
+
+        .remarks-label {
+            font-size:      11px;
+            font-weight:    600;
+            color:          var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom:  4px;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align:    center;
+            padding:       60px 24px;
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+        }
+
+        .empty-icon    { font-size: 48px; margin-bottom: 16px; }
+        .empty-title   { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .empty-desc    { color: var(--subtle); font-size: 14px; margin-bottom: 24px; }
+
+        /* Score pill */
+        .score-pill {
+            display:       inline-block;
+            padding:       4px 10px;
+            border-radius: 999px;
+            font-size:     12px;
+            font-weight:   700;
+            margin-top:    6px;
+        }
+
+        .score-pill.high   { background: #DCFCE7; color: #166534; }
+        .score-pill.medium { background: #FEF3C7; color: #92400E; }
+        .score-pill.low    { background: #FEE2E2; color: #991B1B; }
+
+        @media (max-width: 600px) {
+            .welcome-banner { flex-direction: column; align-items: flex-start; }
+            .btn-apply { width: 100%; text-align: center; }
+            .navbar { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-brand">Rin<span>Sathi</span></div>
+    <div class="navbar-right">
+        <div class="navbar-user">
+            Welcome, <strong id="clientName">—</strong>
+        </div>
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+</nav>
+
+<div class="page-body">
+
+    <!-- Welcome banner -->
+    <div class="welcome-banner">
+        <div class="welcome-text">
+            <h2>Your Loan Dashboard</h2>
+            <p>Track your applications and view AI-assessed credit decisions.</p>
+        </div>
+        <button class="btn-apply"
+                onclick="window.location.href='/templates/client/apply.html'">
+            + Apply for Loan
+        </button>
+    </div>
+
+    <!-- Application list -->
+    <div class="section-title">My Applications</div>
+    <div id="appList">
+        <!-- Filled by JavaScript -->
+    </div>
+
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/guard.js"></script>
+<script>
+    // ── Guard ─────────────────────────────────────────────────────────────────
+    guardPage('client');
+    showUserInfo('clientName');
+
+    // ── Load applications ─────────────────────────────────────────────────────
+    async function loadApplications() {
+        const container = document.getElementById('appList');
+
+        try {
+            const response = await apiFetch('/client/applications');
+
+            if (!response.ok) throw new Error('Failed to load.');
+
+            const apps = await response.json();
+
+            if (apps.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <div class="empty-title">No applications yet</div>
+                        <div class="empty-desc">
+                            Submit your first loan application to get started.
+                            Our AI pipeline assesses your application in under
+                            2 seconds.
+                        </div>
+                        <button class="btn-primary" style="max-width:240px; margin:0 auto;"
+                                onclick="window.location.href='/templates/client/apply.html'">
+                            Apply Now
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="app-list">
+                    ${apps.map(app => renderAppCard(app)).join('')}
+                </div>
+            `;
+
+        } catch (err) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">Failed to load applications</div>
+                    <div class="empty-desc">${err.message}</div>
+                </div>
+            `;
+        }
+    }
+
+    function renderAppCard(app) {
+        const scoreClass = app.credit_score >= 0.65 ? 'high'
+                         : app.credit_score >= 0.40 ? 'medium' : 'low';
+
+        const scorePill = app.credit_score !== null && app.credit_score !== undefined
+            ? `<div class="score-pill ${scoreClass}">
+                   Score: ${(app.credit_score * 100).toFixed(1)}%
+               </div>`
+            : '';
+
+        const remarksHtml = app.officer_remarks
+            ? `<div class="app-remarks">
+                   <div class="remarks-label">Officer Remarks</div>
+                   ${escHtml(app.officer_remarks)}
+               </div>`
+            : '';
+
+        return `
+            <div class="app-card">
+                <div class="app-card-main">
+                    <div class="status-bar ${app.status}"></div>
+                    <div class="app-info">
+                        <div class="app-amount">
+                            NPR ${formatNPR(app.loan_amount_npr)}
+                        </div>
+                        <div class="app-meta">
+                            ${capitalize(app.sector)} sector
+                        </div>
+                        ${scorePill}
+                    </div>
+                    <div class="app-right">
+                        <span class="badge-${app.status}">
+                            ${capitalize(app.status)}
+                        </span>
+                        <div class="app-date">
+                            ${formatDate(app.submitted_at)}
+                        </div>
+                        ${app.reviewed_at
+                            ? `<div class="app-date">
+                                   Reviewed ${formatDate(app.reviewed_at)}
+                               </div>`
+                            : ''}
+                    </div>
+                </div>
+                ${remarksHtml}
+            </div>
+        `;
+    }
+
+    // ── Utilities ──────────────────────────────────────────────────────────────
+    function formatNPR(amount) {
+        return new Intl.NumberFormat('ne-NP').format(Math.round(amount));
+    }
+
+    function formatDate(iso) {
+        return new Date(iso).toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric'
+        });
+    }
+
+    function capitalize(str) {
+        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
+    }
+
+    function escHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // ── Start ──────────────────────────────────────────────────────────────────
+    loadApplications();
+</script>
+
+</body>
+</html>

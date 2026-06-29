@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<!--
+    frontend/templates/officer/review.html
+
+    Officer Review Page — RinSathi ACLO
+    Full AI report for one application + approve/reject controls.
+
+    On load:
+      1. guard.js verifies JWT and role = "officer"
+      2. Reads application ID from URL: ?id={uuid}
+      3. Fetches full detail from GET /api/v1/officer/applications/{id}
+      4. Renders AI pipeline output — score, flags, decision
+      5. Officer types remarks and clicks Approve or Reject
+      6. POST /api/v1/officer/applications/{id}/decision
+      7. Redirects back to dashboard on success
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Application — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .navbar {
+            background:    var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding:       0 32px;
+            height:        64px;
+            display:       flex;
+            align-items:   center;
+            justify-content: space-between;
+        }
+
+        .navbar-brand {
+            font-size:   22px;
+            font-weight: 700;
+            color:       white;
+        }
+
+        .navbar-brand span { color: var(--accent); }
+
+        .navbar-back {
+            display:     flex;
+            align-items: center;
+            gap:         8px;
+            color:       rgba(255,255,255,0.75);
+            font-size:   14px;
+            cursor:      pointer;
+            background:  none;
+            border:      none;
+            padding:     0;
+            transition:  color 0.2s;
+        }
+
+        .navbar-back:hover { color: white; }
+
+        .navbar-right {
+            display:     flex;
+            align-items: center;
+            gap:         20px;
+        }
+
+        .btn-logout {
+            background:   transparent;
+            border:       1.5px solid rgba(255,255,255,0.30);
+            color:        white;
+            padding:      8px 18px;
+            border-radius: 8px;
+            font-size:    13px;
+            font-weight:  600;
+            cursor:       pointer;
+            width:        auto;
+        }
+
+        .btn-logout:hover { background: rgba(255,255,255,0.10); }
+
+        .page-body {
+            max-width: 960px;
+            margin:    0 auto;
+            padding:   36px 24px 60px;
+        }
+
+        /* Two column layout */
+        .review-grid {
+            display:               grid;
+            grid-template-columns: 1fr 360px;
+            gap:                   24px;
+            align-items:           start;
+        }
+
+        /* Section card */
+        .section-card {
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            margin-bottom: 20px;
+            overflow:      hidden;
+        }
+
+        .section-header {
+            padding:       16px 24px;
+            border-bottom: 1px solid var(--border);
+            display:       flex;
+            align-items:   center;
+            gap:           10px;
+        }
+
+        .section-icon {
+            width:         32px;
+            height:        32px;
+            border-radius: 8px;
+            background:    rgba(15,32,68,0.07);
+            display:       flex;
+            align-items:   center;
+            justify-content: center;
+            font-size:     16px;
+        }
+
+        .section-title {
+            font-size:   15px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .section-body {
+            padding: 20px 24px;
+        }
+
+        /* Detail rows */
+        .detail-grid {
+            display:               grid;
+            grid-template-columns: 1fr 1fr;
+            gap:                   16px;
+        }
+
+        .detail-item {}
+
+        .detail-label {
+            font-size:      11px;
+            font-weight:    600;
+            color:          var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom:  4px;
+        }
+
+        .detail-value {
+            font-size:   15px;
+            font-weight: 600;
+            color:       var(--text);
+        }
+
+        /* Credit score gauge */
+        .score-display {
+            text-align:    center;
+            padding:       12px 0 20px;
+        }
+
+        .score-number {
+            font-size:   52px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .score-number.high   { color: var(--success); }
+        .score-number.medium { color: var(--warning); }
+        .score-number.low    { color: var(--danger);  }
+
+        .score-bar-track {
+            height:        10px;
+            background:    var(--border);
+            border-radius: 999px;
+            overflow:      hidden;
+            margin:        12px 0 6px;
+        }
+
+        .score-bar-fill {
+            height:        100%;
+            border-radius: 999px;
+            transition:    width 0.8s ease;
+        }
+
+        .score-bar-fill.high   { background: var(--success); }
+        .score-bar-fill.medium { background: var(--warning); }
+        .score-bar-fill.low    { background: var(--danger);  }
+
+        .score-labels {
+            display:         flex;
+            justify-content: space-between;
+            font-size:       11px;
+            color:           var(--subtle);
+        }
+
+        /* AI verdict badge */
+        .ai-verdict {
+            display:         flex;
+            align-items:     center;
+            gap:             12px;
+            padding:         14px 18px;
+            border-radius:   10px;
+            margin-bottom:   16px;
+            font-weight:     600;
+            font-size:       14px;
+        }
+
+        .ai-verdict.recommend {
+            background: #DCFCE7;
+            color:      #166534;
+            border:     1px solid #BBF7D0;
+        }
+
+        .ai-verdict.reject {
+            background: #FEE2E2;
+            color:      #991B1B;
+            border:     1px solid #FECACA;
+        }
+
+        .ai-verdict.refer {
+            background: #FEF9C3;
+            color:      #854D0E;
+            border:     1px solid #FEF08A;
+        }
+
+        .verdict-icon { font-size: 20px; }
+
+        /* Compliance flags */
+        .flag-list {
+            display:        flex;
+            flex-direction: column;
+            gap:            8px;
+        }
+
+        .flag-item {
+            display:       flex;
+            align-items:   center;
+            gap:           8px;
+            padding:       10px 14px;
+            background:    #FEF2F2;
+            border:        1px solid #FECACA;
+            border-radius: 8px;
+            font-size:     13px;
+            font-weight:   600;
+            color:         #991B1B;
+        }
+
+        .flag-clean {
+            padding:       10px 14px;
+            background:    #F0FDF4;
+            border:        1px solid #BBF7D0;
+            border-radius: 8px;
+            font-size:     13px;
+            font-weight:   600;
+            color:         #166534;
+        }
+
+        /* Decision panel — right column */
+        .decision-panel {
+            position: sticky;
+            top:      24px;
+        }
+
+        .decision-card {
+            background:    white;
+            border-radius: 12px;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            border-top:    4px solid var(--accent);
+            overflow:      hidden;
+        }
+
+        .decision-header {
+            padding:     20px 24px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .decision-title {
+            font-size:   16px;
+            font-weight: 700;
+            color:       var(--primary);
+        }
+
+        .decision-subtitle {
+            font-size:  13px;
+            color:      var(--subtle);
+            margin-top: 4px;
+        }
+
+        .decision-body { padding: 20px 24px; }
+
+        .remarks-label {
+            font-size:      12px;
+            font-weight:    600;
+            color:          var(--subtle);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom:  8px;
+            display:        block;
+        }
+
+        textarea.form-input {
+            resize:     vertical;
+            min-height: 100px;
+            font-size:  14px;
+        }
+
+        .decision-buttons {
+            display:        flex;
+            flex-direction: column;
+            gap:            10px;
+            margin-top:     16px;
+        }
+
+        .btn-approve {
+            background:    var(--success);
+            color:         white;
+            border:        none;
+            padding:       13px;
+            border-radius: 8px;
+            font-weight:   700;
+            font-size:     15px;
+            cursor:        pointer;
+            transition:    opacity 0.2s;
+            width:         100%;
+        }
+
+        .btn-approve:hover    { opacity: 0.88; }
+        .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-reject {
+            background:    white;
+            color:         var(--danger);
+            border:        2px solid var(--danger);
+            padding:       13px;
+            border-radius: 8px;
+            font-weight:   700;
+            font-size:     15px;
+            cursor:        pointer;
+            transition:    all 0.2s;
+            width:         100%;
+        }
+
+        .btn-reject:hover    { background: #FEF2F2; }
+        .btn-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Already reviewed state */
+        .reviewed-banner {
+            padding:       14px 18px;
+            border-radius: 10px;
+            font-size:     14px;
+            font-weight:   600;
+            margin-bottom: 16px;
+        }
+
+        .reviewed-banner.approved {
+            background: #DCFCE7;
+            color:      #166534;
+            border:     1px solid #BBF7D0;
+        }
+
+        .reviewed-banner.rejected {
+            background: #FEE2E2;
+            color:      #991B1B;
+            border:     1px solid #FECACA;
+        }
+
+        /* Loading state */
+        .page-loading {
+            display:         flex;
+            align-items:     center;
+            justify-content: center;
+            min-height:      400px;
+            font-size:       16px;
+            color:           var(--subtle);
+            gap:             12px;
+        }
+
+        @media (max-width: 768px) {
+            .review-grid { grid-template-columns: 1fr; }
+            .decision-panel { position: static; }
+            .navbar { padding: 0 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar">
+    <div style="display:flex; align-items:center; gap:24px;">
+        <div class="navbar-brand">Rin<span>Sathi</span></div>
+        <button class="navbar-back"
+                onclick="window.location.href='/templates/officer/dashboard.html'">
+            ← Back to Queue
+        </button>
+    </div>
+    <div class="navbar-right">
+        <button class="btn-logout" onclick="logout()">Sign Out</button>
+    </div>
+</nav>
+
+<!-- Page body -->
+<div class="page-body">
+
+    <!-- Loading state -->
+    <div class="page-loading" id="pageLoading">
+        <span class="spinner" style="border-color:rgba(15,32,68,0.2); border-top-color:var(--primary);"></span>
+        Loading application...
+    </div>
+
+    <!-- Main content — hidden until loaded -->
+    <div id="pageContent" style="display:none">
+
+        <!-- Page title -->
+        <div style="margin-bottom:24px;">
+            <div style="font-size:22px; font-weight:700; color:var(--primary);"
+                 id="pageTitle">Loan Application Review</div>
+            <div style="font-size:13px; color:var(--subtle); margin-top:4px;"
+                 id="pageSubtitle"></div>
+        </div>
+
+        <div class="review-grid">
+
+            <!-- LEFT COLUMN — Application details + AI report -->
+            <div>
+
+                <!-- Applicant Info -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">👤</div>
+                        <div class="section-title">Applicant Information</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Full Name</div>
+                                <div class="detail-value" id="appName">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Citizenship No.</div>
+                                <div class="detail-value" id="appCitizenship">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Loan Amount</div>
+                                <div class="detail-value" id="appAmount">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Sector</div>
+                                <div class="detail-value" id="appSector">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Submitted</div>
+                                <div class="detail-value" id="appDate">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Application ID</div>
+                                <div class="detail-value"
+                                     id="appId"
+                                     style="font-size:11px; word-break:break-all;">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Credit Score -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">🤖</div>
+                        <div class="section-title">AI Credit Assessment</div>
+                    </div>
+                    <div class="section-body">
+
+                        <!-- AI verdict -->
+                        <div class="ai-verdict" id="aiVerdict">
+                            <span class="verdict-icon" id="verdictIcon"></span>
+                            <div>
+                                <div id="verdictTitle" style="font-size:15px;"></div>
+                                <div id="verdictReason"
+                                     style="font-size:13px; opacity:0.8; margin-top:2px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Score gauge -->
+                        <div class="score-display">
+                            <div style="font-size:12px; font-weight:600;
+                                        color:var(--subtle); text-transform:uppercase;
+                                        letter-spacing:0.05em; margin-bottom:8px;">
+                                Repayment Probability Score
+                            </div>
+                            <div class="score-number" id="scoreNumber">—</div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill" id="scoreBar"
+                                     style="width:0%"></div>
+                            </div>
+                            <div class="score-labels">
+                                <span>High Risk (0.0)</span>
+                                <span>Low Risk (1.0)</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size:11px; color:var(--subtle);
+                                    text-align:center; margin-top:4px;">
+                            Threshold: ≥0.65 Approve · ≥0.40 Refer · &lt;0.40 Reject
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NRB Compliance -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">⚖️</div>
+                        <div class="section-title">NRB Compliance Check</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="flag-list" id="flagList"></div>
+                    </div>
+                </div>
+
+                <!-- Officer's previous remarks (if already reviewed) -->
+                <div class="section-card" id="previousReviewCard" style="display:none">
+                    <div class="section-header">
+                        <div class="section-icon">📝</div>
+                        <div class="section-title">Officer Review</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="detail-label">Decision</div>
+                        <div class="detail-value" id="prevDecision"
+                             style="margin-bottom:12px;"></div>
+                        <div class="detail-label">Remarks</div>
+                        <div style="font-size:14px; color:var(--text);
+                                    line-height:1.6;" id="prevRemarks"></div>
+                        <div class="detail-label"
+                             style="margin-top:12px;">Reviewed At</div>
+                        <div class="detail-value" id="prevReviewedAt"></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT COLUMN — Decision panel -->
+            <div class="decision-panel">
+                <div class="decision-card">
+                    <div class="decision-header">
+                        <div class="decision-title">Officer Decision</div>
+                        <div class="decision-subtitle">
+                            Your decision is final and recorded for audit.
+                        </div>
+                    </div>
+                    <div class="decision-body" id="decisionBody">
+
+                        <!-- Already reviewed banner (shown if status is final) -->
+                        <div id="reviewedBanner" style="display:none"></div>
+
+                        <!-- Decision form (shown if still pending/referred) -->
+                        <div id="decisionForm">
+                            <div style="margin-bottom:16px;">
+                                <div style="font-size:13px; color:var(--subtle);
+                                            line-height:1.6; margin-bottom:16px;">
+                                    Review the AI assessment on the left.
+                                    You may agree with or override the AI recommendation.
+                                    All decisions require written justification per NRB guidelines.
+                                </div>
+                            </div>
+
+                            <label class="remarks-label" for="remarks">
+                                Officer Remarks <span style="color:var(--danger)">*</span>
+                            </label>
+                            <textarea
+                                class="form-input"
+                                id="remarks"
+                                placeholder="Enter your justification for this decision. This is required by NRB compliance guidelines and will be visible to the applicant."
+                            ></textarea>
+                            <div class="error-msg" id="remarksError">
+                                Remarks are required before submitting a decision.
+                            </div>
+
+                            <div class="decision-buttons">
+                                <button class="btn-approve"
+                                        id="approveBtn"
+                                        onclick="submitDecision('approved')">
+                                    ✓ Approve Loan
+                                </button>
+                                <button class="btn-reject"
+                                        id="rejectBtn"
+                                        onclick="submitDecision('rejected')">
+                                    ✗ Reject Application
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- NRB note -->
+                <div style="margin-top:16px; padding:14px 16px;
+                            background:white; border-radius:10px;
+                            font-size:12px; color:var(--subtle);
+                            box-shadow:0 1px 3px rgba(0,0,0,0.07);
+                            line-height:1.6;">
+                    <strong style="color:var(--primary);">NRB Compliance Note</strong><br>
+                    All lending decisions are recorded in the audit trail
+                    per Nepal Rastra Bank Unified Directives. Officer remarks
+                    are mandatory and constitute the written justification
+                    required for regulatory compliance.
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/guard.js"></script>
+<script>
+    // ── Guard ─────────────────────────────────────────────────────────────────
+    guardPage('officer');
+
+    // ── Get application ID from URL ───────────────────────────────────────────
+    const params = new URLSearchParams(window.location.search);
+    const appId  = params.get('id');
+
+    if (!appId) {
+        window.location.href = '/templates/officer/dashboard.html';
+    }
+
+    // ── State ─────────────────────────────────────────────────────────────────
+    let application = null;
+
+    // ── Load application detail ───────────────────────────────────────────────
+    async function loadApplication() {
+        try {
+            const response = await apiFetch(`/officer/applications/${appId}`);
+
+            if (!response.ok) {
+                throw new Error('Application not found.');
+            }
+
+            application = await response.json();
+            renderApplication(application);
+
+        } catch (err) {
+            document.getElementById('pageLoading').innerHTML = `
+                <div style="text-align:center;">
+                    <div style="font-size:24px; margin-bottom:12px;">⚠️</div>
+                    <div style="font-weight:600; color:var(--primary);">
+                        Failed to load application
+                    </div>
+                    <div style="color:var(--subtle); margin-top:6px;">
+                        ${err.message}
+                    </div>
+                </div>
+            `;
+        }
+    }
+
+    // ── Render application data ───────────────────────────────────────────────
+    function renderApplication(app) {
+        // Page title
+        document.getElementById('pageTitle').textContent =
+            `Review: ${app.full_name}`;
+        document.getElementById('pageSubtitle').textContent =
+            `Application ID: ${app.id}`;
+
+        // Applicant info
+        document.getElementById('appName').textContent =
+            app.full_name || '—';
+        document.getElementById('appCitizenship').textContent =
+            app.citizenship_no || 'Not recorded';
+        document.getElementById('appAmount').textContent =
+            'NPR ' + formatNPR(app.loan_amount_npr);
+        document.getElementById('appSector').textContent =
+            capitalize(app.sector);
+        document.getElementById('appDate').textContent =
+            formatDate(app.submitted_at);
+        document.getElementById('appId').textContent = app.id;
+
+        // Credit score
+        const score    = app.credit_score;
+        const scoreEl  = document.getElementById('scoreNumber');
+        const barEl    = document.getElementById('scoreBar');
+        const scoreClass = score >= 0.65 ? 'high' : score >= 0.40 ? 'medium' : 'low';
+
+        if (score !== null && score !== undefined) {
+            scoreEl.textContent = (score * 100).toFixed(1) + '%';
+            scoreEl.className   = 'score-number ' + scoreClass;
+            barEl.style.width   = (score * 100) + '%';
+            barEl.className     = 'score-bar-fill ' + scoreClass;
+        } else {
+            scoreEl.textContent = 'N/A';
+        }
+
+        // AI verdict
+        const verdict    = app.final_decision || 'Refer';
+        const verdictEl  = document.getElementById('aiVerdict');
+        const verdictMap = {
+            'Recommend': { cls: 'recommend', icon: '✓', title: 'AI Recommends Approval' },
+            'Reject':    { cls: 'reject',    icon: '✗', title: 'AI Recommends Rejection' },
+            'Refer':     { cls: 'refer',     icon: '⚠', title: 'AI Refers for Manual Review' },
+        };
+        const v = verdictMap[verdict] || verdictMap['Refer'];
+        verdictEl.className = 'ai-verdict ' + v.cls;
+        document.getElementById('verdictIcon').textContent  = v.icon;
+        document.getElementById('verdictTitle').textContent = v.title;
+        document.getElementById('verdictReason').textContent =
+            app.decision_reason || '';
+
+        // Compliance flags
+        const flagList = document.getElementById('flagList');
+        if (!app.compliance_flags || app.compliance_flags.length === 0) {
+            flagList.innerHTML = `
+                <div class="flag-clean">✓ No NRB compliance violations detected</div>
+            `;
+        } else {
+            flagList.innerHTML = app.compliance_flags.map(flag => `
+                <div class="flag-item">⚠ ${escHtml(flag)}</div>
+            `).join('');
+        }
+
+        // If already reviewed — show banner and hide form
+        if (app.status === 'approved' || app.status === 'rejected') {
+            showReviewedState(app);
+        }
+
+        // Show previous review if exists
+        if (app.officer_remarks) {
+            document.getElementById('previousReviewCard').style.display = 'block';
+            document.getElementById('prevDecision').innerHTML =
+                `<span class="badge-${app.status}">${capitalize(app.status)}</span>`;
+            document.getElementById('prevRemarks').textContent =
+                app.officer_remarks;
+            document.getElementById('prevReviewedAt').textContent =
+                app.reviewed_at ? formatDate(app.reviewed_at) : '—';
+        }
+
+        // Show page content
+        document.getElementById('pageLoading').style.display  = 'none';
+        document.getElementById('pageContent').style.display  = 'block';
+    }
+
+    function showReviewedState(app) {
+        document.getElementById('decisionForm').style.display = 'none';
+
+        const banner = document.getElementById('reviewedBanner');
+        banner.style.display = 'block';
+        banner.className     = `reviewed-banner ${app.status}`;
+        banner.innerHTML     = `
+            ${app.status === 'approved' ? '✓' : '✗'}
+            This application has been
+            <strong>${app.status}</strong>.
+            No further action required.
+        `;
+    }
+
+    // ── Submit officer decision ───────────────────────────────────────────────
+    async function submitDecision(decision) {
+        const remarks    = document.getElementById('remarks').value.trim();
+        const errorEl   = document.getElementById('remarksError');
+        const approveBtn = document.getElementById('approveBtn');
+        const rejectBtn  = document.getElementById('rejectBtn');
+
+        // Validate remarks
+        if (!remarks) {
+            errorEl.classList.add('visible');
+            document.getElementById('remarks').focus();
+            return;
+        }
+        errorEl.classList.remove('visible');
+
+        // Disable both buttons during submission
+        approveBtn.disabled = true;
+        rejectBtn.disabled  = true;
+
+        const label = decision === 'approved' ? 'Approving...' : 'Rejecting...';
+        if (decision === 'approved') {
+            approveBtn.innerHTML = `<span class="spinner"></span>${label}`;
+        } else {
+            rejectBtn.innerHTML  = `<span class="spinner"></span>${label}`;
+        }
+
+        try {
+            const response = await apiFetch(
+                `/officer/applications/${appId}/decision`,
+                {
+                    method: 'POST',
+                    body:   JSON.stringify({ decision, remarks }),
+                }
+            );
+
+            if (response.ok) {
+                // Success — redirect to dashboard
+                window.location.href =
+                    '/templates/officer/dashboard.html';
+            } else {
+                const data = await response.json();
+                alert(data.detail || 'Failed to submit decision.');
+                approveBtn.disabled  = false;
+                rejectBtn.disabled   = false;
+                approveBtn.innerHTML = '✓ Approve Loan';
+                rejectBtn.innerHTML  = '✗ Reject Application';
+            }
+
+        } catch (err) {
+            alert('Cannot connect to server. Please try again.');
+            approveBtn.disabled  = false;
+            rejectBtn.disabled   = false;
+            approveBtn.innerHTML = '✓ Approve Loan';
+            rejectBtn.innerHTML  = '✗ Reject Application';
+        }
+    }
+
+    // ── Utilities ─────────────────────────────────────────────────────────────
+    function formatNPR(amount) {
+        return new Intl.NumberFormat('ne-NP').format(Math.round(amount));
+    }
+
+    function formatDate(isoString) {
+        const d = new Date(isoString);
+        return d.toLocaleDateString('en-GB', {
+            day: '2-digit', month: 'short', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        });
+    }
+
+    function capitalize(str) {
+        return str ? str.charAt(0).toUpperCase() + str.slice(1) : '—';
+    }
+
+    function escHtml(str) {
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // ── Start ─────────────────────────────────────────────────────────────────
+    loadApplication();
+</script>
+
+</body>
+</html>
