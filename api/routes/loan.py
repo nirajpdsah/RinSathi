@@ -109,6 +109,35 @@ async def apply_for_loan(
             status_code=422,
             detail="Loan amount must be greater than zero."
         )
+    # ── Step 2b: Check for duplicate pending application ─────────────────────────
+    # A client should not have more than one active application at a time.
+    # This prevents double-submission from slow networks or impatient clicking.
+    #
+    # "Active" means pending or referred — not yet decided by an officer.
+    # If a previous application was approved or rejected, they can apply again.
+
+    from sqlalchemy import or_
+
+    existing = await db.execute(
+        select(Applicant).where(
+            Applicant.user_id == user_id,
+            or_(
+                Applicant.status == LoanStatus.PENDING,
+                Applicant.status == LoanStatus.REFERRED,
+            )
+        )
+    )
+    duplicate = existing.scalar_one_or_none()
+
+    if duplicate:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "You already have an active application under review. "
+                "Please wait for the officer's decision before submitting a new one. "
+                f"Application ID: {duplicate.id}"
+            )
+        )
 
     # ── Step 3: Initialise SharedState ────────────────────────────────────────
     # SharedState is the data envelope that flows through all 5 agents.
@@ -250,7 +279,7 @@ async def apply_for_loan(
             "Reject":    LoanStatus.PENDING,  # AI rejects → goes to officer for confirmation
             "Refer":     LoanStatus.REFERRED,  # Borderline → officer must review manually
         }
-        db_status = status_map.get(
+        db_status = status_map.get( 
             state.final_decision,
             LoanStatus.REFERRED   # Default to Refer if something unexpected
         )

@@ -41,9 +41,9 @@ async def lifespan(app: FastAPI):
     await warm_up_ocr()
 
     print("ACLO API ready")
-    print("  Local:     http://127.0.0.1:8000")
-    print("  API docs:  http://127.0.0.1:8000/docs")
-    print("  Dashboard: http://127.0.0.1:8000/dashboard")
+    print("  API docs:        http://127.0.0.1:8000/docs")
+    print("  Officer login:   http://127.0.0.1:8000/auth/officer_login.html")
+    print("  Client login:    http://127.0.0.1:8000/auth/login.html")
 
     yield   # Server runs here — code after yield runs on shutdown
 
@@ -91,12 +91,12 @@ async def root(request: Request):
     # Serves login page at http://localhost:8000/
     return templates.TemplateResponse(request=request, name="login.html")
 
-@app.get("/apply", response_class=HTMLResponse, include_in_schema=False)
-async def get_application_page(request: Request):
+#@app.get("/apply", response_class=HTMLResponse, include_in_schema=False)
+#async def get_application_page(request: Request):
     return templates.TemplateResponse(request=request, name="apply.html")
 
-@app.get("/dashboard", response_class=HTMLResponse, tags=["Frontend UI"])
-async def read_dashboard(request: Request):
+#@app.get("/dashboard", response_class=HTMLResponse, tags=["Frontend UI"])
+#async def read_dashboard(request: Request):
     """
     Renders the beautiful, multi-agent underwriting dashboard 
     directly from frontend/templates/dashboard.html
