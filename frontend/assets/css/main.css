@@ -5,19 +5,26 @@
  * it updates across the entire product.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --primary:    #0F2044;
-    --accent:     #F5A623;
-    --surface:    #FFFFFF;
-    --background: #F4F6FA;
-    --text:       #1A1A2E;
-    --subtle:     #6B7280;
-    --success:    #16A34A;
-    --danger:     #DC2626;
-    --warning:    #D97706;
-    --border:     #E5E7EB;
+    --primary:         #0A0F1D;     /* Ultra-deep space navy */
+    --primary-light:   #1E293B;     /* Slate-800 */
+    --accent:          #D97706;     /* Saffron Gold */
+    --accent-light:    #FBBF24;     /* Light saffron */
+    --surface:         #FFFFFF;
+    --background:      #F8FAFC;     /* Slate-50 */
+    --text:            #0F172A;     /* Slate-900 */
+    --subtle:          #64748B;     /* Slate-500 */
+    --success:         #10B981;     /* Emerald-500 */
+    --danger:          #EF4444;     /* Rose-500 */
+    --warning:         #F59E0B;     /* Amber-500 */
+    --border:          #E2E8F0;     /* Slate-200 */
+    --border-subtle:   #F1F5F9;     /* Slate-100 */
+    --ring:            rgba(217, 119, 6, 0.15); /* Accent gold ring */
+    
+    --card-shadow: 0 10px 30px -10px rgba(2, 6, 23, 0.05), 0 1px 3px rgba(2, 6, 23, 0.02);
+    --hover-shadow: 0 20px 40px -15px rgba(2, 6, 23, 0.1), 0 2px 6px rgba(2, 6, 23, 0.04);
 }
 
 * {
@@ -27,75 +34,136 @@
 }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background-color: var(--background);
     color: var(--text);
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Signature element — saffron left border on all cards */
+h1, h2, h3, h4, h5, h6,
+.brand, .navbar-brand, .login-title, .page-title, .section-title, .hero-title {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 99px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94A3B8;
+}
+
+/* Card - modern minimal */
 .rinsathi-card {
-    background:    var(--surface);
-    border-radius: 12px;
-    border-left:   4px solid var(--accent);
-    box-shadow:    0 1px 3px rgba(0,0,0,0.08);
-    padding:       24px;
+    background: var(--surface);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.rinsathi-card:hover {
+    box-shadow: var(--hover-shadow);
+    transform: translateY(-2px);
 }
 
 /* Status badges */
-.badge-pending  { background: #FEF3C7; color: #92400E; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.badge-approved { background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.badge-rejected { background: #FEE2E2; color: #991B1B; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
-.badge-referred { background: #FEF9C3; color: #854D0E; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge-pending  { background: #FEF3C7; color: #B45309; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.badge-approved { background: #D1FAE5; color: #065F46; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.badge-rejected { background: #FEE2E2; color: #991B1B; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
+.badge-referred { background: #EDE9FE; color: #5B21B6; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px; }
 
-/* Primary button */
+/* Buttons */
 .btn-primary {
-    background:    var(--primary);
-    color:         white;
-    border:        none;
-    padding:       12px 28px;
-    border-radius: 8px;
-    font-weight:   600;
-    font-size:     15px;
-    cursor:        pointer;
-    transition:    background 0.2s;
-    width:         100%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(10, 15, 29, 0.1);
 }
-.btn-primary:hover { background: #1a3a6e; }
+.btn-primary:hover:not(:disabled) {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(10, 15, 29, 0.15);
+}
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
-/* Accent button */
 .btn-accent {
-    background:    var(--accent);
-    color:         var(--primary);
-    border:        none;
-    padding:       12px 28px;
-    border-radius: 8px;
-    font-weight:   700;
-    font-size:     15px;
-    cursor:        pointer;
-    transition:    opacity 0.2s;
-    width:         100%;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(217, 119, 6, 0.15);
 }
-.btn-accent:hover { opacity: 0.9; }
+.btn-accent:hover:not(:disabled) {
+    background: #B45309;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(217, 119, 6, 0.25);
+}
+.btn-accent:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 
 /* Form inputs */
 .form-input {
     width:         100%;
     padding:       12px 16px;
     border:        1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 12px;
     font-size:     15px;
-    font-family:   'Inter', sans-serif;
+    font-family:   'Plus Jakarta Sans', sans-serif;
     background:    var(--surface);
     color:         var(--text);
-    transition:    border-color 0.2s;
+    transition:    all 0.2s ease;
     outline:       none;
 }
-.form-input:focus { border-color: var(--accent); }
+.form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--ring);
+}
+.form-input::placeholder {
+    color: var(--subtle);
+    opacity: 0.6;
+}
 
 .form-label {
     display:       block;
-    font-size:     13px;
+    font-size:     12px;
     font-weight:   600;
     color:         var(--subtle);
     margin-bottom: 6px;
@@ -109,6 +177,11 @@ body {
     font-size:   13px;
     margin-top:  8px;
     display:     none;
+    padding:     10px 14px;
+    background:  #FEF2F2;
+    border-radius: 8px;
+    border: 1px solid #FEE2E2;
+    font-weight: 500;
 }
 .error-msg.visible { display: block; }
 
@@ -116,12 +189,55 @@ body {
 .spinner {
     width:  20px;
     height: 20px;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 2.5px solid rgba(255,255,255,0.3);
     border-top-color: white;
     border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    animation: spin 0.75s linear infinite;
     display: inline-block;
     vertical-align: middle;
-    margin-right: 8px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* SVGs general styles */
+.icon {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    stroke-width: 2;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    display: inline-block;
+    vertical-align: middle;
+}
+.step-icon .icon {
+    width: 40px;
+    height: 40px;
+    color: var(--accent);
+}
+.feature-icon .icon {
+    width: 32px;
+    height: 32px;
+    color: var(--accent);
+}
+.trust-badge-icon .icon {
+    width: 28px;
+    height: 28px;
+    color: var(--accent-light);
+}
+.navbar-brand .icon, .brand .icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    margin-top: -4px;
+}
+.section-icon .icon {
+    width: 20px;
+    height: 20px;
+    color: var(--primary);
+}
+.empty-icon .icon {
+    width: 48px;
+    height: 48px;
+    color: var(--subtle);
+}

@@ -21,7 +21,7 @@
     <style>
         .navbar {
             background:    var(--primary);
-            border-bottom: 3px solid var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding:       0 32px;
             height:        64px;
             display:       flex;
@@ -31,8 +31,9 @@
 
         .navbar-brand {
             font-size:   22px;
-            font-weight: 700;
+            font-weight: 800;
             color:       white;
+            letter-spacing: -0.02em;
         }
 
         .navbar-brand span { color: var(--accent); }
@@ -40,114 +41,139 @@
         .navbar-right {
             display:     flex;
             align-items: center;
-            gap:         16px;
+            gap:         20px;
         }
 
         .navbar-user {
-            color:     rgba(255,255,255,0.75);
+            color:     #94A3B8;
             font-size: 14px;
         }
 
-        .navbar-user strong { color: white; }
+        .navbar-user strong { color: white; font-weight: 600; }
 
         .btn-logout {
             background:    transparent;
-            border:        1.5px solid rgba(255,255,255,0.30);
+            border:        1.5px solid rgba(255, 255, 255, 0.15);
             color:         white;
             padding:       8px 18px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size:     13px;
             font-weight:   600;
             cursor:        pointer;
             width:         auto;
-            transition:    all 0.2s;
+            transition:    all 0.2s ease;
         }
 
-        .btn-logout:hover { background: rgba(255,255,255,0.10); }
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
 
         .page-body {
             max-width: 860px;
             margin:    0 auto;
-            padding:   36px 24px 60px;
+            padding:   48px 24px 80px;
         }
 
         /* Welcome banner */
         .welcome-banner {
-            background:    var(--primary);
-            border-radius: 14px;
-            padding:       28px 32px;
-            margin-bottom: 28px;
+            background:    #0A0F1D;
+            border-radius: 20px;
+            padding:       32px 40px;
+            margin-bottom: 36px;
             display:       flex;
             align-items:   center;
             justify-content: space-between;
-            gap:           20px;
+            gap:           24px;
+            border:        1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:    0 10px 30px rgba(0, 0, 0, 0.05);
+            position:      relative;
+            overflow:      hidden;
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 100% 0%, rgba(217, 119, 6, 0.12) 0%, transparent 60%);
+            pointer-events: none;
         }
 
         .welcome-text h2 {
-            font-size:   22px;
-            font-weight: 700;
+            font-size:   24px;
+            font-weight: 800;
             color:       white;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .welcome-text p {
-            color:     rgba(255,255,255,0.65);
-            font-size: 14px;
+            color:     #94A3B8;
+            font-size: 14.5px;
+            line-height: 1.5;
         }
 
         .btn-apply {
             background:    var(--accent);
-            color:         var(--primary);
+            color:         white;
             border:        none;
-            padding:       13px 28px;
-            border-radius: 10px;
-            font-weight:   700;
+            padding:       12px 24px;
+            border-radius: 12px;
+            font-weight:   600;
             font-size:     15px;
             cursor:        pointer;
             white-space:   nowrap;
-            transition:    opacity 0.2s;
+            transition:    all 0.2s ease;
             width:         auto;
             flex-shrink:   0;
+            box-shadow:    0 4px 12px rgba(217, 119, 6, 0.2);
         }
 
-        .btn-apply:hover { opacity: 0.88; }
+        .btn-apply:hover {
+            background: #B45309;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(217, 119, 6, 0.3);
+        }
 
         /* Section title */
         .section-title {
             font-size:     18px;
             font-weight:   700;
             color:         var(--primary);
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         /* Application cards */
         .app-list {
             display:        flex;
             flex-direction: column;
-            gap:            14px;
+            gap:            16px;
         }
 
         .app-card {
             background:    white;
-            border-radius: 12px;
-            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            border-radius: 16px;
+            border:        1px solid var(--border);
+            box-shadow:    var(--card-shadow);
             overflow:      hidden;
-            transition:    box-shadow 0.2s;
+            transition:    all 0.2s ease;
         }
 
-        .app-card:hover { box-shadow: 0 4px 16px rgba(15,32,68,0.10); }
+        .app-card:hover {
+            box-shadow: var(--hover-shadow);
+            transform:  translateY(-1px);
+        }
 
         .app-card-main {
             display:     flex;
             align-items: center;
-            padding:     20px 24px;
-            gap:         20px;
+            padding:     24px;
+            gap:         24px;
         }
 
         /* Status indicator — left colored bar */
         .status-bar {
             width:         4px;
-            height:        56px;
+            height:        48px;
             border-radius: 999px;
             flex-shrink:   0;
         }
@@ -160,15 +186,16 @@
         .app-info { flex: 1; }
 
         .app-amount {
-            font-size:   18px;
+            font-size:   20px;
             font-weight: 700;
             color:       var(--primary);
         }
 
         .app-meta {
-            font-size:  13px;
+            font-size:  13.5px;
             color:      var(--subtle);
-            margin-top: 3px;
+            margin-top: 4px;
+            font-weight: 500;
         }
 
         .app-right {
@@ -177,61 +204,67 @@
         }
 
         .app-date {
-            font-size:     12px;
+            font-size:     12.5px;
             color:         var(--subtle);
             margin-top:    6px;
         }
 
         /* Officer remarks section */
         .app-remarks {
-            border-top: 1px solid var(--border);
-            padding:    14px 24px 14px 52px;
-            font-size:  13px;
+            border-top: 1px solid var(--border-subtle);
+            padding:    16px 24px 16px 52px;
+            font-size:  13.5px;
             color:      var(--text);
             line-height: 1.6;
-            background: #FAFAFA;
+            background: #FAF8F6;
         }
 
         .remarks-label {
             font-size:      11px;
-            font-weight:    600;
-            color:          var(--subtle);
+            font-weight:    700;
+            color:          var(--accent);
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom:  4px;
+            letter-spacing: 0.08em;
+            margin-bottom:  6px;
         }
 
         /* Empty state */
         .empty-state {
             text-align:    center;
-            padding:       60px 24px;
+            padding:       64px 32px;
             background:    white;
-            border-radius: 12px;
-            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            border-radius: 16px;
+            border:        1px solid var(--border);
+            box-shadow:    var(--card-shadow);
         }
 
-        .empty-icon    { font-size: 48px; margin-bottom: 16px; }
-        .empty-title   { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
-        .empty-desc    { color: var(--subtle); font-size: 14px; margin-bottom: 24px; }
+        .empty-icon    { display: flex; justify-content: center; margin-bottom: 20px; }
+        .empty-title   { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .empty-desc    { color: var(--subtle); font-size: 14.5px; margin-bottom: 28px; line-height: 1.6; }
 
         /* Score pill */
         .score-pill {
             display:       inline-block;
-            padding:       4px 10px;
-            border-radius: 999px;
-            font-size:     12px;
+            padding:       4px 12px;
+            border-radius: 99px;
+            font-size:     11.5px;
             font-weight:   700;
-            margin-top:    6px;
+            margin-top:    8px;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
         }
 
-        .score-pill.high   { background: #DCFCE7; color: #166534; }
-        .score-pill.medium { background: #FEF3C7; color: #92400E; }
+        .score-pill.high   { background: #D1FAE5; color: #065F46; }
+        .score-pill.medium { background: #FEF3C7; color: #B45309; }
         .score-pill.low    { background: #FEE2E2; color: #991B1B; }
 
         @media (max-width: 600px) {
-            .welcome-banner { flex-direction: column; align-items: flex-start; }
+            .welcome-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
             .btn-apply { width: 100%; text-align: center; }
             .navbar { padding: 0 16px; }
+            .page-body { padding: 32px 16px; }
+            .app-card-main { gap: 16px; padding: 16px; }
+            .app-amount { font-size: 18px; }
         }
     </style>
 </head>
@@ -291,7 +324,9 @@
             if (apps.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-icon">📋</div>
+                        <div class="empty-icon">
+                            <svg style="width:56px;height:56px;stroke:#94A3B8;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+                        </div>
                         <div class="empty-title">No applications yet</div>
                         <div class="empty-desc">
                             Submit your first loan application to get started.
@@ -316,7 +351,9 @@
         } catch (err) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-icon">
+                        <svg style="width:56px;height:56px;stroke:#EF4444;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
                     <div class="empty-title">Failed to load applications</div>
                     <div class="empty-desc">${err.message}</div>
                 </div>

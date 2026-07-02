@@ -20,7 +20,7 @@
     <style>
         .navbar {
             background:    var(--primary);
-            border-bottom: 3px solid var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding:       0 32px;
             height:        64px;
             display:       flex;
@@ -30,8 +30,9 @@
 
         .navbar-brand {
             font-size:   22px;
-            font-weight: 700;
+            font-weight: 800;
             color:       white;
+            letter-spacing: -0.02em;
         }
 
         .navbar-brand span { color: var(--accent); }
@@ -39,10 +40,12 @@
         .navbar-back {
             background:  none;
             border:      none;
-            color:       rgba(255,255,255,0.75);
+            color:       #94A3B8;
             font-size:   14px;
+            font-weight: 500;
             cursor:      pointer;
             padding:     0;
+            transition:  color 0.2s ease;
         }
 
         .navbar-back:hover { color: white; }
@@ -50,41 +53,42 @@
         .page-body {
             max-width: 680px;
             margin:    0 auto;
-            padding:   36px 24px 60px;
+            padding:   48px 24px 80px;
         }
 
         .page-title {
-            font-size:     24px;
-            font-weight:   700;
+            font-size:     28px;
+            font-weight:   800;
             color:         var(--primary);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .page-desc {
             color:         var(--subtle);
-            font-size:     14px;
-            margin-bottom: 32px;
+            font-size:     14.5px;
+            margin-bottom: 36px;
             line-height:   1.6;
         }
 
         /* Form sections */
         .form-section {
             background:    white;
-            border-radius: 12px;
-            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
-            margin-bottom: 20px;
+            border-radius: 16px;
+            box-shadow:    var(--card-shadow);
+            border:        1px solid var(--border);
+            margin-bottom: 24px;
             overflow:      hidden;
         }
 
         .form-section-header {
-            padding:       16px 24px;
+            padding:       20px 24px;
             border-bottom: 1px solid var(--border);
-            font-size:     15px;
+            font-size:     16px;
             font-weight:   700;
             color:         var(--primary);
             display:       flex;
             align-items:   center;
-            gap:           8px;
+            gap:           10px;
         }
 
         .form-section-body {
@@ -94,11 +98,11 @@
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap:     16px;
+            gap:     20px;
         }
 
         .form-group {
-            margin-bottom: 18px;
+            margin-bottom: 20px;
         }
 
         .form-group:last-child { margin-bottom: 0; }
@@ -113,136 +117,152 @@
             right:       12px;
             top:         50%;
             transform:   translateY(-50%);
-            font-size:   12px;
-            font-weight: 600;
-            padding:     3px 8px;
-            border-radius: 999px;
+            font-size:   11px;
+            font-weight: 700;
+            padding:     4px 10px;
+            border-radius: 99px;
             display:     none;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .nin-verify-badge.verified {
             display:    block;
-            background: #DCFCE7;
-            color:      #166534;
+            background: #D1FAE5;
+            color:      #065F46;
         }
 
         /* Income source toggles */
         .income-toggle {
             display:       flex;
             align-items:   center;
-            gap:           10px;
-            padding:       12px 0;
-            border-bottom: 1px solid var(--border);
+            gap:           16px;
+            padding:       16px 0;
+            border-bottom: 1px solid var(--border-subtle);
             cursor:        pointer;
         }
 
         .income-toggle:last-child { border-bottom: none; }
 
         .toggle-switch {
-            width:         36px;
-            height:        20px;
-            background:    var(--border);
-            border-radius: 999px;
+            width:         44px;
+            height:        24px;
+            background:    #E2E8F0;
+            border-radius: 99px;
             position:      relative;
-            transition:    background 0.2s;
+            transition:    background 0.2s ease;
             flex-shrink:   0;
         }
 
         .toggle-switch::after {
             content:       '';
             position:      absolute;
-            width:         14px;
-            height:        14px;
+            width:         18px;
+            height:        18px;
             background:    white;
             border-radius: 50%;
             top:           3px;
             left:          3px;
-            transition:    left 0.2s;
+            box-shadow:    0 1px 3px rgba(0,0,0,0.1);
+            transition:    left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .toggle-switch.on {
             background: var(--success);
         }
 
-        .toggle-switch.on::after { left: 19px; }
+        .toggle-switch.on::after { left: 23px; }
 
         .toggle-label {
-            font-size:   14px;
+            font-size:   14.5px;
             font-weight: 600;
             color:       var(--text);
-            flex:        1;
+            line-height: 1.2;
         }
 
         .toggle-sublabel {
-            font-size: 12px;
+            font-size: 12.5px;
             color:     var(--subtle);
+            margin-top: 4px;
         }
 
         .income-amount-field {
-            margin-top:  10px;
+            margin-top:  14px;
             display:     none;
-            padding-left: 46px;
+            padding-left: 60px;
+            animation:   slideDown 0.2s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .income-amount-field.visible { display: block; }
 
         /* Submit button */
         .submit-section {
-            margin-top: 8px;
+            margin-top: 16px;
         }
 
         /* Result card — shown after submission */
         .result-card {
             display:       none;
             background:    white;
-            border-radius: 14px;
-            box-shadow:    0 4px 24px rgba(15,32,68,0.12);
+            border-radius: 20px;
+            box-shadow:    var(--hover-shadow);
+            border:        1px solid var(--border);
             overflow:      hidden;
-            margin-top:    28px;
+            margin-top:    32px;
+            animation:     slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .result-card.visible { display: block; }
 
         .result-header {
-            padding:    24px;
+            padding:    32px 24px;
             text-align: center;
+            color:      white;
+            position:   relative;
         }
 
-        .result-header.recommend { background: #DCFCE7; }
-        .result-header.reject    { background: #FEE2E2; }
-        .result-header.refer     { background: #FEF9C3; }
+        .result-header.recommend { background: linear-gradient(135deg, #059669 0%, #10B981 100%); }
+        .result-header.reject    { background: linear-gradient(135deg, #DC2626 0%, #EF4444 100%); }
+        .result-header.refer     { background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%); }
 
-        .result-icon   { font-size: 40px; margin-bottom: 8px; }
-        .result-title  { font-size: 20px; font-weight: 700; }
-        .result-reason { font-size: 13px; margin-top: 6px; opacity: 0.8; }
+        .result-icon   { font-size: 48px; line-height: 1; margin-bottom: 12px; }
+        .result-title  { font-size: 22px; font-weight: 800; font-family: 'Outfit', sans-serif; }
+        .result-reason { font-size: 14px; margin-top: 8px; opacity: 0.9; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.5; }
 
-        .result-body { padding: 20px 24px; }
+        .result-body { padding: 24px; }
 
         .result-stat {
             display:         flex;
             justify-content: space-between;
             align-items:     center;
-            padding:         10px 0;
-            border-bottom:   1px solid var(--border);
-            font-size:       14px;
+            padding:         14px 0;
+            border-bottom:   1px solid var(--border-subtle);
+            font-size:       14.5px;
         }
 
         .result-stat:last-child { border-bottom: none; }
 
         .result-stat-label { color: var(--subtle); font-weight: 500; }
-        .result-stat-value { font-weight: 700; color: var(--primary); }
+        .result-stat-value { font-weight: 600; color: var(--primary); }
 
         .redirect-notice {
             text-align:  center;
-            padding:     16px;
-            font-size:   13px;
+            padding:     20px;
+            font-size:   13.5px;
             color:       var(--subtle);
-            border-top:  1px solid var(--border);
+            border-top:  1px solid var(--border-subtle);
+            background:  var(--background);
         }
 
         @media (max-width: 600px) {
-            .form-row { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; gap: 0; }
             .navbar   { padding: 0 16px; }
+            .page-body { padding: 32px 16px; }
         }
     </style>
 </head>
@@ -254,7 +274,8 @@
         <div class="navbar-brand">Rin<span>Sathi</span></div>
         <button class="navbar-back"
                 onclick="window.location.href='/templates/client/dashboard.html'">
-            ← Back to Dashboard
+            <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Dashboard
         </button>
     </div>
 </nav>
@@ -270,7 +291,8 @@
     <!-- Section 1: Identity -->
     <div class="form-section">
         <div class="form-section-header">
-            👤 Identity Verification
+            <svg class="icon" style="width:18px;height:18px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Identity Verification
         </div>
         <div class="form-section-body">
             <div class="form-group">
@@ -298,7 +320,8 @@
     <!-- Section 2: Loan Details -->
     <div class="form-section">
         <div class="form-section-header">
-            💰 Loan Details
+            <svg class="icon" style="width:18px;height:18px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Loan Details
         </div>
         <div class="form-section-body">
             <div class="form-row">
@@ -338,7 +361,8 @@
     <!-- Section 3: Income Sources -->
     <div class="form-section">
         <div class="form-section-header">
-            📊 Income Sources
+            <svg class="icon" style="width:18px;height:18px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Income Sources
         </div>
         <div class="form-section-body">
             <div style="font-size:13px; color:var(--subtle);
@@ -567,14 +591,14 @@
     function showResult(data) {
         const decision  = data.final_decision;
         const resultMap = {
-            'Recommend': { cls: 'recommend', icon: '✓', title: 'Application Recommended' },
-            'Reject':    { cls: 'reject',    icon: '✗', title: 'Application Not Recommended' },
-            'Refer':     { cls: 'refer',     icon: '⚠', title: 'Application Under Review' },
+            'Recommend': { cls: 'recommend', icon: `<svg style="width:48px;height:48px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`, title: 'Application Recommended' },
+            'Reject':    { cls: 'reject',    icon: `<svg style="width:48px;height:48px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`, title: 'Application Not Recommended' },
+            'Refer':     { cls: 'refer',     icon: `<svg style="width:48px;height:48px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`, title: 'Application Under Review' },
         };
         const r = resultMap[decision] || resultMap['Refer'];
 
         document.getElementById('resultHeader').className = `result-header ${r.cls}`;
-        document.getElementById('resultIcon').textContent   = r.icon;
+        document.getElementById('resultIcon').innerHTML  = r.icon;
         document.getElementById('resultTitle').textContent  = r.title;
         document.getElementById('resultReason').textContent = data.decision_reason || '';
 
@@ -596,7 +620,7 @@
         document.getElementById('rCompliance').textContent =
             data.compliance_flags && data.compliance_flags.length > 0
                 ? data.compliance_flags.join(', ')
-                : '✓ No violations';
+                : 'No violations';
 
         document.getElementById('rTime').textContent =
             data.pipeline_time_ms + ' ms';

@@ -23,7 +23,7 @@
     <style>
         .navbar {
             background:    var(--primary);
-            border-bottom: 3px solid var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding:       0 32px;
             height:        64px;
             display:       flex;
@@ -33,8 +33,9 @@
 
         .navbar-brand {
             font-size:   22px;
-            font-weight: 700;
+            font-weight: 800;
             color:       white;
+            letter-spacing: -0.02em;
         }
 
         .navbar-brand span { color: var(--accent); }
@@ -43,13 +44,14 @@
             display:     flex;
             align-items: center;
             gap:         8px;
-            color:       rgba(255,255,255,0.75);
+            color:       #94A3B8;
             font-size:   14px;
+            font-weight: 500;
             cursor:      pointer;
             background:  none;
             border:      none;
             padding:     0;
-            transition:  color 0.2s;
+            transition:  color 0.2s ease;
         }
 
         .navbar-back:hover { color: white; }
@@ -62,86 +64,91 @@
 
         .btn-logout {
             background:   transparent;
-            border:       1.5px solid rgba(255,255,255,0.30);
+            border:       1.5px solid rgba(255, 255, 255, 0.15);
             color:        white;
             padding:      8px 18px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size:    13px;
             font-weight:  600;
             cursor:       pointer;
             width:        auto;
+            transition:   all 0.2s ease;
         }
 
-        .btn-logout:hover { background: rgba(255,255,255,0.10); }
+        .btn-logout:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
 
         .page-body {
             max-width: 960px;
             margin:    0 auto;
-            padding:   36px 24px 60px;
+            padding:   48px 24px 80px;
         }
 
         /* Two column layout */
         .review-grid {
             display:               grid;
-            grid-template-columns: 1fr 360px;
-            gap:                   24px;
+            grid-template-columns: 1fr 380px;
+            gap:                   28px;
             align-items:           start;
         }
 
         /* Section card */
         .section-card {
             background:    white;
-            border-radius: 12px;
-            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
-            margin-bottom: 20px;
+            border-radius: 16px;
+            border:        1px solid var(--border);
+            box-shadow:    var(--card-shadow);
+            margin-bottom: 24px;
             overflow:      hidden;
         }
 
         .section-header {
-            padding:       16px 24px;
+            padding:       20px 24px;
             border-bottom: 1px solid var(--border);
             display:       flex;
             align-items:   center;
-            gap:           10px;
+            gap:           12px;
         }
 
         .section-icon {
-            width:         32px;
-            height:        32px;
-            border-radius: 8px;
-            background:    rgba(15,32,68,0.07);
+            width:         36px;
+            height:        36px;
+            border-radius: 10px;
+            background:    #F1F5F9;
             display:       flex;
             align-items:   center;
             justify-content: center;
-            font-size:     16px;
+            font-size:     18px;
         }
 
         .section-title {
-            font-size:   15px;
+            font-size:   16px;
             font-weight: 700;
             color:       var(--primary);
         }
 
         .section-body {
-            padding: 20px 24px;
+            padding: 24px;
         }
 
         /* Detail rows */
         .detail-grid {
             display:               grid;
             grid-template-columns: 1fr 1fr;
-            gap:                   16px;
+            gap:                   20px 24px;
         }
 
         .detail-item {}
 
         .detail-label {
             font-size:      11px;
-            font-weight:    600;
+            font-weight:    700;
             color:          var(--subtle);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom:  4px;
+            margin-bottom:  6px;
         }
 
         .detail-value {
@@ -153,14 +160,15 @@
         /* Credit score gauge */
         .score-display {
             text-align:    center;
-            padding:       12px 0 20px;
+            padding:       16px 0 24px;
         }
 
         .score-number {
-            font-size:   52px;
+            font-size:   56px;
             font-weight: 800;
             line-height: 1;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            font-family: 'Outfit', sans-serif;
         }
 
         .score-number.high   { color: var(--success); }
@@ -169,10 +177,10 @@
 
         .score-bar-track {
             height:        10px;
-            background:    var(--border);
+            background:    #E2E8F0;
             border-radius: 999px;
             overflow:      hidden;
-            margin:        12px 0 6px;
+            margin:        16px 0 8px;
         }
 
         .score-bar-fill {
@@ -189,6 +197,7 @@
             display:         flex;
             justify-content: space-between;
             font-size:       11px;
+            font-weight:     600;
             color:           var(--subtle);
         }
 
@@ -196,24 +205,25 @@
         .ai-verdict {
             display:         flex;
             align-items:     center;
-            gap:             12px;
-            padding:         14px 18px;
-            border-radius:   10px;
-            margin-bottom:   16px;
+            gap:             14px;
+            padding:         18px 20px;
+            border-radius:   12px;
+            margin-bottom:   24px;
             font-weight:     600;
-            font-size:       14px;
+            font-size:       14.5px;
+            line-height:     1.5;
         }
 
         .ai-verdict.recommend {
-            background: #DCFCE7;
-            color:      #166534;
-            border:     1px solid #BBF7D0;
+            background: #ECFDF5;
+            color:      #065F46;
+            border:     1px solid #A7F3D0;
         }
 
         .ai-verdict.reject {
-            background: #FEE2E2;
+            background: #FEF2F2;
             color:      #991B1B;
-            border:     1px solid #FECACA;
+            border:     1px solid #FEE2E2;
         }
 
         .ai-verdict.refer {
@@ -222,36 +232,36 @@
             border:     1px solid #FEF08A;
         }
 
-        .verdict-icon { font-size: 20px; }
+        .verdict-icon { font-size: 22px; }
 
         /* Compliance flags */
         .flag-list {
             display:        flex;
             flex-direction: column;
-            gap:            8px;
+            gap:            10px;
         }
 
         .flag-item {
             display:       flex;
             align-items:   center;
-            gap:           8px;
-            padding:       10px 14px;
+            gap:           10px;
+            padding:       12px 16px;
             background:    #FEF2F2;
-            border:        1px solid #FECACA;
-            border-radius: 8px;
-            font-size:     13px;
+            border:        1px solid #FEE2E2;
+            border-radius: 10px;
+            font-size:     14px;
             font-weight:   600;
             color:         #991B1B;
         }
 
         .flag-clean {
-            padding:       10px 14px;
-            background:    #F0FDF4;
-            border:        1px solid #BBF7D0;
-            border-radius: 8px;
-            font-size:     13px;
+            padding:       12px 16px;
+            background:    #ECFDF5;
+            border:        1px solid #A7F3D0;
+            border-radius: 10px;
+            font-size:     14px;
             font-weight:   600;
-            color:         #166534;
+            color:         #065F46;
         }
 
         /* Decision panel — right column */
@@ -262,19 +272,20 @@
 
         .decision-card {
             background:    white;
-            border-radius: 12px;
-            box-shadow:    0 1px 3px rgba(0,0,0,0.07);
+            border-radius: 16px;
+            border:        1px solid var(--border);
+            box-shadow:    var(--card-shadow);
             border-top:    4px solid var(--accent);
             overflow:      hidden;
         }
 
         .decision-header {
-            padding:     20px 24px 16px;
+            padding:     24px;
             border-bottom: 1px solid var(--border);
         }
 
         .decision-title {
-            font-size:   16px;
+            font-size:   17px;
             font-weight: 700;
             color:       var(--primary);
         }
@@ -282,14 +293,15 @@
         .decision-subtitle {
             font-size:  13px;
             color:      var(--subtle);
-            margin-top: 4px;
+            margin-top: 6px;
+            line-height: 1.4;
         }
 
-        .decision-body { padding: 20px 24px; }
+        .decision-body { padding: 24px; }
 
         .remarks-label {
-            font-size:      12px;
-            font-weight:    600;
+            font-size:      11px;
+            font-weight:    700;
             color:          var(--subtle);
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -299,68 +311,78 @@
 
         textarea.form-input {
             resize:     vertical;
-            min-height: 100px;
+            min-height: 110px;
             font-size:  14px;
+            line-height: 1.5;
         }
 
         .decision-buttons {
             display:        flex;
             flex-direction: column;
-            gap:            10px;
-            margin-top:     16px;
+            gap:            12px;
+            margin-top:     20px;
         }
 
         .btn-approve {
             background:    var(--success);
             color:         white;
             border:        none;
-            padding:       13px;
-            border-radius: 8px;
+            padding:       14px;
+            border-radius: 10px;
             font-weight:   700;
             font-size:     15px;
             cursor:        pointer;
-            transition:    opacity 0.2s;
+            transition:    all 0.2s ease;
             width:         100%;
+            box-shadow:    0 4px 12px rgba(16, 185, 129, 0.15);
         }
 
-        .btn-approve:hover    { opacity: 0.88; }
+        .btn-approve:hover:not(:disabled) {
+            background: #059669;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+            transform:  translateY(-1px);
+        }
         .btn-approve:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .btn-reject {
             background:    white;
             color:         var(--danger);
-            border:        2px solid var(--danger);
-            padding:       13px;
-            border-radius: 8px;
+            border:        1.5px solid var(--danger);
+            padding:       12px;
+            border-radius: 10px;
             font-weight:   700;
             font-size:     15px;
             cursor:        pointer;
-            transition:    all 0.2s;
+            transition:    all 0.2s ease;
             width:         100%;
         }
 
-        .btn-reject:hover    { background: #FEF2F2; }
+        .btn-reject:hover:not(:disabled) {
+            background: #FEF2F2;
+            transform:  translateY(-1px);
+        }
         .btn-reject:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* Already reviewed state */
         .reviewed-banner {
-            padding:       14px 18px;
-            border-radius: 10px;
+            padding:       16px;
+            border-radius: 12px;
             font-size:     14px;
             font-weight:   600;
             margin-bottom: 16px;
+            line-height:   1.5;
         }
 
         .reviewed-banner.approved {
-            background: #DCFCE7;
-            color:      #166534;
-            border:     1px solid #BBF7D0;
+            background: #ECFDF5;
+            color:      #065F46;
+            border:     1px solid #A7F3D0;
         }
 
         .reviewed-banner.rejected {
-            background: #FEE2E2;
+            background: #FEF2F2;
             color:      #991B1B;
-            border:     1px solid #FECACA;
+            border:     1px solid #FEE2E2;
         }
 
         /* Loading state */
@@ -372,12 +394,14 @@
             font-size:       16px;
             color:           var(--subtle);
             gap:             12px;
+            font-weight:     500;
         }
 
         @media (max-width: 768px) {
-            .review-grid { grid-template-columns: 1fr; }
+            .review-grid { grid-template-columns: 1fr; gap: 24px; }
             .decision-panel { position: static; }
             .navbar { padding: 0 16px; }
+            .page-body { padding: 32px 16px; }
         }
     </style>
 </head>
@@ -389,7 +413,8 @@
         <div class="navbar-brand">Rin<span>Sathi</span></div>
         <button class="navbar-back"
                 onclick="window.location.href='/templates/officer/dashboard.html'">
-            ← Back to Queue
+            <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle;" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to Queue
         </button>
     </div>
     <div class="navbar-right">
@@ -425,7 +450,9 @@
                 <!-- Applicant Info -->
                 <div class="section-card">
                     <div class="section-header">
-                        <div class="section-icon">👤</div>
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </div>
                         <div class="section-title">Applicant Information</div>
                     </div>
                     <div class="section-body">
@@ -463,7 +490,9 @@
                 <!-- AI Credit Score -->
                 <div class="section-card">
                     <div class="section-header">
-                        <div class="section-icon">🤖</div>
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 2v4m0 0H8m4 0h4"/><circle cx="8.5" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16" r="1" fill="currentColor" stroke="none"/></svg>
+                        </div>
                         <div class="section-title">AI Credit Assessment</div>
                     </div>
                     <div class="section-body">
@@ -506,7 +535,9 @@
                 <!-- NRB Compliance -->
                 <div class="section-card">
                     <div class="section-header">
-                        <div class="section-icon">⚖️</div>
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
                         <div class="section-title">NRB Compliance Check</div>
                     </div>
                     <div class="section-body">
@@ -517,7 +548,9 @@
                 <!-- Officer's previous remarks (if already reviewed) -->
                 <div class="section-card" id="previousReviewCard" style="display:none">
                     <div class="section-header">
-                        <div class="section-icon">📝</div>
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        </div>
                         <div class="section-title">Officer Review</div>
                     </div>
                     <div class="section-body">
@@ -576,12 +609,14 @@
                                 <button class="btn-approve"
                                         id="approveBtn"
                                         onclick="submitDecision('approved')">
-                                    ✓ Approve Loan
+                                    <svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Approve Loan
                                 </button>
                                 <button class="btn-reject"
                                         id="rejectBtn"
                                         onclick="submitDecision('rejected')">
-                                    ✗ Reject Application
+                                    <svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                    Reject Application
                                 </button>
                             </div>
                         </div>
@@ -639,7 +674,9 @@
         } catch (err) {
             document.getElementById('pageLoading').innerHTML = `
                 <div style="text-align:center;">
-                    <div style="font-size:24px; margin-bottom:12px;">⚠️</div>
+                    <div style="margin-bottom:16px;">
+                        <svg style="width:48px;height:48px;stroke:#EF4444;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
                     <div style="font-weight:600; color:var(--primary);">
                         Failed to load application
                     </div>
@@ -691,13 +728,25 @@
         const verdict    = app.final_decision || 'Refer';
         const verdictEl  = document.getElementById('aiVerdict');
         const verdictMap = {
-            'Recommend': { cls: 'recommend', icon: '✓', title: 'AI Recommends Approval' },
-            'Reject':    { cls: 'reject',    icon: '✗', title: 'AI Recommends Rejection' },
-            'Refer':     { cls: 'refer',     icon: '⚠', title: 'AI Refers for Manual Review' },
+            'Recommend': {
+                cls: 'recommend',
+                icon: `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#065F46;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`,
+                title: 'AI Recommends Approval'
+            },
+            'Reject': {
+                cls: 'reject',
+                icon: `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,
+                title: 'AI Recommends Rejection'
+            },
+            'Refer': {
+                cls: 'refer',
+                icon: `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+                title: 'AI Refers for Manual Review'
+            },
         };
         const v = verdictMap[verdict] || verdictMap['Refer'];
         verdictEl.className = 'ai-verdict ' + v.cls;
-        document.getElementById('verdictIcon').textContent  = v.icon;
+        document.getElementById('verdictIcon').innerHTML  = v.icon;
         document.getElementById('verdictTitle').textContent = v.title;
         document.getElementById('verdictReason').textContent =
             app.decision_reason || '';
@@ -706,11 +755,17 @@
         const flagList = document.getElementById('flagList');
         if (!app.compliance_flags || app.compliance_flags.length === 0) {
             flagList.innerHTML = `
-                <div class="flag-clean">✓ No NRB compliance violations detected</div>
+                <div class="flag-clean">
+                    <svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:#065F46;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    No NRB compliance violations detected
+                </div>
             `;
         } else {
             flagList.innerHTML = app.compliance_flags.map(flag => `
-                <div class="flag-item">⚠ ${escHtml(flag)}</div>
+                <div class="flag-item">
+                    <svg style="width:16px;height:16px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    ${escHtml(flag)}
+                </div>
             `).join('');
         }
 
@@ -741,8 +796,11 @@
         const banner = document.getElementById('reviewedBanner');
         banner.style.display = 'block';
         banner.className     = `reviewed-banner ${app.status}`;
-        banner.innerHTML     = `
-            ${app.status === 'approved' ? '✓' : '✗'}
+        banner.innerHTML = `
+            ${app.status === 'approved'
+                ? `<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`
+                : `<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:4px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+            }
             This application has been
             <strong>${app.status}</strong>.
             No further action required.
@@ -793,16 +851,16 @@
                 alert(data.detail || 'Failed to submit decision.');
                 approveBtn.disabled  = false;
                 rejectBtn.disabled   = false;
-                approveBtn.innerHTML = '✓ Approve Loan';
-                rejectBtn.innerHTML  = '✗ Reject Application';
+                approveBtn.innerHTML = '<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Approve Loan';
+                rejectBtn.innerHTML  = '<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reject Application';
             }
 
         } catch (err) {
             alert('Cannot connect to server. Please try again.');
             approveBtn.disabled  = false;
             rejectBtn.disabled   = false;
-            approveBtn.innerHTML = '✓ Approve Loan';
-            rejectBtn.innerHTML  = '✗ Reject Application';
+            approveBtn.innerHTML = '<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:white;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg> Approve Loan';
+            rejectBtn.innerHTML  = '<svg style="width:16px;height:16px;display:inline;vertical-align:middle;margin-right:6px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Reject Application';
         }
     }
 
