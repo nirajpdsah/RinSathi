@@ -10,7 +10,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
 from db.session import create_tables
-from api.routes import documents, income, loan
+from api.routes import income, loan
 from config import get_settings
 from agents.score_agent import ScoreAgent
 from routers import auth as auth_router
@@ -36,10 +36,6 @@ async def lifespan(app: FastAPI):
     await create_tables()
     print("Database tables ready (Supabase)")
 
-    # Warm up PaddleOCR — loads models into memory now, not on first request.
-    from utils.ocr import warm_up_ocr
-    await warm_up_ocr()
-
     print("ACLO API ready")
     print("  API docs:        http://127.0.0.1:8000/docs")
     print("  Officer login:   http://127.0.0.1:8000/auth/officer_login.html")
@@ -57,7 +53,7 @@ app = FastAPI(
     description=(
         "Autonomous Credit and Lending Orchestrator — "
         "5-agent AI pipeline for rural Nepal microfinance credit assessment. "
-        "Stack: FastAPI, PostgreSQL (Supabase), PaddleOCR, XGBoost, SHAP."
+        "Stack: FastAPI, PostgreSQL (Supabase), XGBoost, SHAP."
     ),
     version="1.0.0",
     lifespan=lifespan,
@@ -73,7 +69,6 @@ app.add_middleware(
 )
 
 # Register route modules namespaces under /api/v1 cleanly
-app.include_router(documents.router, prefix="/api/v1")
 app.include_router(income.router,    prefix="/api/v1")
 app.include_router(loan.router,      prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1")
@@ -111,11 +106,9 @@ async def root(request: Request):
 
 @app.get("/health", tags=["System"])
 async def health():
-    from utils.ocr import OCR_AVAILABLE
     return {
         "status":   "ok",
         "version":  "1.0.0",
-        "ocr_mode": "paddleocr" if OCR_AVAILABLE else "mock",
         "database": "supabase",
     }
 

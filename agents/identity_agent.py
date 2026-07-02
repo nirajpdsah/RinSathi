@@ -1,7 +1,7 @@
 # agents/identity_agent.py
 #
 # Identity Agent: first agent in the ACLO five-agent pipeline.
-# Replaces the Document Agent (OCR-based approach).
+# Replaces the document-based verification flow.
 #
 # WHAT IT DOES:
 #   1. Accepts a NIN (National Identity Number) from the applicant
@@ -20,7 +20,7 @@
 #   NRB's KYC guidelines recommend NID-based verification for digital
 #   lending. This agent implements exactly that recommendation.
 #
-# DESIGN RULE (inherited from Document Agent):
+# DESIGN RULE:
 #   NEVER raises exceptions. Always returns SharedState.
 #   On any failure, degrade gracefully and set manual_review_required = True.
 #   The Compliance Agent downstream will detect this and add KYC_INCOMPLETE.
@@ -59,7 +59,7 @@ class IdentityAgent:
     """
     Verifies applicant identity and land assets using government databases.
 
-    Replaces DocumentAgent in the five-agent pipeline.
+    Replaces the old document-based verification flow in the five-agent pipeline.
     All downstream agents (Income, Score, Compliance, Decision) are
     completely unaware of this change — SharedState field names unchanged.
 
@@ -171,7 +171,7 @@ class IdentityAgent:
             state.manual_review_required = False
 
         except Exception as e:
-            # Catch-all safety net — same pattern as original Document Agent
+            # Catch-all safety net — same pattern as the older verification flow
             # One agent failure must never crash the entire pipeline
             print(f"IdentityAgent: Unexpected error: {e}")
             return self._fail(state, reason="Unexpected error in Identity Agent")

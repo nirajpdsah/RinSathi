@@ -21,7 +21,7 @@ class DecisionAgent:
     Reads from SharedState:
         compliance_flags  — any NRB violations (overrides everything)
         credit_score      — XGBoost repayment probability (0.0-1.0)
-        manual_review_required — Document Agent quality flag
+        manual_review_required — identity verification quality flag
         monthly_income_npr — used in decision_reason text
         loan_amount_npr   — used in decision_reason text
 

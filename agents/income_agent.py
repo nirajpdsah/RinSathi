@@ -1,7 +1,7 @@
 # agents/income_agent.py
 # Income Agent: second agent in the ACLO five-agent pipeline.
 # Parses income signals from three sources, normalizes them into a
-# MonthlyIncomeEstimate, cross-validates names against Document Agent output,
+# MonthlyIncomeEstimate, cross-validates names against verified identity output,
 # and writes results to SharedState.
 #
 # Design rule: NEVER raises exceptions. Always returns SharedState.
@@ -22,7 +22,7 @@ class IncomeAgent:
     Processes income signals from multiple financial data sources.
 
     Reads from SharedState:
-        extracted_fields  — name from Document Agent for cross-validation
+        extracted_fields  — name from identity verification for cross-validation
 
     Writes to SharedState:
         monthly_income_npr  — raw NPR amount (NEVER scaled — scaling only in Score Agent)
@@ -72,7 +72,7 @@ class IncomeAgent:
             estimate = normalize_to_monthly_estimate(all_signals)
 
             # ── Step 5: Name cross-validation ─────────────────────────────────
-            # Extract the name from Document Agent's output in SharedState
+            # Extract the name from verified identity output in SharedState
             doc_name = None
             if state.extracted_fields and "name" in state.extracted_fields:
                 doc_name = state.extracted_fields["name"].get("value")

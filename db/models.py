@@ -212,7 +212,7 @@ class Document(Base):
     """
     One row per uploaded document.
     One applicant can have multiple documents (citizenship + lalpurja + PAN).
-    The Document Agent fills extracted_fields and doc_confidence after OCR.
+    Identity verification writes extracted_fields and doc_confidence.
     """
     __tablename__ = "documents"
 

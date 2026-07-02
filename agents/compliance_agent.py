@@ -22,7 +22,7 @@ class ComplianceAgent:
         monthly_income_npr  — for loan-to-income ratio check
         income_confidence   — for KYC quality check
         doc_confidence      — for KYC document quality check
-        manual_review_required — direct KYC flag from Document Agent
+        manual_review_required — direct KYC flag from identity verification
         extracted_fields    — for loan_amount and sector
         loan_amount_npr     — the requested loan amount
         sector              — applicant's business sector
@@ -44,7 +44,7 @@ class ComplianceAgent:
             state.compliance_flags = []   # Reset flags at start of compliance run
 
             # ── Check 1: KYC — Document quality ───────────────────────────────
-            # If Document Agent flagged manual review, OCR confidence was too low.
+            # If identity verification flagged manual review, identity confidence was too low.
             # NRB requires verified identity before any credit decision.
             if state.manual_review_required:
                 state.compliance_flags.append("KYC_INCOMPLETE")
@@ -65,7 +65,7 @@ class ComplianceAgent:
             # NRB Unified Directive: loan cannot exceed 75% of asset value.
             # loan_to_asset = loan_amount / estimated_asset_value
             # We estimate asset value from income (simplified for Sprint 3;
-            # full implementation uses Lalpurja land value from Document Agent).
+            # full implementation uses land value from the identity verification flow).
             loan_amount    = state.loan_amount_npr or 0.0
             monthly_income = state.monthly_income_npr or 0.0
 

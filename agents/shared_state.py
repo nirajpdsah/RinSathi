@@ -23,7 +23,7 @@ class SharedState(BaseModel):
     sector:           str         # Business sector (e.g. "agriculture", "retail")
 
     # ── Identity Agent outputs ── None until Identity Agent runs ──────────────
-    # (Replaces Document Agent — same fields preserved for downstream compatibility)
+    # Same field names are preserved for downstream compatibility.
 
     document_verified:        Optional[bool]  = None
     # True if NIN verified successfully against DoNIDCR

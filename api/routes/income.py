@@ -50,7 +50,7 @@ class IncomeAnalyzeResponse(BaseModel):
     description=(
         "Accepts income data from eSewa, remittance records, and cooperative ledger. "
         "Normalises all signals into a MonthlyIncomeEstimate with confidence scoring. "
-        "Cross-validates applicant name against Document Agent output for fraud detection. "
+        "Cross-validates applicant name against verified identity data for fraud detection. "
         "Set use_mock_data=true to generate realistic test data without real records."
     ),
     tags=["Income Agent"],

@@ -1,150 +1,121 @@
-# RinSathi: Autonomous Credit & Lending Orchestrator (ACLO)
+# RinSathi: Autonomous Credit & Lending Orchestrator
 
-[![Tech Stack](https://img.shields.io/badge/Tech%20Stack-FastAPI%20%7C%20PostgreSQL%20%7C%20XGBoost%20%7C%20PaddleOCR-blue)](https://fastapi.tiangolo.com)
+[![Tech Stack](https://img.shields.io/badge/Tech%20Stack-FastAPI%20%7C%20PostgreSQL%20%7C%20XGBoost-blue)](https://fastapi.tiangolo.com)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-green)](https://www.python.org/)
 [![Database](https://img.shields.io/badge/Database-Supabase%20PostgreSQL-orange)](https://supabase.com)
 
-**RinSathi (ऋणसाथी)** is an AI-driven, multi-agent credit underwriting and compliance orchestration pipeline designed specifically for rural and semi-urban microfinance institutions (MFIs) in Nepal. It automates credit risk assessment and compliance checking using a pipeline of five specialized AI agents.
+RinSathi is a FastAPI-based lending orchestration system for Nepalese microfinance workflows. It combines government identity verification, income normalization, risk scoring, compliance checks, and final decisioning in a shared-state pipeline.
 
----
+The current implementation uses NIN-based identity verification instead of document-image extraction. That keeps the pipeline tied to authoritative data sources while preserving the same downstream state contract for scoring and compliance.
 
-## 📌 The Problem RinSathi Solves
-Rural microfinance in Nepal is plagued by:
-1. **High Operational Friction**: Credit officers manually travel to remote villages to collect physical documents (Citizenship Certificates/Nagarikta, Lalpurja land ownership deeds).
-2. **Informal & Unbanked Cash Flows**: Most rural applicants lack formal bank statements or credit histories (CIB reports). Instead, they rely on informal income from farming, remittances, and mobile wallets (eSewa/Khalti).
-3. **Complex Regulatory Overhead**: Nepal Rastra Bank (NRB) mandates strict exposure limits, Loan-to-Asset (LTV) ratio checks, and Anti-Money Laundering (AML) verifications which are prone to human error when done manually.
+## What It Does
 
-RinSathi addresses these challenges by processing unstructured documents and informal cash flow signals through an **Autonomous Multi-Agent Pipeline**, delivering a transparent, compliant, and explainable lending decision in seconds.
-
----
-
-## ⚙️ Core Architecture: The 5-Agent Pipeline
-RinSathi uses a sequential **Shared State Pattern** (built on Pydantic v2) where each agent acts as a functional transformer, appending its insights to the shared state envelope.
+RinSathi routes each loan application through five agents:
 
 ```mermaid
 graph TD
-    A[Raw Document Upload & Metadata] --> Agent1[1. Document Agent]
-    Agent1 -->|OCR & Extraction| Agent2[2. Income Agent]
-    Agent2 -->|Cashflow Analysis| Agent3[3. Score Agent]
-    Agent3 -->|XGBoost & SHAP Explainability| Agent4[4. Compliance Agent]
-    Agent4 -->|NRB Regulatory Audit| Agent5[5. Decision Agent]
-    Agent5 -->|Final Decision & Audit Trail| F[Supabase DB & PDF Report]
-
-    style Agent1 fill:#f9f,stroke:#333,stroke-width:2px
-    style Agent2 fill:#bbf,stroke:#333,stroke-width:2px
-    style Agent3 fill:#bfb,stroke:#333,stroke-width:2px
-    style Agent4 fill:#fbb,stroke:#333,stroke-width:2px
-    style Agent5 fill:#dff,stroke:#333,stroke-width:2px
+    A[Applicant NIN + Application Data] --> B[Identity Agent]
+    B --> C[Income Agent]
+    C --> D[Score Agent]
+    D --> E[Compliance Agent]
+    E --> F[Decision Agent]
+    F --> G[Audit Trail + Database]
 ```
 
-### 1. Document Agent (KYC & OCR)
-* **Responsibility**: Digitizes and verifies government-issued identification documents.
-* **Core Tech**: **PaddleOCR** (optimized for multilingual text) combined with **OpenCV** image preprocessing (grayscale, adaptive Gaussian thresholding, and denoising).
-* **Key Features**: Extracts fields (Name, Citizenship Number, Issue District, Issue Date) and calculates a field-level confidence score. Documents with confidence below a threshold (e.g., `0.70`) are flagged for manual human review.
+The identity step verifies the applicant against government sources and populates shared state with verified fields and land-asset context. The income agent normalizes cashflow data, the score agent predicts repayment likelihood, the compliance agent applies NRB-style guardrails, and the decision agent produces the final verdict.
 
-### 2. Income Agent (Cashflow Analysis)
-* **Responsibility**: Estimates normalized monthly income from informal and unstructured digital cashflows.
-* **Key Features**: Aggregates transactions from mobile wallet statements (e.g., eSewa, Khalti) and remittance receipts, categorizing incoming streams and assigning a confidence score based on the consistency and age of the data.
+## Key Modules
 
-### 3. Score Agent (Predictive Underwriting)
-* **Responsibility**: Predicts default probability.
-* **Core Tech**: **XGBoost Classifier** + **SHAP (SHapley Additive exPlanations)**.
-* **Key Features**: Feeds normalized financial inputs into an XGBoost model. Computes a credit score and explains the prediction by translating raw SHAP values into top 5 human-readable sentences for the loan officer (e.g., *"Monthly income of NPR 25,000 increased repayment confidence by 31%"*).
+`agents/identity_agent.py` verifies identity and land data from the mock government APIs.
+`agents/income_agent.py` combines income sources into a normalized monthly estimate.
+`agents/score_agent.py` generates the repayment score and SHAP-based explanations.
+`agents/compliance_agent.py` applies policy thresholds and risk rules.
+`agents/decision_agent.py` converts the pipeline output into Recommend, Refer, or Reject.
 
-### 4. Compliance Agent (Regulatory Guardrails)
-* **Responsibility**: Ensures compliance with Nepal Rastra Bank (NRB) guidelines and internal policy parameters.
-* **Key Features**: Evaluates constraints including the Loan-to-Asset ratio (max `75%`), transaction caps (AML limit of NPR 1,000,000), and agricultural sector limits (NPR 500,000 cap). Compliance violations instantly override the machine learning score, forcing a "Refer" or "Reject" status.
+`api/routes/loan.py` is the main application endpoint.
+`api/routes/income.py` exposes the income analysis route.
+`routers/auth.py`, `routers/client.py`, `routers/officer.py`, and `routers/mock_gov.py` support the rest of the app surface.
 
-### 5. Decision Agent (Final Orchestration & Auditing)
-* **Responsibility**: Consolidates scores and flags into a final verdict (`Approve`, `Reject`, or `Refer` for manual review) and outputs an immutable PDF audit trail.
-* **Key Features**: Resolves conflicts between ML predictions and compliance checks. If any compliance rules are violated or the Document Agent flagged low confidence, it defaults to a safe state.
+## Technology Stack
 
----
+FastAPI powers the API layer.
+PostgreSQL via Supabase stores applicants, documents, and audit logs.
+XGBoost and SHAP provide the underwriting model and explanations.
+Pydantic v2 defines the shared state and API schemas.
 
-## 🛠️ Technology Stack
-* **Web Framework**: FastAPI (Async pythonic framework, automated OpenAPI documentation via Swagger)
-* **Database & ORM**: PostgreSQL (Supabase) with SQLAlchemy Async Engine & Alembic for database migrations
-* **OCR & Computer Vision**: OpenCV (image processing), NumPy, PaddleOCR (lightweight deep learning OCR models)
-* **Machine Learning & Explainability**: XGBoost (for tabular risk classification), SHAP (for local explainable AI feature attribution)
-* **Data Validation**: Pydantic v2 (strict type-safe shared state models)
+## Project Layout
 
----
-
-## 📁 Repository Structure
 ```bash
 RinSathi/
-├── agents/                  # Multi-Agent Pipeline
-│   ├── document_agent.py    # OCR, validation & field extraction
-│   └── shared_state.py      # The single data contract schema (Pydantic v2)
-├── api/                     # HTTP API Layer
-│   ├── routes/              # Route handlers
-│   │   └── documents.py     # Document upload & validation endpoints
-│   └── schemas.py           # Request/Response schemas (API contracts)
-├── db/                      # Database Layer
-│   ├── migration/           # Alembic database migrations
-│   ├── models.py            # SQLAlchemy models (PostgreSQL schemas)
-│   └── session.py           # Async Supabase PostgreSQL connection
-├── utils/                   # Shared Utilities
-│   └── ocr.py               # OpenCV preprocessing and PaddleOCR integrations
-├── config.py                # 12-Factor app configuration (from env)
-├── main.py                  # FastAPI Entry point
-├── requirements.txt         # Project dependencies
-└── alembic.ini              # Database migration configuration
+├── agents/              # Multi-agent pipeline logic
+├── api/                 # API schemas and routes
+├── core/                # Security helpers
+├── db/                  # SQLAlchemy models and session setup
+├── frontend/            # Static HTML, CSS, and browser assets
+├── ml/                  # Training script and saved model
+├── routers/             # Web route modules
+├── services/            # Application services
+├── tests/               # Validation and regression scripts
+├── utils/               # Income parsing, SHAP formatting, helpers
+├── config.py            # Environment-driven configuration
+├── main.py              # FastAPI entrypoint
+├── requirements.txt     # Python dependencies
+└── alembic.ini          # Alembic configuration
 ```
 
----
-
-## 🚀 Getting Started
+## Quick Start
 
 ### 1. Prerequisites
-Ensure you have Python 3.10+ installed.
 
-### 2. Installation
-Clone the repository and set up a virtual environment:
+Install Python 3.10 or newer.
+
+### 2. Create a Virtual Environment
+
 ```powershell
-# Clone the repository
-git clone <repo-url>
-cd RinSathi
-
-# Create a virtual environment
 python -m venv venv
-
-# Activate virtual environment
-.\venv\Scripts\Activate.ps1   # Windows (PowerShell)
-
-# Install dependencies
+.\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 3. Environment Configuration
-Create a `.env` file in the root directory:
+### 3. Configure Environment Variables
+
+Create a `.env` file in the project root:
+
 ```env
 DATABASE_URL=postgresql://<user>:<password>@<host>:<port>/<dbname>
 SECRET_KEY=your-jwt-signing-secret
+APPROVE_THRESHOLD=0.65
+REFER_THRESHOLD=0.40
+MIN_KYC_CONFIDENCE=0.70
+MAX_LOAN_TO_ASSET=0.75
+AML_TXN_LIMIT_NPR=1000000
+AGRI_SECTOR_LIMIT_NPR=500000
 ```
 
-### 4. Running Database Migrations
-Initialize and upgrade your Supabase database schema using Alembic:
+### 4. Run Migrations
+
 ```bash
 alembic upgrade head
 ```
 
-### 5. Launching the API
-Start the FastAPI development server:
+### 5. Start the App
+
 ```bash
 uvicorn main:app --reload
 ```
-Once started, you can access:
-* **Interactive API documentation (Swagger)**: [http://localhost:8000/docs](http://localhost:8000/docs)
-* **Alternative documentation (ReDoc)**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
----
+Open `http://localhost:8000/docs` for Swagger UI and `http://localhost:8000/redoc` for ReDoc.
 
-## 📊 MFI Microfinance Specific Configuration (Nepal)
-Key parameters are loaded dynamically from `config.py` and can be adjusted in the `.env` file to comply with new NRB circulars:
-* `APPROVE_THRESHOLD`: Default `0.65` (Credit score probability threshold for automatic approval)
-* `REFER_THRESHOLD`: Default `0.40` (Below this, applicant is automatically rejected; above is referred)
-* `MIN_KYC_CONFIDENCE`: Default `0.70` (Minimum acceptable OCR reliability before triggering manual review)
-* `MAX_LOAN_TO_ASSET`: Default `0.75` (NRB regulatory cap on microfinance collateral loans)
-* `AML_TXN_LIMIT_NPR`: Default `1,000,000` (NRB Anti-Money Laundering transaction tracking threshold)
-* `AGRI_SECTOR_LIMIT_NPR`: Default `500,000` (Exposure cap on agricultural loans)
+## Main Endpoints
+
+`GET /health` returns the service health summary.
+`POST /api/v1/loan/apply` runs the full underwriting pipeline.
+`POST /api/v1/income/analyze` analyzes income signals independently.
+
+## Configuration Notes
+
+`APPROVE_THRESHOLD` and `REFER_THRESHOLD` control the score-based decision band.
+`MIN_KYC_CONFIDENCE` governs when identity quality triggers manual review.
+`MAX_LOAN_TO_ASSET`, `AML_TXN_LIMIT_NPR`, and `AGRI_SECTOR_LIMIT_NPR` enforce compliance rules.
+
+If you need the retired document-image workflow, it has been intentionally removed from this codebase and is no longer part of the documented flow.

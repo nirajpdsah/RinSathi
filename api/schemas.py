@@ -15,17 +15,6 @@ class FieldResult(BaseModel):
     confidence: float              # OCR confidence for this field (0.0 – 1.0)
 
 
-class DocumentUploadResponse(BaseModel):
-    # Response schema for POST /document/upload
-    applicant_id:           uuid.UUID             # Unique ID for tracking
-    document_verified:      bool                  # Passed quality check?
-    extracted_fields:       dict[str, FieldResult]# All extracted fields
-    doc_confidence:         float                 # Overall scan quality (0.0 – 1.0)
-    manual_review_required: bool                  # True if quality too low
-    processing_time_ms:     int                   # How long OCR took in milliseconds
-    ocr_mode:               str                   # "paddleocr" or "mock" (for transparency)
-
-
 class ErrorResponse(BaseModel):
     # Standard error response shape — consistent across all endpoints
     detail:     str               # Human-readable error message

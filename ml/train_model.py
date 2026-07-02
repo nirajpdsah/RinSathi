@@ -32,7 +32,7 @@ def generate_synthetic_data(num_samples=1000):
     # Simulate the Income Agent's confidence score (ranging from 40% up to 100% reliability)
     income_confidence = np.random.uniform(0.4, 1.0, num_samples)
     
-    # Simulate the Document Agent's OCR identity verification confidence (ranging from 50% to 100%)
+    # Simulate identity verification confidence (ranging from 50% to 100%)
     doc_confidence = np.random.uniform(0.5, 1.0, num_samples)
     
     # Calculate a logical mathematical probability of default based on these inputs
