@@ -37,19 +37,39 @@ class ClientApplicationSummary(BaseModel):
 
 
 class ClientApplicationDetail(BaseModel):
-    """Full detail of one application — shown on status page."""
-    id:              uuid.UUID
-    full_name:       str
-    loan_amount_npr: float
-    sector:          str
-    status:          str
-    submitted_at:    datetime
-    reviewed_at:     Optional[datetime] = None
-    officer_remarks: Optional[str]      = None
-    credit_score:    Optional[float]    = None
-    final_decision:  Optional[str]      = None
-    decision_reason: Optional[str]      = None
-    compliance_flags: list[str]         = []
+    id:                 uuid.UUID
+    full_name:          str
+    citizenship_no:     Optional[str]
+    loan_amount_npr:    float
+    sector:             str
+    status:             str
+    submitted_at:       datetime
+    reviewed_at:        Optional[datetime]
+    officer_remarks:    Optional[str]
+
+    # AI decision
+    credit_score:       Optional[float]  = None
+    compliance_flags:   list[str]        = []
+    final_decision:     Optional[str]    = None
+    decision_reason:    Optional[str]    = None
+    pipeline_time_ms:   Optional[int]    = None
+    shap_explanation:   Optional[list]   = None
+
+    # Full identity — NEW
+    date_of_birth:      Optional[str]    = None
+    sex:                Optional[str]    = None
+    permanent_address:  Optional[str]    = None
+    nin:                Optional[str]    = None
+
+    # Full asset detail — NEW
+    total_land_ropani:  Optional[int]    = None
+    total_land_aana:    Optional[int]    = None
+    land_parcels_count: Optional[int]    = None
+
+    # Full income detail — NEW
+    monthly_income_npr: Optional[float]  = None
+    income_confidence:  Optional[float]  = None
+    income_sources:     list[str]        = []
 
     class Config:
         from_attributes = True
@@ -127,16 +147,29 @@ async def get_my_application_detail(
     pipeline_data = audit.details if audit and audit.details else {}
 
     return ClientApplicationDetail(
-        id=               applicant.id,
-        full_name=        applicant.full_name,
-        loan_amount_npr=  applicant.loan_amount_npr,
-        sector=           applicant.sector,
-        status=           applicant.status.value,
-        submitted_at=     applicant.created_at,
-        reviewed_at=      applicant.reviewed_at,
-        officer_remarks=  applicant.officer_remarks,
-        credit_score=     pipeline_data.get("credit_score"),
-        final_decision=   pipeline_data.get("final_decision"),
-        decision_reason=  pipeline_data.get("decision_reason"),
-        compliance_flags= pipeline_data.get("compliance_flags", []),
-    )
+    id=                 applicant.id,
+    full_name=          applicant.full_name,
+    citizenship_no=     applicant.citizenship_no,
+    loan_amount_npr=    applicant.loan_amount_npr,
+    sector=             applicant.sector,
+    status=             applicant.status.value,
+    submitted_at=       applicant.created_at,
+    reviewed_at=        applicant.reviewed_at,
+    officer_remarks=    applicant.officer_remarks,
+    credit_score=       pipeline_data.get("credit_score"),
+    compliance_flags=   pipeline_data.get("compliance_flags", []),
+    final_decision=     pipeline_data.get("final_decision"),
+    decision_reason=    pipeline_data.get("decision_reason"),
+    pipeline_time_ms=   pipeline_data.get("pipeline_time_ms"),
+    shap_explanation=   pipeline_data.get("shap_explanation"),
+    date_of_birth=      pipeline_data.get("date_of_birth"),
+    sex=                pipeline_data.get("sex"),
+    permanent_address=  pipeline_data.get("permanent_address"),
+    nin=                pipeline_data.get("nin"),
+    total_land_ropani=  pipeline_data.get("total_land_ropani"),
+    total_land_aana=    pipeline_data.get("total_land_aana"),
+    land_parcels_count= pipeline_data.get("land_parcels"),
+    monthly_income_npr= pipeline_data.get("monthly_income_npr"),
+    income_confidence=  pipeline_data.get("income_confidence"),
+    income_sources=     pipeline_data.get("income_sources", []),
+)

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<!--
+    frontend/templates/client/status.html
+
+    Client Application Detail Page — RinSathi ACLO
+    The "receipt" page — full depth view of ONE application.
+
+    On load:
+      1. guard.js verifies JWT and role = "client"
+      2. Reads application ID from URL: ?id={uuid}
+      3. Fetches full detail from GET /api/v1/client/applications/{id}
+      4. Renders every verified field — identity, assets, income, AI, officer
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Detail — RinSathi</title>
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+        .navbar {
+            background:    var(--primary);
+            border-bottom: 3px solid var(--accent);
+            padding:       0 32px;
+            height:        64px;
+            display:       flex;
+            align-items:   center;
+            justify-content: space-between;
+        }
+        .navbar-brand { font-size: 22px; font-weight: 700; color: white; }
+        .navbar-brand span { color: var(--accent); }
+        .navbar-back {
+            background: none; border: none;
+            color: rgba(255,255,255,0.75);
+            font-size: 14px; cursor: pointer; padding: 0;
+        }
+        .navbar-back:hover { color: white; }
+
+        .page-body { max-width: 760px; margin: 0 auto; padding: 36px 24px 60px; }
+
+        .section-card {
+            background: white; border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+            margin-bottom: 20px; overflow: hidden;
+        }
+        .section-header {
+            padding: 16px 24px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 10px;
+        }
+        .section-icon {
+            width: 32px; height: 32px; border-radius: 8px;
+            background: rgba(15,32,68,0.07);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+        }
+        .section-title { font-size: 15px; font-weight: 700; color: var(--primary); }
+        .section-body { padding: 20px 24px; }
+
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .detail-label {
+            font-size: 11px; font-weight: 600; color: var(--subtle);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;
+        }
+        .detail-value { font-size: 15px; font-weight: 600; color: var(--text); }
+
+        .status-hero {
+            text-align: center; padding: 32px 24px;
+            border-radius: 14px; margin-bottom: 24px;
+        }
+        .status-hero.pending  { background: #FEF3C7; }
+        .status-hero.approved { background: #DCFCE7; }
+        .status-hero.rejected { background: #FEE2E2; }
+        .status-hero.referred { background: #FEF9C3; }
+
+        .status-hero-icon { font-size: 40px; margin-bottom: 8px; }
+        .status-hero-title { font-size: 20px; font-weight: 700; }
+        .status-hero-sub   { font-size: 13px; opacity: 0.75; margin-top: 4px; }
+
+        .parcel-row {
+            display: flex; justify-content: space-between;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .parcel-row:last-child { border-bottom: none; }
+
+        .source-pill {
+            display: inline-block; padding: 4px 12px; border-radius: 999px;
+            background: #E6F1FB; color: #0C447C;
+            font-size: 12px; font-weight: 600; margin: 3px 4px 3px 0;
+        }
+
+        .remarks-box {
+            background: #FAFAFA; border-left: 3px solid var(--accent);
+            padding: 14px 16px; border-radius: 6px;
+            font-size: 14px; line-height: 1.6; margin-top: 8px;
+        }
+
+        .score-bar-track {
+            height: 10px; background: var(--border); border-radius: 999px;
+            overflow: hidden; margin: 10px 0 6px;
+        }
+        .score-bar-fill { height: 100%; border-radius: 999px; }
+        .score-bar-fill.high   { background: var(--success); }
+        .score-bar-fill.medium { background: var(--warning); }
+        .score-bar-fill.low    { background: var(--danger); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar">
+    <div style="display:flex; align-items:center; gap:20px;">
+        <div class="navbar-brand">Rin<span>Sathi</span></div>
+        <button class="navbar-back"
+                onclick="window.location.href='/templates/client/dashboard.html'">
+            ← Back to Dashboard
+        </button>
+    </div>
+</nav>
+
+<div class="page-body" id="pageBody">
+    <div style="text-align:center; padding:80px 0; color:var(--subtle);">
+        Loading your application...
+    </div>
+</div>
+
+<script src="/assets/js/auth.js"></script>
+<script src="/assets/js/guard.js"></script>
+<script>
+    guardPage('client');
+
+    const params = new URLSearchParams(window.location.search);
+    const appId  = params.get('id');
+    if (!appId) window.location.href = '/templates/client/dashboard.html';
+
+    async function load() {
+        try {
+            const res = await apiFetch(`/client/applications/${appId}`);
+            if (!res.ok) throw new Error('Application not found.');
+            render(await res.json());
+        } catch (err) {
+            document.getElementById('pageBody').innerHTML = `
+                <div style="text-align:center; padding:60px 0;">
+                    <div style="font-size:40px;">⚠️</div>
+                    <div style="font-weight:700; color:var(--primary); margin-top:12px;">
+                        ${err.message}
+                    </div>
+                </div>`;
+        }
+    }
+
+    function render(app) {
+        const statusMap = {
+            pending:  { icon: '⏳', title: 'Under Review',
+                        sub: 'An officer is reviewing your application.' },
+            approved: { icon: '✓',  title: 'Approved',
+                        sub: 'Your loan has been approved.' },
+            rejected: { icon: '✗',  title: 'Not Approved',
+                        sub: 'Your application was not approved this time.' },
+            referred: { icon: '⚠',  title: 'Under Manual Review',
+                        sub: 'Your application needs closer review by an officer.' },
+        };
+        const s = statusMap[app.status] || statusMap.pending;
+
+        const scoreClass = app.credit_score >= 0.65 ? 'high'
+                          : app.credit_score >= 0.40 ? 'medium' : 'low';
+
+        const sourcesHtml = (app.income_sources || [])
+            .map(src => `<span class="source-pill">${capitalize(src)}</span>`)
+            .join('') || '<span style="color:var(--subtle); font-size:13px;">Not recorded</span>';
+
+        document.getElementById('pageBody').innerHTML = `
+
+            <div class="status-hero ${app.status}">
+                <div class="status-hero-icon">${s.icon}</div>
+                <div class="status-hero-title">${s.title}</div>
+                <div class="status-hero-sub">${s.sub}</div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">👤</div>
+                    <div class="section-title">Your Verified Identity</div>
+                </div>
+                <div class="section-body">
+                    <div class="detail-grid">
+                        <div><div class="detail-label">Full Name</div>
+                             <div class="detail-value">${esc(app.full_name)}</div></div>
+                        <div><div class="detail-label">NIN</div>
+                             <div class="detail-value">${esc(app.nin || '—')}</div></div>
+                        <div><div class="detail-label">Citizenship No.</div>
+                             <div class="detail-value">${esc(app.citizenship_no || '—')}</div></div>
+                        <div><div class="detail-label">Date of Birth</div>
+                             <div class="detail-value">${esc(app.date_of_birth || '—')}</div></div>
+                        <div><div class="detail-label">Sex</div>
+                             <div class="detail-value">${esc(app.sex || '—')}</div></div>
+                        <div><div class="detail-label">Permanent Address</div>
+                             <div class="detail-value">${esc(app.permanent_address || '—')}</div></div>
+                    </div>
+                    <div style="font-size:12px; color:var(--subtle); margin-top:14px;">
+                        Verified against DoNIDCR national identity registry.
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">🌾</div>
+                    <div class="section-title">Your Land Assets</div>
+                </div>
+                <div class="section-body">
+                    <div class="detail-grid">
+                        <div><div class="detail-label">Total Parcels</div>
+                             <div class="detail-value">${app.land_parcels_count ?? 0}</div></div>
+                        <div><div class="detail-label">Total Area</div>
+                             <div class="detail-value">
+                                 ${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana
+                             </div></div>
+                    </div>
+                    <div style="font-size:12px; color:var(--subtle); margin-top:14px;">
+                        Verified against NeLIS land registry using your citizenship number.
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">💰</div>
+                    <div class="section-title">Loan &amp; Income</div>
+                </div>
+                <div class="section-body">
+                    <div class="detail-grid" style="margin-bottom:16px;">
+                        <div><div class="detail-label">Requested Amount</div>
+                             <div class="detail-value">NPR ${formatNPR(app.loan_amount_npr)}</div></div>
+                        <div><div class="detail-label">Sector</div>
+                             <div class="detail-value">${capitalize(app.sector)}</div></div>
+                        <div><div class="detail-label">Monthly Income</div>
+                             <div class="detail-value">
+                                 ${app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—'}
+                             </div></div>
+                        <div><div class="detail-label">Income Confidence</div>
+                             <div class="detail-value">
+                                 ${app.income_confidence ? (app.income_confidence*100).toFixed(0)+'%' : '—'}
+                             </div></div>
+                    </div>
+                    <div class="detail-label">Income Sources</div>
+                    <div style="margin-top:6px;">${sourcesHtml}</div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">🤖</div>
+                    <div class="section-title">AI Credit Assessment</div>
+                </div>
+                <div class="section-body">
+                    <div style="font-size:12px; font-weight:600; color:var(--subtle);
+                                text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">
+                        Repayment Probability Score
+                    </div>
+                    <div style="font-size:28px; font-weight:800;" class="score-${scoreClass}">
+                        ${app.credit_score !== null && app.credit_score !== undefined
+                            ? (app.credit_score*100).toFixed(1)+'%' : 'N/A'}
+                    </div>
+                    <div class="score-bar-track">
+                        <div class="score-bar-fill ${scoreClass}"
+                             style="width:${(app.credit_score||0)*100}%"></div>
+                    </div>
+                    <div style="font-size:13px; color:var(--text); margin-top:12px; line-height:1.6;">
+                        ${esc(app.decision_reason || '')}
+                    </div>
+                </div>
+            </div>
+
+            ${app.officer_remarks ? `
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">📝</div>
+                    <div class="section-title">Officer's Decision</div>
+                </div>
+                <div class="section-body">
+                    <span class="badge-${app.status}">${capitalize(app.status)}</span>
+                    <div class="remarks-box">${esc(app.officer_remarks)}</div>
+                    <div style="font-size:12px; color:var(--subtle); margin-top:10px;">
+                        Reviewed ${app.reviewed_at ? formatDate(app.reviewed_at) : ''}
+                    </div>
+                </div>
+            </div>` : ''}
+
+        `;
+    }
+
+    function formatNPR(n) { return new Intl.NumberFormat('ne-NP').format(Math.round(n)); }
+    function formatDate(iso) { return new Date(iso).toLocaleDateString('en-GB',
+        {day:'2-digit', month:'short', year:'numeric'}); }
+    function capitalize(s) { return s ? s.charAt(0).toUpperCase()+s.slice(1) : ''; }
+    function esc(s) { const d=document.createElement('div'); d.textContent=s??''; return d.innerHTML; }
+
+    load();
+</script>
+
+</body>
+</html>

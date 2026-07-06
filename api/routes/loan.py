@@ -301,19 +301,40 @@ async def apply_for_loan(
 
         # Write to audit log — NRB requires every pipeline run to be logged
         audit = AuditLog(
-            applicant_id = state.applicant_id,
-            event_type   = "PIPELINE_COMPLETED",
-            agent_name   = "pipeline",
-            details      = {
-                "final_decision":     state.final_decision,
-                "credit_score":       state.credit_score,
-                "compliance_flags":   state.compliance_flags,
-                "pipeline_time_ms":   pipeline_ms,
-                "nin":                nin.strip().upper(),
-                "land_parcels":       state.total_land_parcels,
-            },
-            performed_by = str(user_id),
-        )
+        applicant_id = state.applicant_id,
+        event_type   = "PIPELINE_COMPLETED",
+        agent_name   = "pipeline",
+        details      = {
+            # Decision summary
+            "final_decision":     state.final_decision,
+            "decision_reason":    state.decision_reason,
+            "credit_score":       state.credit_score,
+            "compliance_flags":   state.compliance_flags,
+            "pipeline_time_ms":   pipeline_ms,
+
+            # Full identity record (from DoNIDCR)
+            "nin":                nin.strip().upper(),
+            "verified_full_name": state.verified_full_name,
+            "date_of_birth":      state.date_of_birth,
+            "sex":                state.sex,
+            "permanent_address":  state.permanent_address,
+            "citizenship_no":     state.citizenship_no,
+
+            # Full asset record (from NeLIS)
+            "land_parcels":       state.total_land_parcels,
+            "total_land_ropani":  state.total_land_ropani,
+            "total_land_aana":    state.total_land_aana,
+
+            # Income breakdown
+            "monthly_income_npr": state.monthly_income_npr,
+            "income_confidence":  state.income_confidence,
+            "income_sources":     state.income_sources,
+
+            # AI explainability
+            "shap_explanation":   state.shap_explanation,
+        },
+        performed_by = str(user_id),
+    )
         db.add(audit)
 
         await db.commit()

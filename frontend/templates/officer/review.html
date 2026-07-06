@@ -487,6 +487,76 @@
                     </div>
                 </div>
 
+                <!-- Full Identity Detail — NEW -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">🪪</div>
+                        <div class="section-title">Verified Identity Record (DoNIDCR)</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">NIN</div>
+                                <div class="detail-value" id="detailNin">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Date of Birth</div>
+                                <div class="detail-value" id="detailDob">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Sex</div>
+                                <div class="detail-value" id="detailSex">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Permanent Address</div>
+                                <div class="detail-value" id="detailAddress">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Land Asset Detail — NEW -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">🌾</div>
+                        <div class="section-title">Land Asset Record (NeLIS)</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Total Parcels</div>
+                                <div class="detail-value" id="detailParcels">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Total Land Area</div>
+                                <div class="detail-value" id="detailLandArea">—</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Income Breakdown — NEW -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">💰</div>
+                        <div class="section-title">Income Assessment</div>
+                    </div>
+                    <div class="section-body">
+                        <div class="detail-grid" style="margin-bottom:14px;">
+                            <div class="detail-item">
+                                <div class="detail-label">Monthly Income</div>
+                                <div class="detail-value" id="detailIncome">—</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Income Confidence</div>
+                                <div class="detail-value" id="detailIncomeConf">—</div>
+                            </div>
+                        </div>
+                        <div class="detail-label">Income Sources</div>
+                        <div style="margin-top:6px;" id="detailIncomeSources">—</div>
+                    </div>
+                </div>
+
                 <!-- AI Credit Score -->
                 <div class="section-card">
                     <div class="section-header">
@@ -708,6 +778,33 @@
         document.getElementById('appDate').textContent =
             formatDate(app.submitted_at);
         document.getElementById('appId').textContent = app.id;
+
+        // Full identity fields — NEW
+        document.getElementById('detailNin').textContent = app.nin || '—';
+        document.getElementById('detailDob').textContent  = app.date_of_birth || '—';
+        document.getElementById('detailSex').textContent  = app.sex || '—';
+        document.getElementById('detailAddress').textContent = app.permanent_address || '—';
+
+        // Land asset fields — NEW
+        document.getElementById('detailParcels').textContent =
+            app.land_parcels_count ?? 0;
+        document.getElementById('detailLandArea').textContent =
+            `${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana`;
+
+        // Income breakdown — NEW
+        document.getElementById('detailIncome').textContent =
+            app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—';
+        document.getElementById('detailIncomeConf').textContent =
+            app.income_confidence ? (app.income_confidence * 100).toFixed(0) + '%' : '—';
+
+        const sources = app.income_sources || [];
+        document.getElementById('detailIncomeSources').innerHTML = sources.length
+            ? sources.map(s =>
+                `<span style="display:inline-block; padding:4px 12px; border-radius:999px;
+                        background:#E6F1FB; color:#0C447C; font-size:12px; font-weight:600;
+                        margin:3px 4px 3px 0;">${capitalize(s)}</span>`
+            ).join('')
+            : '<span style="color:var(--subtle); font-size:13px;">Not recorded</span>';
 
         // Credit score
         const score    = app.credit_score;
