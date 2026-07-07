@@ -648,6 +648,10 @@
                         </div>
                     </div>
                     <div class="decision-body" id="decisionBody">
+                        <button class="btn-primary" style="background:var(--primary); margin-bottom:16px;"
+                                onclick="downloadPDF()">
+                                ⬇ Download Application PDF
+                        </button>
 
                         <!-- Already reviewed banner (shown if status is final) -->
                         <div id="reviewedBanner" style="display:none"></div>
@@ -902,6 +906,17 @@
             <strong>${app.status}</strong>.
             No further action required.
         `;
+    }
+
+    async function downloadPDF() {
+    const token = getToken();
+    const url = `${API_BASE}/officer/applications/${appId}/pdf`;
+    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `RinSathi_Application_${appId.slice(0,8)}.pdf`;
+    a.click();
     }
 
     // ── Submit officer decision ───────────────────────────────────────────────

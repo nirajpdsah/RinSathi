@@ -16,13 +16,35 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime, timezone
 import uuid
-
 from db.session  import get_db
 from db.models   import Applicant, LoanStatus, AuditLog, User
 from core.security import require_role
+from fastapi.responses import StreamingResponse
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import (
+    SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, HRFlowable
+)
+import io
+from datetime import timedelta
 
 router = APIRouter(prefix="/officer", tags=["Officer Dashboard"])
 
+NPT_OFFSET = timedelta(hours=5, minutes=45)
+
+def to_npt(dt):
+    """
+    Converts a UTC-aware datetime into Nepal Standard Time for display.
+    
+    We only ever call this at the moment of PRESENTING a timestamp
+    to a human — never when storing or comparing timestamps internally.
+    The database and all internal logic continue to use UTC exclusively.
+    """
+    if dt is None:
+        return None
+    return dt + NPT_OFFSET
 
 # ── Schemas ────────────────────────────────────────────────────────────────────
 
@@ -281,3 +303,169 @@ async def submit_decision(
         "decision":       request.decision,
         "reviewed_at":    applicant.reviewed_at.isoformat(),
     }
+@router.get("/applications/{application_id}/pdf")
+async def download_application_pdf(
+    application_id: uuid.UUID,
+    payload: dict    = Depends(require_role("officer")),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Generates a downloadable PDF of the complete loan application —
+    identity, assets, income, AI assessment, and officer decision.
+
+    Think of this as the digital equivalent of a physical loan file
+    an officer would staple together and archive. Every verified
+    fact from DoNIDCR, NeLIS, and the AI pipeline is laid out in
+    one document that can be printed, signed, and filed for audit.
+    """
+    # ── Fetch the applicant record ────────────────────────────────────────────
+    result = await db.execute(
+        select(Applicant).where(Applicant.id == application_id)
+    )
+    applicant = result.scalar_one_or_none()
+    if not applicant:
+        raise HTTPException(status_code=404, detail="Application not found.")
+
+    # ── Fetch the AI pipeline output from the audit log ───────────────────────
+    audit_result = await db.execute(
+        select(AuditLog)
+        .where(AuditLog.applicant_id == application_id)
+        .where(AuditLog.event_type   == "PIPELINE_COMPLETED")
+    )
+    audit = audit_result.scalar_one_or_none()
+    d = audit.details if audit and audit.details else {}
+
+    # ── Build the PDF in memory ────────────────────────────────────────────────
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=A4,
+        topMargin=18*mm, bottomMargin=18*mm,
+        leftMargin=18*mm, rightMargin=18*mm,
+    )
+    styles = getSampleStyleSheet()
+
+    navy   = colors.HexColor("#0F2044")
+    gold   = colors.HexColor("#F5A623")
+    grey   = colors.HexColor("#6B7280")
+
+    title_style = ParagraphStyle(
+        "TitleStyle", parent=styles["Title"],
+        textColor=navy, fontSize=20, spaceAfter=2,
+    )
+    subtitle_style = ParagraphStyle(
+        "SubtitleStyle", parent=styles["Normal"],
+        textColor=grey, fontSize=10, spaceAfter=14,
+    )
+    section_style = ParagraphStyle(
+        "SectionStyle", parent=styles["Heading2"],
+        textColor=navy, fontSize=13, spaceBefore=16, spaceAfter=6,
+    )
+    body_style = ParagraphStyle(
+        "BodyStyle", parent=styles["Normal"], fontSize=10, leading=15,
+    )
+
+    story = []
+
+    # ── Header ──────────────────────────────────────────────────────────────
+    story.append(Paragraph("RinSathi — Loan Application Form", title_style))
+    story.append(Paragraph(
+        f"Application ID: {applicant.id} &nbsp;&nbsp;|&nbsp;&nbsp; "
+        f"Submitted: {to_npt(applicant.created_at).strftime('%d %b %Y, %H:%M')} NPT",
+        subtitle_style
+    ))
+    story.append(HRFlowable(width="100%", color=gold, thickness=2))
+
+    def section_table(rows):
+        """Two-column label/value table styled consistently across sections."""
+        t = Table(rows, colWidths=[55*mm, 115*mm])
+        t.setStyle(TableStyle([
+            ("FONTSIZE",     (0,0), (-1,-1), 10),
+            ("TEXTCOLOR",    (0,0), (0,-1),  grey),
+            ("FONTNAME",     (0,0), (0,-1),  "Helvetica"),
+            ("FONTNAME",     (1,0), (1,-1),  "Helvetica-Bold"),
+            ("BOTTOMPADDING",(0,0), (-1,-1), 6),
+            ("TOPPADDING",   (0,0), (-1,-1), 6),
+            ("LINEBELOW",    (0,0), (-1,-1), 0.5, colors.HexColor("#E5E7EB")),
+        ]))
+        return t
+
+    # ── Section A — Identity ────────────────────────────────────────────────
+    story.append(Paragraph("A. Applicant Identity (Verified via DoNIDCR)", section_style))
+    story.append(section_table([
+        ["Full Name",           applicant.full_name or "—"],
+        ["NIN",                 d.get("nin") or "—"],
+        ["Citizenship No.",     applicant.citizenship_no or "—"],
+        ["Date of Birth",       d.get("date_of_birth") or "—"],
+        ["Sex",                 d.get("sex") or "—"],
+        ["Permanent Address",   d.get("permanent_address") or "—"],
+    ]))
+
+    # ── Section B — Assets ──────────────────────────────────────────────────
+    story.append(Paragraph("B. Asset Verification (Verified via NeLIS)", section_style))
+    story.append(section_table([
+        ["Total Land Parcels",  str(d.get("land_parcels", 0))],
+        ["Total Land Area",
+         f"{d.get('total_land_ropani', 0)} Ropani {d.get('total_land_aana', 0)} Aana"],
+    ]))
+
+    # ── Section C — Loan Details ────────────────────────────────────────────
+    story.append(Paragraph("C. Loan Details", section_style))
+    story.append(section_table([
+        ["Requested Amount",  f"NPR {applicant.loan_amount_npr:,.0f}"],
+        ["Business Sector",   applicant.sector.title()],
+    ]))
+
+    # ── Section D — Income Assessment ───────────────────────────────────────
+    income_sources = ", ".join(s.title() for s in d.get("income_sources", [])) or "—"
+    story.append(Paragraph("D. Income Assessment", section_style))
+    story.append(section_table([
+        ["Monthly Income",
+         f"NPR {d.get('monthly_income_npr'):,.0f}" if d.get("monthly_income_npr") else "—"],
+        ["Income Confidence",
+         f"{d.get('income_confidence')*100:.0f}%" if d.get("income_confidence") else "—"],
+        ["Income Sources",   income_sources],
+    ]))
+
+    # ── Section E — AI Credit Assessment ────────────────────────────────────
+    story.append(Paragraph("E. AI Credit Assessment", section_style))
+    story.append(section_table([
+        ["Credit Score",
+         f"{d.get('credit_score')*100:.1f}%" if d.get("credit_score") else "N/A"],
+        ["AI Recommendation",   d.get("final_decision") or "—"],
+    ]))
+    story.append(Paragraph(d.get("decision_reason") or "", body_style))
+
+    # ── Section F — Compliance ──────────────────────────────────────────────
+    flags = d.get("compliance_flags") or []
+    story.append(Paragraph("F. NRB Compliance Check", section_style))
+    story.append(Paragraph(
+        ", ".join(flags) if flags else "No compliance violations detected.",
+        body_style
+    ))
+
+    # ── Section G — Officer Decision ────────────────────────────────────────
+    story.append(Paragraph("G. Officer Decision", section_style))
+    story.append(section_table([
+        ["Decision",         applicant.status.value.upper()],
+        ["Reviewed At",
+         to_npt(applicant.reviewed_at).strftime("%d %b %Y, %H:%M") + " NPT" if applicant.reviewed_at else "Pending"],
+    ]))
+    story.append(Spacer(1, 6))
+    story.append(Paragraph(
+        f"<b>Officer Remarks:</b> {applicant.officer_remarks or 'Not yet reviewed.'}",
+        body_style
+    ))
+
+    story.append(Spacer(1, 40))
+    story.append(HRFlowable(width="40%", color=colors.HexColor("#9CA3AF"), thickness=0.7))
+    story.append(Paragraph("Authorized Signature — Loan Officer", subtitle_style))
+
+    doc.build(story)
+    buffer.seek(0)
+
+    filename = f"RinSathi_Application_{str(applicant.id)[:8]}.pdf"
+    return StreamingResponse(
+        buffer,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'}
+    )
