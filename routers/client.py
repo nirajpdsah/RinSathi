@@ -70,6 +70,8 @@ class ClientApplicationDetail(BaseModel):
     monthly_income_npr: Optional[float]  = None
     income_confidence:  Optional[float]  = None
     income_sources:     list[str]        = []
+    income_breakdown:              Optional[dict]  = None
+    total_accumulated_income_npr:  Optional[float] = None
 
     class Config:
         from_attributes = True

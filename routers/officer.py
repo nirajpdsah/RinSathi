@@ -96,6 +96,8 @@ class ApplicationDetail(BaseModel):
     monthly_income_npr: Optional[float]  = None
     income_confidence:  Optional[float]  = None
     income_sources:     list[str]        = []
+    income_breakdown:              Optional[dict]  = None
+    total_accumulated_income_npr:  Optional[float] = None   
 
     class Config:
         from_attributes = True
@@ -405,7 +407,9 @@ async def download_application_pdf(
     story.append(section_table([
         ["Total Land Parcels",  str(d.get("land_parcels", 0))],
         ["Total Land Area",
-         f"{d.get('total_land_ropani', 0)} Ropani {d.get('total_land_aana', 0)} Aana"],
+        f"{d.get('total_land_ropani', 0)} Ropani {d.get('total_land_aana', 0)} Aana"],
+        ["Estimated Asset Value",
+        f"NPR {d.get('total_land_value_npr'):,.0f}" if d.get("total_land_value_npr") else "Not verified"],
     ]))
 
     # ── Section C — Loan Details ────────────────────────────────────────────
@@ -416,15 +420,31 @@ async def download_application_pdf(
     ]))
 
     # ── Section D — Income Assessment ───────────────────────────────────────
-    income_sources = ", ".join(s.title() for s in d.get("income_sources", [])) or "—"
+    income_rows = [["Source", "Monthly Avg", "3-Month Total"]]
+    for src, v in (d.get("income_breakdown") or {}).items():
+        income_rows.append([
+            src.title(),
+            f"NPR {v['monthly_avg']:,.0f}",
+            f"NPR {v['accumulated_3mo']:,.0f}",
+        ])
+
     story.append(Paragraph("D. Income Assessment", section_style))
-    story.append(section_table([
-        ["Monthly Income",
-         f"NPR {d.get('monthly_income_npr'):,.0f}" if d.get("monthly_income_npr") else "—"],
-        ["Income Confidence",
-         f"{d.get('income_confidence')*100:.0f}%" if d.get("income_confidence") else "—"],
-        ["Income Sources",   income_sources],
-    ]))
+    if len(income_rows) > 1:
+        t = Table(income_rows, colWidths=[55*mm, 55*mm, 60*mm])
+        t.setStyle(TableStyle([
+            ("BACKGROUND", (0,0), (-1,0), colors.HexColor("#0F2044")),
+            ("TEXTCOLOR",  (0,0), (-1,0), colors.white),
+            ("FONTSIZE",   (0,0), (-1,-1), 9),
+            ("GRID",       (0,0), (-1,-1), 0.5, colors.HexColor("#E5E7EB")),
+            ("BOTTOMPADDING", (0,0), (-1,-1), 6),
+            ("TOPPADDING", (0,0), (-1,-1), 6),
+        ]))
+        story.append(t)
+    story.append(Spacer(1, 6))
+    story.append(Paragraph(
+        f"<b>Total Accumulated Income (3mo):</b> "
+        f"NPR {d.get('total_accumulated_income_npr', 0):,.0f}", body_style
+    ))
 
     # ── Section E — AI Credit Assessment ────────────────────────────────────
     story.append(Paragraph("E. AI Credit Assessment", section_style))

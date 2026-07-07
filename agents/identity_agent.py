@@ -147,10 +147,12 @@ class IdentityAgent:
                 state.total_land_parcels = 0
                 state.total_land_ropani  = 0
                 state.total_land_aana    = 0
+                state.total_land_value_npr = 0     # NEW
             else:
                 state.total_land_parcels = assets["total_parcels"]
                 state.total_land_ropani  = assets["total_area_ropani"]
                 state.total_land_aana    = assets["total_area_aana"]
+                state.total_land_value_npr = assets["total_asset_value_npr"]   # NEW
 
                 # Add land data to extracted_fields for audit trail
                 state.extracted_fields["land_assets"] = {

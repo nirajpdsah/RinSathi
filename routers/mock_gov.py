@@ -92,6 +92,9 @@ class LandParcel(BaseModel):
     full_name:        str
     land_area_ropani: int
     land_area_aana:   int
+    district:            str      # NEW — needed to explain the valuation
+    land_type:           str      # NEW — needed to explain the valuation
+    estimated_value_npr: int      # NEW — the actual rupee figure
 
 
 class CitizenshipLookupRequest(BaseModel):
@@ -118,6 +121,7 @@ class NeLISResponse(BaseModel):
     total_parcels:    int
     total_area_ropani: int   # Sum of all parcels in ropani
     total_area_aana:  int    # Sum of all parcels in aana (remainder)
+    total_asset_value_npr: int      # NEW — sum of every parcel's value 
 
 
 # ══════════════════════════════════════════════════════════════
@@ -282,20 +286,24 @@ async def lookup_land(request: CitizenshipLookupRequest):
 
     # Convert SQLite rows to LandParcel objects
     parcels = [
-        LandParcel(
-            sanket_no=        row["sanket_no"],
-            citizenship_no=   row["citizenship_no"],
-            full_name=        row["full_name"],
-            land_area_ropani= row["land_area_ropani"],
-            land_area_aana=   row["land_area_aana"],
-        )
-        for row in rows
-    ]
+    LandParcel(
+        sanket_no=           row["sanket_no"],
+        citizenship_no=      row["citizenship_no"],
+        full_name=           row["full_name"],
+        land_area_ropani=    row["land_area_ropani"],
+        land_area_aana=      row["land_area_aana"],
+        district=            row["district"],
+        land_type=           row["land_type"],
+        estimated_value_npr= row["estimated_value_npr"],
+    )
+    for row in rows
+]
 
     # Pre-calculate total land area across all parcels
     # Score Agent uses this directly — no need to sum in the agent
     total_ropani = sum(p.land_area_ropani for p in parcels)
     total_aana   = sum(p.land_area_aana   for p in parcels)
+    total_asset_value_npr = sum(p.estimated_value_npr for p in parcels)
 
     # Normalize aana overflow into ropani
     # 1 ropani = 16 aana — if total aana >= 16, convert the overflow
@@ -305,9 +313,10 @@ async def lookup_land(request: CitizenshipLookupRequest):
     total_aana    = remaining_aana
 
     return NeLISResponse(
-        citizenship_no=    request.citizenship_no,
-        parcels=           parcels,
-        total_parcels=     len(parcels),
-        total_area_ropani= total_ropani,
-        total_area_aana=   total_aana,
-    )
+    citizenship_no=       request.citizenship_no,
+    parcels=              parcels,
+    total_parcels=        len(parcels),
+    total_area_ropani=    total_ropani,
+    total_area_aana=      total_aana,
+    total_asset_value_npr= total_asset_value,
+)

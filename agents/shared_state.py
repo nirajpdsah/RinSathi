@@ -63,6 +63,11 @@ class SharedState(BaseModel):
     total_land_ropani:        Optional[int]   = None
     total_land_aana:          Optional[int]   = None
     total_land_parcels:       Optional[int]   = None
+    total_land_value_npr:     Optional[int]   = None
+    # Combined estimated market value of all verified land parcels, in NPR.
+    # Calculated by NeLIS based on district rate and land type — this is
+    # what the Compliance Agent actually compares against loan_amount_npr
+    # for the loan-to-asset ratio check, not raw land area.
     # Number of Lalpurja entries found under this citizenship_no
     # Zero is valid — some applicants own no land
 
@@ -105,3 +110,13 @@ class SharedState(BaseModel):
 
     audit_trail_path:         Optional[str]   = None
     # File path to the generated PDF audit report — stored in audit_logs table
+
+    income_breakdown:  Optional[dict]  = None
+    # Per-source detail, e.g.
+    # {"esewa": {"monthly_avg": 30000, "accumulated_3mo": 90000},
+    #  "remittance": {"monthly_avg": 35000, "accumulated_3mo": 105000}}
+
+    total_accumulated_income_npr: Optional[float] = None
+    # Sum of all sources' 3-month accumulated income — NOT the monthly average.
+    # Gives the officer the full picture of cash actually seen over the window,
+    # not just a blended monthly figure that hides volatility.

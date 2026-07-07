@@ -219,6 +219,47 @@ async def apply_for_loan(
         parsed_remittance_data = build_remittance()
         parsed_coop_data       = build_coop()
 
+        def build_income_breakdown(esewa, remittance, coop) -> dict:
+            """
+            Computes per-source monthly average and 3-month accumulated total
+            from the raw payloads already built for the Income Agent.
+            This does NOT change how the Income Agent calculates the blended
+            monthly_income_npr used for scoring — it only adds transparency
+            on top, for display to officer and client.
+            """
+            breakdown = {}
+
+            if esewa:
+                amounts = [t["amount"] for t in esewa["transactions"]]
+                breakdown["esewa"] = {
+                    "monthly_avg":     round(sum(amounts) / len(amounts), 2),
+                    "accumulated_3mo": round(sum(amounts), 2),
+                }
+
+            if remittance:
+                amounts = [r["amount_usd"] * r["exchange_rate"] for r in remittance["records"]]
+                breakdown["remittance"] = {
+                    "monthly_avg":     round(sum(amounts) / len(amounts), 2),
+                    "accumulated_3mo": round(sum(amounts), 2),
+                }
+
+            if coop:
+                amounts = [d["amount"] for d in coop["monthly_deposits"]]
+                breakdown["cooperative"] = {
+                    "monthly_avg":     round(sum(amounts) / len(amounts), 2) if amounts else 0,
+                    "accumulated_3mo": round(sum(amounts), 2),
+                }
+
+            return breakdown
+
+        # Call it right after building the payloads:
+        state.income_breakdown = build_income_breakdown(
+            parsed_esewa_data, parsed_remittance_data, parsed_coop_data
+        )
+        state.total_accumulated_income_npr = round(
+            sum(v["accumulated_3mo"] for v in state.income_breakdown.values()), 2
+        )
+
         if not any([parsed_esewa_data, parsed_remittance_data, parsed_coop_data]):
             raise HTTPException(
                 status_code=422,
@@ -329,6 +370,8 @@ async def apply_for_loan(
             "monthly_income_npr": state.monthly_income_npr,
             "income_confidence":  state.income_confidence,
             "income_sources":     state.income_sources,
+            "income_breakdown":              state.income_breakdown,
+            "total_accumulated_income_npr":  state.total_accumulated_income_npr,
 
             # AI explainability
             "shap_explanation":   state.shap_explanation,

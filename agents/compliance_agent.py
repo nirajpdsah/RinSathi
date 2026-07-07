@@ -61,23 +61,30 @@ class ComplianceAgent:
             if state.name_mismatch_detected:
                 state.compliance_flags.append("NAME_MISMATCH")
 
-            # ── Check 3: Loan-to-asset ratio ──────────────────────────────────
+            ## ── Check 3: Loan-to-asset ratio ──────────────────────────────────
             # NRB Unified Directive: loan cannot exceed 75% of asset value.
-            # loan_to_asset = loan_amount / estimated_asset_value
-            # We estimate asset value from income (simplified for Sprint 3;
-            # full implementation uses land value from the identity verification flow).
-            loan_amount    = state.loan_amount_npr or 0.0
-            monthly_income = state.monthly_income_npr or 0.0
+            # loan_to_asset = loan_amount / verified_land_value
+            #
+            # We now use the REAL land value verified through NeLIS
+            # (district-based valuation, not a guess from income).
+            # If no land value is available — applicant owns no verified
+            # land — we treat asset value as zero, which will correctly
+            # breach this check for any non-trivial loan amount. This is
+            # intentional: an unsecured loan request should be flagged
+            # for closer officer review, not silently approved.
+            loan_amount = state.loan_amount_npr or 0.0
+            land_value  = state.total_land_value_npr or 0.0
 
-            if loan_amount > 0 and monthly_income > 0:
-                # Simplified proxy: annual income × 10 as rough asset estimate
-                # In production: replace with actual land value from Lalpurja
-                estimated_assets = monthly_income * 12 * 10
-                loan_to_asset    = loan_amount / estimated_assets
-
-                if loan_to_asset > settings.MAX_LOAN_TO_ASSET:
-                    # Loan amount exceeds NRB's 75% loan-to-asset limit
-                    state.compliance_flags.append("LOAN_TO_ASSET_BREACH")
+            if loan_amount > 0:
+                if land_value > 0:
+                    loan_to_asset = loan_amount / land_value
+                    if loan_to_asset > settings.MAX_LOAN_TO_ASSET:
+                        state.compliance_flags.append("LOAN_TO_ASSET_BREACH")
+                else:
+                    # No verified land asset at all — loan is effectively
+                    # unsecured. Flag distinctly so the officer understands
+                    # WHY, rather than lumping it with a normal breach.
+                    state.compliance_flags.append("NO_VERIFIED_COLLATERAL")
 
             # ── Check 4: Agricultural sector exposure limit ───────────────────
             # NRB caps agricultural sector lending to prevent over-concentration.

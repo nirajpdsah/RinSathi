@@ -529,6 +529,10 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Total Land Area</div>
+                                <div class="detail-item">
+                                    <div class="detail-label">Estimated Asset Value</div>
+                                    <div class="detail-value" id="detailLandValue">—</div>
+                                </div>
                                 <div class="detail-value" id="detailLandArea">—</div>
                             </div>
                         </div>
@@ -547,6 +551,8 @@
                                 <div class="detail-label">Monthly Income</div>
                                 <div class="detail-value" id="detailIncome">—</div>
                             </div>
+                            <div class="detail-label" style="margin-top:14px;">Income Breakdown (3-Month)</div>
+                                <div id="incomeBreakdownTable" style="margin-top:8px;"></div>
                             <div class="detail-item">
                                 <div class="detail-label">Income Confidence</div>
                                 <div class="detail-value" id="detailIncomeConf">—</div>
@@ -794,6 +800,10 @@
             app.land_parcels_count ?? 0;
         document.getElementById('detailLandArea').textContent =
             `${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana`;
+        document.getElementById('detailLandArea').textContent =
+            `${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana`;
+        document.getElementById('detailLandValue').textContent =
+            app.total_land_value_npr ? 'NPR ' + formatNPR(app.total_land_value_npr) : 'Not verified';
 
         // Income breakdown — NEW
         document.getElementById('detailIncome').textContent =
@@ -998,6 +1008,25 @@
         d.textContent = str;
         return d.innerHTML;
     }
+    function renderIncomeBreakdown(breakdown, total) {
+            if (!breakdown || Object.keys(breakdown).length === 0) {
+                return '<span style="color:var(--subtle); font-size:13px;">No income data recorded</span>';
+            }
+            let rows = Object.entries(breakdown).map(([source, v]) => `
+                <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;">
+                    <span>${capitalize(source)}</span>
+                    <span><b>NPR ${formatNPR(v.monthly_avg)}</b>/mo · NPR ${formatNPR(v.accumulated_3mo)} total</span>
+                </div>`).join('');
+            rows += `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; font-weight:700; color:var(--primary);">
+                    <span>Total Accumulated (3mo)</span>
+                    <span>NPR ${formatNPR(total)}</span>
+                </div>`;
+            return rows;
+        }
+
+        document.getElementById('incomeBreakdownTable').innerHTML =
+            renderIncomeBreakdown(app.income_breakdown, app.total_accumulated_income_npr);
 
     // ── Start ─────────────────────────────────────────────────────────────────
     loadApplication();
