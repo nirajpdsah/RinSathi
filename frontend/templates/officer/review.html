@@ -810,6 +810,13 @@
             app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—';
         document.getElementById('detailIncomeConf').textContent =
             app.income_confidence ? (app.income_confidence * 100).toFixed(0) + '%' : '—';
+        // Income breakdown — NEW
+        document.getElementById('detailIncome').textContent =
+            app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—';
+        document.getElementById('detailIncomeConf').textContent =
+            app.income_confidence ? (app.income_confidence * 100).toFixed(0) + '%' : '—';
+        document.getElementById('incomeBreakdownTable').innerHTML =
+            renderIncomeBreakdown(app.income_breakdown, app.total_accumulated_income_npr);
 
         const sources = app.income_sources || [];
         document.getElementById('detailIncomeSources').innerHTML = sources.length
@@ -1024,9 +1031,6 @@
                 </div>`;
             return rows;
         }
-
-        document.getElementById('incomeBreakdownTable').innerHTML =
-            renderIncomeBreakdown(app.income_breakdown, app.total_accumulated_income_npr);
 
     // ── Start ─────────────────────────────────────────────────────────────────
     loadApplication();

@@ -93,36 +93,64 @@ class DecisionAgent:
                 )
                 return state
 
-            # ── PRIORITY 3: Score-based decision ──────────────────────────────
-            # APPROVE_THRESHOLD = 0.65 from config (credit_score >= 0.65 → Approve)
-            # REFER_THRESHOLD   = 0.40 from config (credit_score >= 0.40 → Refer)
-            # Below REFER_THRESHOLD → Reject
-            score   = state.credit_score
-            income  = state.monthly_income_npr or 0.0
-            loan    = state.loan_amount_npr    or 0.0
+            # ── PRIORITY 3: Weighted scorecard decision ────────────────────────
+            # This is the auditable layer. The ML credit_score is only 40% of
+            # the final qualification score — asset coverage, income
+            # stability, and compliance cleanliness make up the rest.
+            # Every weight here is fixed and documented, exactly like a
+            # published bank scorecard (e.g. FICO: payment history 35%,
+            # amounts owed 30%, etc.) — an NRB auditor can recompute this
+            # by hand for any applicant, using only numbers already stored
+            # in the audit log.
+            score          = state.credit_score
+            income         = state.monthly_income_npr or 0.0
+            loan           = state.loan_amount_npr    or 0.0
+            land_value     = state.total_land_value_npr or 0.0
 
-            if score >= settings.APPROVE_THRESHOLD:
+            asset_coverage_ratio = (
+                min(land_value / loan, 1.0) if loan > 0 else 0.0
+            )
+            income_stability_score = state.income_confidence or 0.0
+            compliance_score = 1.0   # We only reach here if compliance_flags was empty
+
+            qualification_score = (
+                (score                   * 0.40) +
+                (asset_coverage_ratio    * 0.25) +
+                (income_stability_score  * 0.20) +
+                (compliance_score        * 0.15)
+            ) * 100
+
+            state.qualification_score = round(qualification_score, 1)
+
+            # Thresholds now apply to the published 0-100 scorecard,
+            # not the raw ML probability alone.
+            APPROVE_LINE = settings.APPROVE_THRESHOLD * 100   # e.g. 65
+            REFER_LINE   = settings.REFER_THRESHOLD * 100     # e.g. 40
+
+            if qualification_score >= APPROVE_LINE:
                 state.final_decision = "Recommend"
                 state.decision_reason = (
-                    f"The repayment rating is {score * 100:.1f}%. The applicant appears able "
-                    f"to support this request, with estimated monthly income of NPR {income:,.0f} "
-                    f"and a requested loan amount of NPR {loan:,.0f}. This is a recommendation "
-                    "for the loan officer, not a final approval."
+                    f"Qualification score is {qualification_score:.1f}/100 "
+                    f"(ML repayment probability {score*100:.1f}% weighted 40%, "
+                    f"asset coverage {asset_coverage_ratio*100:.0f}% weighted 25%, "
+                    f"income reliability {income_stability_score*100:.0f}% weighted 20%, "
+                    f"clean compliance record weighted 15%). Estimated monthly income "
+                    f"NPR {income:,.0f} against requested loan NPR {loan:,.0f}. "
+                    "This is a recommendation for the loan officer, not a final approval."
                 )
-            elif score < settings.REFER_THRESHOLD:
+            elif qualification_score < REFER_LINE:
                 state.final_decision = "Reject"
                 state.decision_reason = (
-                    f"This application has been rejected because the repayment "
-                    f"rating is {score * 100:.1f}%, which is below the minimum required level "
-                    f"of {settings.REFER_THRESHOLD * 100:.0f}%. Stronger or clearer income "
-                    "records may improve a future assessment."
+                    f"Qualification score is {qualification_score:.1f}/100, below the "
+                    f"minimum required {REFER_LINE:.0f}/100. Stronger income verification "
+                    "or additional collateral may improve a future assessment."
                 )
             else:
                 state.final_decision = "Refer"
                 state.decision_reason = (
-                    f"The repayment rating is {score * 100:.1f}%. This is close to the review "
-                    "range, so a loan officer should look at the supporting documents before "
-                    "making a final decision."
+                    f"Qualification score is {qualification_score:.1f}/100, within the "
+                    "manual review range. A loan officer should examine the supporting "
+                    "documents before making a final decision."
                 )
 
         except Exception:

@@ -76,13 +76,6 @@
         .status-hero-title { font-size: 20px; font-weight: 700; }
         .status-hero-sub   { font-size: 13px; opacity: 0.75; margin-top: 4px; }
 
-        .parcel-row {
-            display: flex; justify-content: space-between;
-            padding: 10px 0; border-bottom: 1px solid var(--border);
-            font-size: 14px;
-        }
-        .parcel-row:last-child { border-bottom: none; }
-
         .source-pill {
             display: inline-block; padding: 4px 12px; border-radius: 999px;
             background: #E6F1FB; color: #0C447C;
@@ -103,6 +96,22 @@
         .score-bar-fill.high   { background: var(--success); }
         .score-bar-fill.medium { background: var(--warning); }
         .score-bar-fill.low    { background: var(--danger); }
+
+        /* Income breakdown table */
+        .income-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0; border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .income-row:last-child { border-bottom: none; }
+        .income-row .src { font-weight: 600; color: var(--text); }
+        .income-row .amt { color: var(--subtle); text-align: right; }
+        .income-total-row {
+            display: flex; justify-content: space-between;
+            padding: 12px 0 4px; margin-top: 4px;
+            border-top: 2px solid var(--border);
+            font-size: 14px; font-weight: 700; color: var(--primary);
+        }
     </style>
 </head>
 <body>
@@ -164,10 +173,6 @@
         const scoreClass = app.credit_score >= 0.65 ? 'high'
                           : app.credit_score >= 0.40 ? 'medium' : 'low';
 
-        const sourcesHtml = (app.income_sources || [])
-            .map(src => `<span class="source-pill">${capitalize(src)}</span>`)
-            .join('') || '<span style="color:var(--subtle); font-size:13px;">Not recorded</span>';
-
         document.getElementById('pageBody').innerHTML = `
 
             <div class="status-hero ${app.status}">
@@ -215,9 +220,16 @@
                              <div class="detail-value">
                                  ${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana
                              </div></div>
+                        <div><div class="detail-label">Estimated Asset Value</div>
+                             <div class="detail-value">
+                                 ${app.total_land_value_npr
+                                     ? 'NPR ' + formatNPR(app.total_land_value_npr)
+                                     : 'Not verified'}
+                             </div></div>
                     </div>
                     <div style="font-size:12px; color:var(--subtle); margin-top:14px;">
                         Verified against NeLIS land registry using your citizenship number.
+                        Value estimated using district-based rate and land type.
                     </div>
                 </div>
             </div>
@@ -225,15 +237,27 @@
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-icon">💰</div>
-                    <div class="section-title">Loan &amp; Income</div>
+                    <div class="section-title">Loan Details</div>
                 </div>
                 <div class="section-body">
-                    <div class="detail-grid" style="margin-bottom:16px;">
+                    <div class="detail-grid">
                         <div><div class="detail-label">Requested Amount</div>
                              <div class="detail-value">NPR ${formatNPR(app.loan_amount_npr)}</div></div>
                         <div><div class="detail-label">Sector</div>
                              <div class="detail-value">${capitalize(app.sector)}</div></div>
-                        <div><div class="detail-label">Monthly Income</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">📊</div>
+                    <div class="section-title">Income Breakdown (3-Month Window)</div>
+                </div>
+                <div class="section-body">
+                    ${renderIncomeBreakdown(app.income_breakdown, app.total_accumulated_income_npr)}
+                    <div class="detail-grid" style="margin-top:16px;">
+                        <div><div class="detail-label">Blended Monthly Income</div>
                              <div class="detail-value">
                                  ${app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—'}
                              </div></div>
@@ -242,8 +266,6 @@
                                  ${app.income_confidence ? (app.income_confidence*100).toFixed(0)+'%' : '—'}
                              </div></div>
                     </div>
-                    <div class="detail-label">Income Sources</div>
-                    <div style="margin-top:6px;">${sourcesHtml}</div>
                 </div>
             </div>
 
@@ -287,6 +309,26 @@
             </div>` : ''}
 
         `;
+    }
+
+    function renderIncomeBreakdown(breakdown, total) {
+        if (!breakdown || Object.keys(breakdown).length === 0) {
+            return '<span style="color:var(--subtle); font-size:13px;">No income data recorded</span>';
+        }
+        let rows = Object.entries(breakdown).map(([source, v]) => `
+            <div class="income-row">
+                <span class="src">${capitalize(source)}</span>
+                <span class="amt">
+                    NPR ${formatNPR(v.monthly_avg)}/mo &nbsp;·&nbsp;
+                    NPR ${formatNPR(v.accumulated_3mo)} total
+                </span>
+            </div>`).join('');
+        rows += `
+            <div class="income-total-row">
+                <span>Total Accumulated (3mo)</span>
+                <span>NPR ${formatNPR(total || 0)}</span>
+            </div>`;
+        return rows;
     }
 
     function formatNPR(n) { return new Intl.NumberFormat('ne-NP').format(Math.round(n)); }

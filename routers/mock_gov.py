@@ -272,7 +272,7 @@ async def lookup_land(request: CitizenshipLookupRequest):
         cursor.execute(
             """
             SELECT sanket_no, citizenship_no, full_name,
-                   land_area_ropani, land_area_aana
+                   land_area_ropani, land_area_aana, district, land_type, estimated_value_npr
             FROM   land_parcels
             WHERE  citizenship_no = ?
             ORDER  BY sanket_no ASC
@@ -303,6 +303,7 @@ async def lookup_land(request: CitizenshipLookupRequest):
     # Score Agent uses this directly — no need to sum in the agent
     total_ropani = sum(p.land_area_ropani for p in parcels)
     total_aana   = sum(p.land_area_aana   for p in parcels)
+    total_asset_value = sum(p.estimated_value_npr for p in parcels)
     total_asset_value_npr = sum(p.estimated_value_npr for p in parcels)
 
     # Normalize aana overflow into ropani

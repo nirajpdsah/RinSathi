@@ -120,3 +120,10 @@ class SharedState(BaseModel):
     # Sum of all sources' 3-month accumulated income — NOT the monthly average.
     # Gives the officer the full picture of cash actually seen over the window,
     # not just a blended monthly figure that hides volatility.
+
+    qualification_score: Optional[float] = None
+# The final 0-100 auditable scorecard result — ML score (40%) +
+# asset coverage (25%) + income stability (20%) + compliance (15%).
+# This, not the raw ML probability, is what actually drives the
+# Approve/Refer/Reject threshold — the number an NRB auditor would
+# independently recompute to verify the decision.

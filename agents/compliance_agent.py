@@ -72,8 +72,9 @@ class ComplianceAgent:
             # breach this check for any non-trivial loan amount. This is
             # intentional: an unsecured loan request should be flagged
             # for closer officer review, not silently approved.
-            loan_amount = state.loan_amount_npr or 0.0
-            land_value  = state.total_land_value_npr or 0.0
+            loan_amount    = state.loan_amount_npr or 0.0
+            land_value     = state.total_land_value_npr or 0.0
+            monthly_income = state.monthly_income_npr or 0.0
 
             if loan_amount > 0:
                 if land_value > 0:

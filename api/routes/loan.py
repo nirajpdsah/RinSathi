@@ -265,6 +265,13 @@ async def apply_for_loan(
                 status_code=422,
                 detail="Provide at least one income source or enable mock income."
             )
+        
+    state.income_breakdown = build_income_breakdown(
+    parsed_esewa_data, parsed_remittance_data, parsed_coop_data
+    )
+    state.total_accumulated_income_npr = round(
+    sum(v["accumulated_3mo"] for v in state.income_breakdown.values()), 2
+    )
 
     # ── Step 5: Run Identity + Income agents IN PARALLEL ─────────────────────
     # Identity Agent: verifies NIN against DoNIDCR, fetches land from NeLIS
@@ -286,22 +293,14 @@ async def apply_for_loan(
     await asyncio.gather(run_identity(), run_income())
 
     # ── Step 6: Score Agent ───────────────────────────────────────────────────
+    # ── Step 6: Run Score Agent ───────────────────────────────────────────────
     try:
         from agents.score_agent import ScoreAgent
         score_agent = ScoreAgent()
-        try:
-            state = await score_agent.run(state)
-        except Exception:
-            state = score_agent.run(state)
+        state = await score_agent.run(state)
     except Exception as e:
-        print(f"ScoreAgent error: {e}")
-        # Graceful fallback — pipeline must not stop
-        income_val  = state.monthly_income_npr or 45000.0
-        loan_val    = state.loan_amount_npr or 100000.0
-        inc_conf    = state.income_confidence or 0.8
-        base        = 0.5 + (0.2 if income_val > 50000 else 0) - (0.15 if loan_val > 400000 else 0)
-        state.credit_score = min(max(base + inc_conf * 0.2, 0.3), 0.98)
-
+        print(f"ScoreAgent Bridge Critical Error: {str(e)}")
+        state.credit_score = 0.5   # Neutral fallback — routes toward Refer, not auto-approve
     # ── Step 7: Compliance Agent ──────────────────────────────────────────────
     state = await compliance_agent.run(state)
 
@@ -372,6 +371,9 @@ async def apply_for_loan(
             "income_sources":     state.income_sources,
             "income_breakdown":              state.income_breakdown,
             "total_accumulated_income_npr":  state.total_accumulated_income_npr,
+            "total_land_value_npr":         state.total_land_value_npr,
+            "income_breakdown":             state.income_breakdown,
+            "total_accumulated_income_npr": state.total_accumulated_income_npr,
 
             # AI explainability
             "shap_explanation":   state.shap_explanation,
