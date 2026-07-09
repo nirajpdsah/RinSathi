@@ -76,6 +76,26 @@
         .status-hero-title { font-size: 20px; font-weight: 700; }
         .status-hero-sub   { font-size: 13px; opacity: 0.75; margin-top: 4px; }
 
+        .download-pdf-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        .download-pdf-btn:hover { transform: translateY(-1px); opacity: 0.95; }
+        .download-pdf-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
         .source-pill {
             display: inline-block; padding: 4px 12px; border-radius: 999px;
             background: #E6F1FB; color: #0C447C;
@@ -179,6 +199,9 @@
                 <div class="status-hero-icon">${s.icon}</div>
                 <div class="status-hero-title">${s.title}</div>
                 <div class="status-hero-sub">${s.sub}</div>
+                <button class="download-pdf-btn" onclick="downloadPDF()">
+                    ⬇ Download Application PDF
+                </button>
             </div>
 
             <div class="section-card">
@@ -329,6 +352,25 @@
                 <span>NPR ${formatNPR(total || 0)}</span>
             </div>`;
         return rows;
+    }
+
+    async function downloadPDF() {
+        const token = getToken();
+        const url = `${API_BASE}/client/applications/${appId}/pdf`;
+        const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+
+        if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            alert(data.detail || 'Failed to download PDF.');
+            return;
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `RinSathi_Application_${appId.slice(0, 8)}.pdf`;
+        link.click();
+        URL.revokeObjectURL(link.href);
     }
 
     function formatNPR(n) { return new Intl.NumberFormat('ne-NP').format(Math.round(n)); }

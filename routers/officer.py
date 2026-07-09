@@ -91,6 +91,7 @@ class ApplicationDetail(BaseModel):
     total_land_ropani:  Optional[int]    = None
     total_land_aana:    Optional[int]    = None
     land_parcels_count: Optional[int]    = None
+    total_land_value_npr: Optional[float] = None
 
     # Full income detail — NEW
     monthly_income_npr: Optional[float]  = None
@@ -216,9 +217,12 @@ async def get_application_detail(
     total_land_ropani=  pipeline_data.get("total_land_ropani"),
     total_land_aana=    pipeline_data.get("total_land_aana"),
     land_parcels_count= pipeline_data.get("land_parcels"),
+    total_land_value_npr= pipeline_data.get("total_land_value_npr"),
     monthly_income_npr= pipeline_data.get("monthly_income_npr"),
     income_confidence=  pipeline_data.get("income_confidence"),
     income_sources=     pipeline_data.get("income_sources", []),
+    income_breakdown=   pipeline_data.get("income_breakdown"), 
+    total_accumulated_income_npr= pipeline_data.get("total_accumulated_income_npr"),         
 )
 
 

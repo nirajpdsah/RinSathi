@@ -529,12 +529,13 @@
                             </div>
                             <div class="detail-item">
                                 <div class="detail-label">Total Land Area</div>
-                                <div class="detail-item">
-                                    <div class="detail-label">Estimated Asset Value</div>
-                                    <div class="detail-value" id="detailLandValue">—</div>
-                                </div>
                                 <div class="detail-value" id="detailLandArea">—</div>
                             </div>
+                        </div>
+                        <div class="detail-item" style="margin-top:16px;">
+                            <div class="detail-label">Estimated Asset Value</div>
+                            <div class="detail-value" id="detailLandValue"
+                                 style="font-size:18px; color:var(--primary);">—</div>
                         </div>
                     </div>
                 </div>
@@ -546,20 +547,21 @@
                         <div class="section-title">Income Assessment</div>
                     </div>
                     <div class="section-body">
-                        <div class="detail-grid" style="margin-bottom:14px;">
+                        <div class="detail-grid" style="margin-bottom:16px;">
                             <div class="detail-item">
                                 <div class="detail-label">Monthly Income</div>
                                 <div class="detail-value" id="detailIncome">—</div>
                             </div>
-                            <div class="detail-label" style="margin-top:14px;">Income Breakdown (3-Month)</div>
-                                <div id="incomeBreakdownTable" style="margin-top:8px;"></div>
                             <div class="detail-item">
                                 <div class="detail-label">Income Confidence</div>
                                 <div class="detail-value" id="detailIncomeConf">—</div>
                             </div>
                         </div>
-                        <div class="detail-label">Income Sources</div>
-                        <div style="margin-top:6px;" id="detailIncomeSources">—</div>
+                        <div class="detail-label" style="margin-bottom:8px;">Income Breakdown (3-Month)</div>
+                        <div id="incomeBreakdownTable" style="margin-bottom:16px;"></div>
+
+                        <div class="detail-label" style="margin-bottom:6px;">Income Sources</div>
+                        <div id="detailIncomeSources"></div>
                     </div>
                 </div>
 
@@ -800,16 +802,9 @@
             app.land_parcels_count ?? 0;
         document.getElementById('detailLandArea').textContent =
             `${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana`;
-        document.getElementById('detailLandArea').textContent =
-            `${app.total_land_ropani ?? 0} Ropani ${app.total_land_aana ?? 0} Aana`;
         document.getElementById('detailLandValue').textContent =
             app.total_land_value_npr ? 'NPR ' + formatNPR(app.total_land_value_npr) : 'Not verified';
 
-        // Income breakdown — NEW
-        document.getElementById('detailIncome').textContent =
-            app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—';
-        document.getElementById('detailIncomeConf').textContent =
-            app.income_confidence ? (app.income_confidence * 100).toFixed(0) + '%' : '—';
         // Income breakdown — NEW
         document.getElementById('detailIncome').textContent =
             app.monthly_income_npr ? 'NPR ' + formatNPR(app.monthly_income_npr) : '—';
