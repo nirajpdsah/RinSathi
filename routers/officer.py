@@ -480,8 +480,8 @@ async def download_application_pdf(
         body_style
     ))
 
-    story.append(Spacer(1, 40))
-    story.append(HRFlowable(width="40%", color=colors.HexColor("#9CA3AF"), thickness=0.7))
+    story.append(Spacer(1, 60))
+    story.append(HRFlowable(width="40%", color=colors.HexColor("#9CA3AF"), thickness=0.7, hAlign='LEFT', spaceAfter=4))
     story.append(Paragraph("Authorized Signature — Loan Officer", subtitle_style))
 
     doc.build(story)

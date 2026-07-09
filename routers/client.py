@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.lib import colors
@@ -32,10 +32,16 @@ from core.security import require_role
 router = APIRouter(prefix="/client", tags=["Client Dashboard"])
 
 
+NPT_OFFSET = timedelta(hours=5, minutes=45)
+
 def to_npt(dt):
+    """
+    Converts a UTC-aware datetime into Nepal Standard Time for display.
+    """
     if not dt:
         return None
-    return dt
+    return dt + NPT_OFFSET
+
 
 
 class ClientApplicationSummary(BaseModel):
@@ -349,8 +355,8 @@ async def download_my_application_pdf(
         body_style
     ))
 
-    story.append(Spacer(1, 40))
-    story.append(HRFlowable(width="40%", color=colors.HexColor("#9CA3AF"), thickness=0.7))
+    story.append(Spacer(1, 60))
+    story.append(HRFlowable(width="40%", color=colors.HexColor("#9CA3AF"), thickness=0.7, hAlign='LEFT', spaceAfter=4))
     story.append(Paragraph("Authorized Signature — Loan Officer", subtitle_style))
 
     doc.build(story)
