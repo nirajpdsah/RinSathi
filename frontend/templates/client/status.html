@@ -291,7 +291,8 @@
 
             <div class="detail-item">
                 <div class="detail-label">Nepal CIB Credit Score</div>
-                <div class="detail-value" id="detailNepalScore">—</div>
+                <div class="detail-value" id="detailNepalScore">
+                     ${app.nepal_credit_score ? app.nepal_credit_score + ' / 960' : 'No history — first-time borrower'}</div>
                 <div style="font-size:11px; color:var(--subtle);">Scale: 60 (poor) – 960 (excellent)</div>
             </div>
 
@@ -316,7 +317,7 @@
                     <div style="font-size:12px; color:var(--subtle); margin-top:8px;">
                         Nepal CIB Credit Score:
                         <strong style="color:var(--primary);">
-                            ${app.nepal_credit_score ? app.nepal_credit_score + ' / 960' : 'No history — first-time borrower'}
+                           
                         </strong>
                     </div>
                     <div style="font-size:13px; color:var(--text); margin-top:12px; line-height:1.6;">
