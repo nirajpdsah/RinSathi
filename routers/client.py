@@ -96,6 +96,11 @@ class ClientApplicationDetail(BaseModel):
     income_breakdown:              Optional[dict]  = None
     total_accumulated_income_npr:  Optional[float] = None
 
+    is_blacklisted:      Optional[bool] = None
+    max_dpd_bucket:      Optional[str]  = None
+    cib_records_count:   Optional[int]  = None
+    nepal_credit_score:  Optional[int]  = None
+
     class Config:
         from_attributes = True
 
@@ -200,6 +205,10 @@ async def get_my_application_detail(
     income_sources=     pipeline_data.get("income_sources", []),
     income_breakdown=   pipeline_data.get("income_breakdown"),          
     total_accumulated_income_npr= pipeline_data.get("total_accumulated_income_npr"),
+    is_blacklisted=      pipeline_data.get("is_blacklisted"),        # ← NEW
+    max_dpd_bucket=      pipeline_data.get("max_dpd_bucket"),        # ← NEW
+    cib_records_count=   pipeline_data.get("cib_records_count"),     # ← NEW
+    nepal_credit_score=  pipeline_data.get("nepal_credit_score"),    # ← NEW
 )
 
 

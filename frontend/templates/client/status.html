@@ -199,9 +199,6 @@
                 <div class="status-hero-icon">${s.icon}</div>
                 <div class="status-hero-title">${s.title}</div>
                 <div class="status-hero-sub">${s.sub}</div>
-                <button class="download-pdf-btn" onclick="downloadPDF()">
-                    <svg class="icon" style="width:16px;height:16px;margin-right:6px;vertical-align:middle;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Application PDF
-                </button>
             </div>
 
             <div class="section-card">
@@ -292,6 +289,12 @@
                 </div>
             </div>
 
+            <div class="detail-item">
+                <div class="detail-label">Nepal CIB Credit Score</div>
+                <div class="detail-value" id="detailNepalScore">—</div>
+                <div style="font-size:11px; color:var(--subtle);">Scale: 60 (poor) – 960 (excellent)</div>
+            </div>
+
             <div class="section-card">
                 <div class="section-header">
                     <div class="section-icon"><svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg></div>
@@ -309,6 +312,12 @@
                     <div class="score-bar-track">
                         <div class="score-bar-fill ${scoreClass}"
                              style="width:${(app.credit_score||0)*100}%"></div>
+                    </div>
+                    <div style="font-size:12px; color:var(--subtle); margin-top:8px;">
+                        Nepal CIB Credit Score:
+                        <strong style="color:var(--primary);">
+                            ${app.nepal_credit_score ? app.nepal_credit_score + ' / 960' : 'No history — first-time borrower'}
+                        </strong>
                     </div>
                     <div style="font-size:13px; color:var(--text); margin-top:12px; line-height:1.6;">
                         ${esc(app.decision_reason || '')}
@@ -330,8 +339,36 @@
                     </div>
                 </div>
             </div>` : ''}
+            ${app.status === 'approved' ? `
+                <div class="section-card" style="border-left:4px solid var(--success);">
+                    <div class="section-header">
+                        <div class="section-icon">🏦</div>
+                        <div class="section-title">Next Step — Visit Your Branch</div>
+                    </div>
+                    <div class="section-body">
+                        <div style="font-size:14px; line-height:1.7; color:var(--text);">
+                            Your loan has been approved. To claim your loan, please visit
+                            your nearest RinSathi partner branch with:
+                        </div>
+                        <ul style="margin:12px 0 16px 20px; font-size:14px; color:var(--text); line-height:1.9;">
+                            <li>A printed copy of this application form</li>
+                            <li>Your original citizenship certificate / National ID card</li>
+                            <li>Your original Lalpurja (land ownership document), if applicable</li>
+                        </ul>
+                        <div style="font-size:12px; color:var(--subtle); margin-bottom:16px; line-height:1.6;">
+                            This in-person verification is a mandatory final step required
+                            before loan disbursement, ensuring your identity is confirmed
+                            directly at the branch.
+                        </div>
+                        <button class="btn-primary" onclick="downloadPDF()">
+                            ⬇ Download Application Form (PDF)
+                        </button>
+                    </div>
+                </div>` : ''}
         `;
     }
+
+    
 
     function renderIncomeBreakdown(breakdown, total) {
         if (!breakdown || Object.keys(breakdown).length === 0) {
@@ -354,22 +391,14 @@
     }
 
     async function downloadPDF() {
-        const token = getToken();
-        const url = `${API_BASE}/client/applications/${appId}/pdf`;
-        const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-
-        if (!response.ok) {
-            const data = await response.json().catch(() => ({}));
-            alert(data.detail || 'Failed to download PDF.');
-            return;
-        }
-
-        const blob = await response.blob();
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `RinSathi_Application_${appId.slice(0, 8)}.pdf`;
-        link.click();
-        URL.revokeObjectURL(link.href);
+    const token = getToken();
+    const url = `${API_BASE}/client/applications/${appId}/pdf`;
+    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+    const blob = await res.blob();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `RinSathi_Application_${appId.slice(0,8)}.pdf`;
+    a.click();
     }
 
     function formatNPR(n) { return new Intl.NumberFormat('ne-NP').format(Math.round(n)); }

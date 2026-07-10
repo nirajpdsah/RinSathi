@@ -377,6 +377,11 @@ async def apply_for_loan(
 
             # AI explainability
             "shap_explanation":   state.shap_explanation,
+
+            "is_blacklisted":     state.is_blacklisted,
+            "max_dpd_bucket":      state.max_dpd_bucket,
+            "cib_records_count":   state.cib_records_count,
+            "nepal_credit_score":  state.nepal_credit_score,
         },
         performed_by = str(user_id),
     )

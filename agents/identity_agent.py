@@ -49,6 +49,8 @@ DONIDCR_URL = getattr(settings, "DONIDCR_URL",
               "http://localhost:8000/api/v1/mock/donidcr/verify")
 NELIS_URL   = getattr(settings, "NELIS_URL",
               "http://localhost:8000/api/v1/mock/nelis/lookup")
+CIB_URL     = getattr(settings, "CIB_URL",
+              "http://localhost:8000/api/v1/mock/cib/lookup")
 
 # Timeout in seconds for government API calls
 # If the government server doesn't respond in time, we degrade gracefully
@@ -165,7 +167,25 @@ class IdentityAgent:
                     "source": "NeLIS"
                 }
 
-            # ── Step 4: Mark verification as successful ───────────────────────
+            # ── Step 4: Query CIB for prior credit history ────────────────────────────
+            # CIB = Karja Suchana Kendra Limited, Nepal's credit bureau — checking
+            # is mandatory under NRB regulation for loans NPR 1,000,000+.
+            cib_data = await self._lookup_cib(citizen["citizenship_no"])
+
+            if cib_data is None:
+                state.is_blacklisted     = False
+                state.max_dpd_bucket     = "none"
+                state.active_loan_count  = 0
+                state.cib_records_count  = 0
+                state.nepal_credit_score = None
+            else:
+                state.is_blacklisted     = cib_data["is_blacklisted"]
+                state.max_dpd_bucket     = cib_data["max_dpd_bucket"]
+                state.active_loan_count  = cib_data["active_loan_count"]
+                state.cib_records_count  = cib_data["total_records"]
+                state.nepal_credit_score = cib_data["nepal_credit_score"]
+
+            # ── Step 5: Mark verification as successful ───────────────────────
             # doc_confidence = 1.0 because government database is authoritative
             # This is significantly more reliable than OCR (typically 0.7-0.9)
             state.document_verified      = True
@@ -257,6 +277,25 @@ class IdentityAgent:
             print(f"IdentityAgent: NeLIS connection error: {e}")
             return None
 
+    async def _lookup_cib(self, citizenship_no: str) -> dict | None:
+        """
+        Calls the mock CIB endpoint. Zero records is a valid result.
+        """
+        try:
+            async with httpx.AsyncClient(timeout=API_TIMEOUT) as client:
+                response = await client.post(
+                    CIB_URL, json={"citizenship_no": citizenship_no}
+                )
+            if response.status_code == 200:
+                return response.json()
+            print(f"IdentityAgent: CIB returned status {response.status_code}")
+            return None
+        except httpx.TimeoutException:
+            print(f"IdentityAgent: CIB API timed out after {API_TIMEOUT}s")
+            return None
+        except httpx.RequestError as e:
+            print(f"IdentityAgent: CIB connection error: {e}")
+            return None
 
     def _fail(self, state: SharedState, reason: str = "") -> SharedState:
         """

@@ -39,10 +39,7 @@ class DecisionAgent:
     async def run(self, state: SharedState) -> SharedState:
         try:
             # ── PRIORITY 1: Compliance flags override EVERYTHING ───────────────
-            # Even a perfect credit score cannot override an NRB rule violation.
-            # This is the most important rule in the entire pipeline.
             if state.compliance_flags:
-                # Build a readable summary of which rules were violated
                 flag_descriptions = {
                     "KYC_INCOMPLETE":        "the identity document is not clear enough to verify automatically",
                     "INCOME_UNVERIFIABLE":   "the income records are not strong enough for an automatic decision",
@@ -52,10 +49,11 @@ class DecisionAgent:
                     "NO_INCOME_SIGNALS":     "no usable income record was found for this loan request",
                     "NAME_MISMATCH":         "the name on the cashflow record does not match the identity document",
                     "SYSTEM_ERROR":          "Pipeline error — manual verification required",
+                    "CIB_BLACKLISTED":            "the applicant is formally blacklisted with Nepal's Credit Information Bureau (CIB) for a prior serious default",
+                    "SEVERE_DELINQUENCY_HISTORY": "the applicant has a history of severe payment delinquency (90+ days past due) with a prior lender",
                 }
-                # Build reason string from all flags found
                 reasons = [
-                    flag_descriptions.get(flag, flag)   # Use description or raw flag code
+                    flag_descriptions.get(flag, flag)
                     for flag in state.compliance_flags
                 ]
                 hard_reject_flags = {
@@ -63,6 +61,7 @@ class DecisionAgent:
                     "NO_INCOME_SIGNALS",
                     "LOAN_TO_ASSET_BREACH",
                     "NAME_MISMATCH",
+                    "CIB_BLACKLISTED",
                 }
                 state.final_decision  = "Reject" if any(
                     flag in hard_reject_flags for flag in state.compliance_flags
@@ -79,11 +78,9 @@ class DecisionAgent:
                         f"{'; '.join(reasons)}. A loan officer can verify the details and "
                         "decide the next step."
                     )
-                return state   # Stop here — no further checks needed
+                return state
 
             # ── PRIORITY 2: Missing credit score → cannot auto-decide ──────────
-            # If Score Agent failed or returned None, we have no basis for
-            # an automated decision. Route to human review.
             if state.credit_score is None:
                 state.final_decision  = "Refer"
                 state.decision_reason = (
@@ -94,14 +91,8 @@ class DecisionAgent:
                 return state
 
             # ── PRIORITY 3: Weighted scorecard decision ────────────────────────
-            # This is the auditable layer. The ML credit_score is only 40% of
-            # the final qualification score — asset coverage, income
-            # stability, and compliance cleanliness make up the rest.
-            # Every weight here is fixed and documented, exactly like a
-            # published bank scorecard (e.g. FICO: payment history 35%,
-            # amounts owed 30%, etc.) — an NRB auditor can recompute this
-            # by hand for any applicant, using only numbers already stored
-            # in the audit log.
+            # Auditable layer. ML credit_score is 35%, asset coverage 20%,
+            # income stability 15%, credit history 15%, compliance 15%.
             score          = state.credit_score
             income         = state.monthly_income_npr or 0.0
             loan           = state.loan_amount_npr    or 0.0
@@ -111,29 +102,41 @@ class DecisionAgent:
                 min(land_value / loan, 1.0) if loan > 0 else 0.0
             )
             income_stability_score = state.income_confidence or 0.0
-            compliance_score = 1.0   # We only reach here if compliance_flags was empty
+            compliance_score = 1.0
+
+            # ── Credit history score — from CIB check via IdentityAgent ────────
+            if state.is_blacklisted:
+                credit_history_score = 0.0
+            elif state.max_dpd_bucket == "dpd_90_plus":
+                credit_history_score = 0.3
+            elif state.max_dpd_bucket == "dpd_60":
+                credit_history_score = 0.6
+            elif state.max_dpd_bucket == "dpd_30":
+                credit_history_score = 0.8
+            else:
+                credit_history_score = 1.0
 
             qualification_score = (
-                (score                   * 0.40) +
-                (asset_coverage_ratio    * 0.25) +
-                (income_stability_score  * 0.20) +
+                (score                   * 0.35) +
+                (asset_coverage_ratio    * 0.20) +
+                (income_stability_score  * 0.15) +
+                (credit_history_score    * 0.15) +
                 (compliance_score        * 0.15)
             ) * 100
 
             state.qualification_score = round(qualification_score, 1)
 
-            # Thresholds now apply to the published 0-100 scorecard,
-            # not the raw ML probability alone.
-            APPROVE_LINE = settings.APPROVE_THRESHOLD * 100   # e.g. 65
-            REFER_LINE   = settings.REFER_THRESHOLD * 100     # e.g. 40
+            APPROVE_LINE = settings.APPROVE_THRESHOLD * 100
+            REFER_LINE   = settings.REFER_THRESHOLD * 100
 
             if qualification_score >= APPROVE_LINE:
                 state.final_decision = "Recommend"
                 state.decision_reason = (
                     f"Qualification score is {qualification_score:.1f}/100 "
-                    f"(ML repayment probability {score*100:.1f}% weighted 40%, "
-                    f"asset coverage {asset_coverage_ratio*100:.0f}% weighted 25%, "
-                    f"income reliability {income_stability_score*100:.0f}% weighted 20%, "
+                    f"(ML repayment probability {score*100:.1f}% weighted 35%, "
+                    f"asset coverage {asset_coverage_ratio*100:.0f}% weighted 20%, "
+                    f"income reliability {income_stability_score*100:.0f}% weighted 15%, "
+                    f"credit history {credit_history_score*100:.0f}% weighted 15%, "
                     f"clean compliance record weighted 15%). Estimated monthly income "
                     f"NPR {income:,.0f} against requested loan NPR {loan:,.0f}. "
                     "This is a recommendation for the loan officer, not a final approval."
@@ -154,8 +157,7 @@ class DecisionAgent:
                 )
 
         except Exception:
-            # Safety net — unknown error → route to human, never auto-approve
             state.final_decision  = "Refer"
             state.decision_reason = "System error during decision processing. Manual review required."
 
-        return state   # Always return state — never raise
+        return state

@@ -122,8 +122,27 @@ class SharedState(BaseModel):
     # not just a blended monthly figure that hides volatility.
 
     qualification_score: Optional[float] = None
-# The final 0-100 auditable scorecard result — ML score (40%) +
-# asset coverage (25%) + income stability (20%) + compliance (15%).
-# This, not the raw ML probability, is what actually drives the
-# Approve/Refer/Reject threshold — the number an NRB auditor would
-# independently recompute to verify the decision.
+    # The final 0-100 auditable scorecard result — ML score (40%) +
+    # asset coverage (25%) + income stability (20%) + compliance (15%).
+    # This, not the raw ML probability, is what actually drives the
+    # Approve/Refer/Reject threshold — the number an NRB auditor would
+    # independently recompute to verify the decision.
+
+    is_blacklisted:        bool            = False
+    # True if formally blacklisted per NRB directive — the most serious
+    # CIB signal, publicly notified for serious defaulters.
+
+    max_dpd_bucket:        str             = "none"
+    # Worst Days Past Due severity found in credit history:
+    # "none" / "dpd_30" / "dpd_60" / "dpd_90_plus"
+
+    active_loan_count:     int             = 0
+    # Number of currently ongoing loans elsewhere.
+
+    cib_records_count:     int             = 0
+    # Total prior loan records — 0 means first-time borrower.
+
+    nepal_credit_score:    Optional[int]   = None
+    # Traditional Nepali CIB score, 60-960 scale, mirroring the real
+    # convention used by Karja Suchana Kendra Limited — shown alongside
+    # our own qualification_score for comparison in officer/client views.

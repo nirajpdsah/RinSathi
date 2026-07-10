@@ -610,6 +610,12 @@
                     </div>
                 </div>
 
+                <div class="detail-item">
+                    <div class="detail-label">Nepal CIB Credit Score</div>
+                    <div class="detail-value" id="detailNepalScore">—</div>
+                    <div style="font-size:11px; color:var(--subtle);">Scale: 60 (poor) – 960 (excellent)</div>
+                </div>
+
                 <!-- NRB Compliance -->
                 <div class="section-card">
                     <div class="section-header">
@@ -863,6 +869,9 @@
         document.getElementById('verdictTitle').textContent = v.title;
         document.getElementById('verdictReason').textContent =
             app.decision_reason || '';
+
+        document.getElementById('detailNepalScore').textContent =
+            app.nepal_credit_score ? `${app.nepal_credit_score} / 960` : 'No history — first-time borrower';
 
         // Compliance flags
         const flagList = document.getElementById('flagList');

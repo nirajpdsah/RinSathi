@@ -123,6 +123,27 @@ class NeLISResponse(BaseModel):
     total_area_aana:  int    # Sum of all parcels in aana (remainder)
     total_asset_value_npr: int      # NEW — sum of every parcel's value 
 
+class CIBLookupRequest(BaseModel):
+    citizenship_no: str
+
+
+class CIBRecord(BaseModel):
+    lender_name:     str
+    loan_amount_npr: float
+    disbursed_date:  str
+    closed_date:     Optional[str]
+    status:          str
+
+
+class CIBResponse(BaseModel):
+    citizenship_no:       str
+    records:              List[CIBRecord]
+    total_records:        int
+    is_blacklisted:       bool     # Formal NRB blacklist status
+    max_dpd_bucket:       str      # "none" / "dpd_30" / "dpd_60" / "dpd_90_plus"
+    active_loan_count:    int
+    nepal_credit_score:   int      # Traditional 60-960 scale, per real CIB convention
+
 
 # ══════════════════════════════════════════════════════════════
 # HELPER — SQLite connection
@@ -321,3 +342,87 @@ async def lookup_land(request: CitizenshipLookupRequest):
     total_area_aana=      total_aana,
     total_asset_value_npr= total_asset_value,
 )
+
+# ══════════════════════════════════════════════════════════════
+# ENDPOINT 3: CIB Lookup
+# ══════════════════════════════════════════════════════════════
+@router.post(
+    "/cib/lookup",
+    response_model=CIBResponse,
+    summary="Lookup credit history via CIB (Karja Suchana Kendra Limited)",
+    description=(
+        "Simulates a CIB lookup — mandatory under NRB regulation for "
+        "credit facilities of NPR 1,000,000 and above. Returns prior "
+        "loan history, DPD status, and blacklist flag, following the "
+        "same terminology used by Nepal's real credit bureau."
+    )
+)
+async def lookup_cib(request: CIBLookupRequest):
+    """
+    Checks prior borrowing history for a citizenship number.
+    No records found means a first-time borrower — not an error,
+    and not treated as risky by default.
+    """
+    db_path = os.path.join(BASE_DIR, "mock_databases", "cib.db")
+    conn = get_sqlite_connection(db_path)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            """
+            SELECT lender_name, loan_amount_npr, disbursed_date,
+                   closed_date, status
+            FROM   cib_records
+            WHERE  citizenship_no = ?
+            ORDER  BY disbursed_date DESC
+            """,
+            (request.citizenship_no.strip(),)
+        )
+        rows = cursor.fetchall()
+    finally:
+        conn.close()
+
+    records = [
+        CIBRecord(
+            lender_name=     row["lender_name"],
+            loan_amount_npr= row["loan_amount_npr"],
+            disbursed_date=  row["disbursed_date"],
+            closed_date=     row["closed_date"],
+            status=          row["status"],
+        )
+        for row in rows
+    ]
+
+    is_blacklisted    = any(r.status == "blacklisted" for r in records)
+    active_loan_count = sum(1 for r in records if r.status == "active")
+
+    # Determine the worst DPD bucket present, if any
+    dpd_severity = {"dpd_90_plus": 3, "dpd_60": 2, "dpd_30": 1}
+    worst_dpd = max(
+        (dpd_severity.get(r.status, 0) for r in records), default=0
+    )
+    max_dpd_bucket = {0: "none", 1: "dpd_30", 2: "dpd_60", 3: "dpd_90_plus"}[worst_dpd]
+
+    # Simplified Nepal-style 60-960 score.
+    # Real CIB weighs 15-month payment behavior; we approximate with
+    # a deterministic penalty model for demo purposes.
+    base_score = 960
+    if is_blacklisted:
+        base_score = 60 + (len(records) * 5)   # near floor, regardless of other loans
+    else:
+        penalty = {"dpd_30": 80, "dpd_60": 180, "dpd_90_plus": 320}
+        for r in records:
+            base_score -= penalty.get(r.status, 0)
+        base_score = max(base_score, 60)
+
+    nepal_credit_score = min(max(int(base_score), 60), 960)
+
+    return CIBResponse(
+        citizenship_no=      request.citizenship_no,
+        records=              records,
+        total_records=        len(records),
+        is_blacklisted=       is_blacklisted,
+        max_dpd_bucket=       max_dpd_bucket,
+        active_loan_count=    active_loan_count,
+        nepal_credit_score=   nepal_credit_score,
+    )

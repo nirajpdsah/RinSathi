@@ -32,6 +32,7 @@ class Settings(BaseSettings):               # Inheriting BaseSettings auto-reads
     # Zero code changes needed in agents — only these values change
     DONIDCR_URL: str = "http://localhost:8000/api/v1/mock/donidcr/verify"
     NELIS_URL:   str = "http://localhost:8000/api/v1/mock/nelis/lookup"
+    CIB_URL: str = "http://localhost:8000/api/v1/mock/cib/lookup"
 
     class Config:
         env_file = ".env"                   # Tell Pydantic: read from the .env file
