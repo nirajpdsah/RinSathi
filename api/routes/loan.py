@@ -37,6 +37,36 @@ from config import get_settings
 settings = get_settings()
 router   = APIRouter()
 
+def build_income_breakdown(esewa, remittance, coop) -> dict:
+    """
+    Computes per-source monthly average and 3-month accumulated total
+    from the raw payloads built for the Income Agent.
+    """
+    breakdown = {}
+
+    if esewa:
+        amounts = [t["amount"] for t in esewa["transactions"]]
+        breakdown["esewa"] = {
+            "monthly_avg":     round(sum(amounts) / len(amounts), 2),
+            "accumulated_3mo": round(sum(amounts), 2),
+        }
+
+    if remittance:
+        amounts = [r["amount_usd"] * r["exchange_rate"] for r in remittance["records"]]
+        breakdown["remittance"] = {
+            "monthly_avg":     round(sum(amounts) / len(amounts), 2),
+            "accumulated_3mo": round(sum(amounts), 2),
+        }
+
+    if coop:
+        amounts = [d["amount"] for d in coop["monthly_deposits"]]
+        breakdown["cooperative"] = {
+            "monthly_avg":     round(sum(amounts) / len(amounts), 2) if amounts else 0,
+            "accumulated_3mo": round(sum(amounts), 2),
+        }
+
+    return breakdown
+
 # Instantiate agents once at module load — not per request
 identity_agent   = IdentityAgent()
 income_agent     = IncomeAgent()
@@ -219,39 +249,6 @@ async def apply_for_loan(
         parsed_remittance_data = build_remittance()
         parsed_coop_data       = build_coop()
 
-        def build_income_breakdown(esewa, remittance, coop) -> dict:
-            """
-            Computes per-source monthly average and 3-month accumulated total
-            from the raw payloads already built for the Income Agent.
-            This does NOT change how the Income Agent calculates the blended
-            monthly_income_npr used for scoring — it only adds transparency
-            on top, for display to officer and client.
-            """
-            breakdown = {}
-
-            if esewa:
-                amounts = [t["amount"] for t in esewa["transactions"]]
-                breakdown["esewa"] = {
-                    "monthly_avg":     round(sum(amounts) / len(amounts), 2),
-                    "accumulated_3mo": round(sum(amounts), 2),
-                }
-
-            if remittance:
-                amounts = [r["amount_usd"] * r["exchange_rate"] for r in remittance["records"]]
-                breakdown["remittance"] = {
-                    "monthly_avg":     round(sum(amounts) / len(amounts), 2),
-                    "accumulated_3mo": round(sum(amounts), 2),
-                }
-
-            if coop:
-                amounts = [d["amount"] for d in coop["monthly_deposits"]]
-                breakdown["cooperative"] = {
-                    "monthly_avg":     round(sum(amounts) / len(amounts), 2) if amounts else 0,
-                    "accumulated_3mo": round(sum(amounts), 2),
-                }
-
-            return breakdown
-
         # Call it right after building the payloads:
         state.income_breakdown = build_income_breakdown(
             parsed_esewa_data, parsed_remittance_data, parsed_coop_data
@@ -316,7 +313,7 @@ async def apply_for_loan(
         # Map Decision Agent output to LoanStatus enum
         status_map = {
             "Recommend": LoanStatus.PENDING,   # AI recommends → officer still decides
-            "Reject":    LoanStatus.PENDING,  # AI rejects → goes to officer for confirmation
+            "Reject":    LoanStatus.REJECTED,  # AI rejects → goes to officer for confirmation
             "Refer":     LoanStatus.REFERRED,  # Borderline → officer must review manually
         }
         db_status = status_map.get( 
@@ -336,6 +333,17 @@ async def apply_for_loan(
             status          = db_status,
             user_id         = user_id,   # Links to the logged-in client
         )
+        # If auto-rejected by hard compliance rule, mark it as system-reviewed
+        # immediately — no officer action needed, but the audit trail still
+        # clearly shows WHY and WHEN this happened.
+        if db_status == LoanStatus.REJECTED:
+            applicant.reviewed_by     = None   # No human officer — system decision
+            applicant.officer_remarks = (
+                "Automatically rejected by system compliance rules: "
+                + "; ".join(state.compliance_flags)
+                + ". No officer review required — this is a hard regulatory stop."
+            )
+            applicant.reviewed_at     = datetime.now(timezone.utc)
 
         db.add(applicant)
 

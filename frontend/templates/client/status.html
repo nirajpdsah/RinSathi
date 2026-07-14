@@ -117,6 +117,19 @@
         .score-bar-fill.medium { background: var(--warning); }
         .score-bar-fill.low    { background: var(--danger); }
 
+        /* AI verdict banner — matches review.html styling */
+        .ai-verdict {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px 18px; border-radius: 10px; margin-bottom: 16px;
+            font-weight: 600; font-size: 14px;
+        }
+        .ai-verdict.recommend { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+        .ai-verdict.reject    { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .ai-verdict.refer     { background: #FEF9C3; color: #854D0E; border: 1px solid #FEF08A; }
+        .ai-verdict.info      { background: #EFF6FF; color: #1E40AF; border: 1px solid #BFDBFE; }
+        .score-bar-fill.neutral { background: #94A3B8; }
+        .score-neutral { color: #64748B; }
+
         /* Income breakdown table */
         .income-row {
             display: flex; justify-content: space-between; align-items: center;
@@ -192,6 +205,16 @@
 
         const scoreClass = app.credit_score >= 0.65 ? 'high'
                           : app.credit_score >= 0.40 ? 'medium' : 'low';
+
+        let cibScoreClass = 'neutral';
+        let cibPercent = 0;
+        if (app.nepal_credit_score !== null && app.nepal_credit_score !== undefined) {
+            cibPercent = ((app.nepal_credit_score - 60) / (960 - 60)) * 100;
+            if (app.is_blacklisted) cibScoreClass = 'low';
+            else if (app.nepal_credit_score >= 700) cibScoreClass = 'high';
+            else if (app.nepal_credit_score >= 500) cibScoreClass = 'medium';
+            else cibScoreClass = 'low';
+        }
 
         document.getElementById('pageBody').innerHTML = `
 
@@ -289,39 +312,56 @@
                 </div>
             </div>
 
-            <div class="detail-item">
-                <div class="detail-label">Nepal CIB Credit Score</div>
-                <div class="detail-value" id="detailNepalScore">
-                     ${app.nepal_credit_score ? app.nepal_credit_score + ' / 960' : 'No history — first-time borrower'}</div>
-                <div style="font-size:11px; color:var(--subtle);">Scale: 60 (poor) – 960 (excellent)</div>
-            </div>
-
             <div class="section-card">
                 <div class="section-header">
-                    <div class="section-icon"><svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg></div>
+                    <div class="section-icon">
+                        <svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 2v4m0 0H8m4 0h4"/><circle cx="8.5" cy="16" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="16" r="1" fill="currentColor" stroke="none"/></svg>
+                    </div>
                     <div class="section-title">AI Credit Assessment</div>
                 </div>
                 <div class="section-body">
+                    ${renderVerdictBanner(app.final_decision)}
                     <div style="font-size:12px; font-weight:600; color:var(--subtle);
                                 text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">
                         Repayment Probability Score
                     </div>
                     <div style="font-size:28px; font-weight:800;" class="score-${scoreClass}">
                         ${app.credit_score !== null && app.credit_score !== undefined
-                             ? (app.credit_score*100).toFixed(1)+'%' : 'N/A'}
+                            ? (app.credit_score*100).toFixed(1)+'%' : 'N/A'}
                     </div>
                     <div class="score-bar-track">
                         <div class="score-bar-fill ${scoreClass}"
-                             style="width:${(app.credit_score||0)*100}%"></div>
-                    </div>
-                    <div style="font-size:12px; color:var(--subtle); margin-top:8px;">
-                        Nepal CIB Credit Score:
-                        <strong style="color:var(--primary);">
-                           
-                        </strong>
+                            style="width:${(app.credit_score||0)*100}%"></div>
                     </div>
                     <div style="font-size:13px; color:var(--text); margin-top:12px; line-height:1.6;">
                         ${esc(app.decision_reason || '')}
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                    </div>
+                    <div class="section-title">Nepal CIB Credit Assessment</div>
+                </div>
+                <div class="section-body">
+                    ${renderCIBBanner(app)}
+                    <div style="font-size:12px; font-weight:600; color:var(--subtle);
+                                text-transform:uppercase; letter-spacing:0.05em; margin-bottom:6px;">
+                        CIB Credit Rating Score
+                    </div>
+                    <div style="font-size:28px; font-weight:800;" class="score-${cibScoreClass}">
+                        ${app.nepal_credit_score !== null && app.nepal_credit_score !== undefined
+                            ? app.nepal_credit_score + ' / 960' : 'N/A'}
+                    </div>
+                    <div class="score-bar-track">
+                        <div class="score-bar-fill ${cibScoreClass}"
+                            style="width:${cibPercent}%"></div>
+                    </div>
+                    <div style="font-size:12px; color:var(--subtle); margin-top:8px;">
+                        Total CIB Records Found: <strong>${app.cib_records_count ?? 0}</strong>
                     </div>
                 </div>
             </div>
@@ -343,7 +383,9 @@
             ${app.status === 'approved' ? `
                 <div class="section-card" style="border-left:4px solid var(--success);">
                     <div class="section-header">
-                        <div class="section-icon">🏦</div>
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>
+                        </div>
                         <div class="section-title">Next Step — Visit Your Branch</div>
                     </div>
                     <div class="section-body">
@@ -362,14 +404,92 @@
                             directly at the branch.
                         </div>
                         <button class="btn-primary" onclick="downloadPDF()">
-                            ⬇ Download Application Form (PDF)
+                            <svg style="width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;margin-right:6px;display:inline-block;vertical-align:middle;" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Download Application Form (PDF)
                         </button>
                     </div>
                 </div>` : ''}
         `;
     }
 
-    
+    function renderVerdictBanner(finalDecision) {
+        const verdictMap = {
+            'Recommend': { 
+                cls: 'recommend', 
+                icon: `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#166534;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`, 
+                title: 'AI Recommends Approval' 
+            },
+            'Reject':    { 
+                cls: 'reject',    
+                icon: `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`, 
+                title: 'AI Recommends Rejection' 
+            },
+            'Refer':     { 
+                cls: 'refer',     
+                icon: `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`, 
+                title: 'AI Refers for Manual Review' 
+            },
+        };
+        const v = verdictMap[finalDecision] || verdictMap['Refer'];
+        return `
+            <div class="ai-verdict ${v.cls}" style="margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+                ${v.icon}
+                <div style="font-weight:700; font-size:15px;">${v.title}</div>
+            </div>
+        `;
+    }
+
+    function renderCIBBanner(app) {
+        let cls = 'info';
+        let icon = `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#1E40AF;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+        let title = 'No CIB History';
+        let detail = 'First-time borrower with no history recorded in the Credit Information Bureau of Nepal.';
+        
+        if (app.is_blacklisted) {
+            cls = 'reject';
+            icon = `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            title = 'CIB Blacklisted';
+            detail = 'Applicant is currently blacklisted in the Credit Information Bureau database. Heavy penalty applied.';
+        } else if (app.max_dpd_bucket && app.max_dpd_bucket !== 'none') {
+            const bucketStr = app.max_dpd_bucket === 'dpd_90_plus' ? '90+ Days Past Due' 
+                            : app.max_dpd_bucket === 'dpd_60' ? '60 Days Past Due'
+                            : '30 Days Past Due';
+            cls = app.max_dpd_bucket === 'dpd_90_plus' ? 'reject' : 'refer';
+            icon = app.max_dpd_bucket === 'dpd_90_plus' 
+                ? `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+                : `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+            title = 'Payment Defaults/Delays';
+            detail = `CIB records indicate payment delays. Max delay: ${bucketStr}.`;
+        } else if (app.nepal_credit_score !== null && app.nepal_credit_score !== undefined) {
+            const score = app.nepal_credit_score;
+            if (score >= 700) {
+                cls = 'recommend';
+                icon = `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#166534;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+                title = 'Excellent Credit Rating';
+                detail = `Clean payment history with a strong score of ${score} / 960.`;
+            } else if (score >= 500) {
+                cls = 'refer';
+                icon = `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+                title = 'Moderate Credit Rating';
+                detail = `CIB score is ${score} / 960. Standard risk profile.`;
+            } else {
+                cls = 'reject';
+                icon = `<svg style="width:20px;height:20px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+                title = 'Poor Credit Rating';
+                detail = `CIB score is low (${score} / 960). High probability of repayment issues.`;
+            }
+        }
+        
+        return `
+            <div class="ai-verdict ${cls}" style="margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+                ${icon}
+                <div>
+                    <div style="font-weight:700; font-size:15px;">${title}</div>
+                    <div style="font-size:13px; opacity:0.8; margin-top:2px;">${detail}</div>
+                </div>
+            </div>
+        `;
+    }
 
     function renderIncomeBreakdown(breakdown, total) {
         if (!breakdown || Object.keys(breakdown).length === 0) {
@@ -392,14 +512,14 @@
     }
 
     async function downloadPDF() {
-    const token = getToken();
-    const url = `${API_BASE}/client/applications/${appId}/pdf`;
-    const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-    const blob = await res.blob();
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `RinSathi_Application_${appId.slice(0,8)}.pdf`;
-    a.click();
+        const token = getToken();
+        const url = `${API_BASE}/client/applications/${appId}/pdf`;
+        const res = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `RinSathi_Application_${appId.slice(0,8)}.pdf`;
+        a.click();
     }
 
     function formatNPR(n) { return new Intl.NumberFormat('ne-NP').format(Math.round(n)); }

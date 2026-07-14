@@ -87,6 +87,21 @@ class ComplianceAgent:
                     # WHY, rather than lumping it with a normal breach.
                     state.compliance_flags.append("NO_VERIFIED_COLLATERAL")
 
+            # ── Check 3b: CIB Blacklist status ──────────────────────────────────────
+            # NRB requires mandatory CIB verification for loans NPR 1,000,000+.
+            # A blacklisted applicant is a hard, non-negotiable rejection signal —
+            # this mirrors Nepal's real regulatory framework exactly.
+            if state.is_blacklisted:
+                state.compliance_flags.append("CIB_BLACKLISTED")
+
+            # ── Check 3c: Severe delinquency (90+ days past due) ────────────────────
+            # A 90+ DPD history is a serious caution signal, though not an
+            # automatic hard rejection like a formal blacklist.
+            if state.max_dpd_bucket == "dpd_90_plus":
+                state.compliance_flags.append("SEVERE_DELINQUENCY_HISTORY")
+
+            
+
             # ── Check 4: Agricultural sector exposure limit ───────────────────
             # NRB caps agricultural sector lending to prevent over-concentration.
             # AGRI_SECTOR_LIMIT_NPR from config (default NPR 500,000).

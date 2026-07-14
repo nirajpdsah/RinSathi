@@ -232,6 +232,15 @@
             border:     1px solid #FEF08A;
         }
 
+        .ai-verdict.info {
+            background: #EFF6FF;
+            color:      #1E40AF;
+            border:     1px solid #BFDBFE;
+        }
+
+        .score-number.neutral { color: var(--subtle); }
+        .score-bar-fill.neutral { background: var(--subtle); }
+
         .verdict-icon { font-size: 22px; }
 
         /* Compliance flags */
@@ -610,10 +619,49 @@
                     </div>
                 </div>
 
-                <div class="detail-item">
-                    <div class="detail-label">Nepal CIB Credit Score</div>
-                    <div class="detail-value" id="detailNepalScore">—</div>
-                    <div style="font-size:11px; color:var(--subtle);">Scale: 60 (poor) – 960 (excellent)</div>
+                <!-- CIB Credit Assessment -->
+                <div class="section-card">
+                    <div class="section-header">
+                        <div class="section-icon">
+                            <svg class="icon" style="width:20px;height:20px;color:var(--accent);" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+                        </div>
+                        <div class="section-title">Nepal CIB Credit Assessment</div>
+                    </div>
+                    <div class="section-body">
+
+                        <!-- CIB verdict banner -->
+                        <div class="ai-verdict" id="cibVerdict">
+                            <span class="verdict-icon" id="cibVerdictIcon"></span>
+                            <div>
+                                <div id="cibVerdictTitle" style="font-size:15px; font-weight:700;"></div>
+                                <div id="cibVerdictReason"
+                                     style="font-size:13px; opacity:0.8; margin-top:2px;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Score gauge -->
+                        <div class="score-display">
+                            <div style="font-size:12px; font-weight:600;
+                                        color:var(--subtle); text-transform:uppercase;
+                                        letter-spacing:0.05em; margin-bottom:8px;">
+                                CIB Credit Rating Score
+                            </div>
+                            <div class="score-number" id="cibScoreNumber">—</div>
+                            <div class="score-bar-track">
+                                <div class="score-bar-fill" id="cibScoreBar"
+                                     style="width:0%"></div>
+                            </div>
+                            <div class="score-labels">
+                                <span>Poor (60)</span>
+                                <span>Excellent (960)</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size:11px; color:var(--subtle);
+                                    text-align:center; margin-top:4px;" id="cibRecordsCount">
+                            Total CIB Records Found: —
+                        </div>
+                    </div>
                 </div>
 
                 <!-- NRB Compliance -->
@@ -843,6 +891,89 @@
             scoreEl.textContent = 'N/A';
         }
 
+        // CIB Credit Score
+        const cibScore = app.nepal_credit_score;
+        const cibScoreEl = document.getElementById('cibScoreNumber');
+        const cibBarEl = document.getElementById('cibScoreBar');
+        
+        let cibScoreClass = 'neutral';
+        let cibPercent = 0;
+        
+        if (cibScore !== null && cibScore !== undefined) {
+            cibPercent = ((cibScore - 60) / (960 - 60)) * 100;
+            if (app.is_blacklisted) {
+                cibScoreClass = 'low';
+            } else if (cibScore >= 700) {
+                cibScoreClass = 'high';
+            } else if (cibScore >= 500) {
+                cibScoreClass = 'medium';
+            } else {
+                cibScoreClass = 'low';
+            }
+            cibScoreEl.textContent = cibScore + ' / 960';
+            cibScoreEl.className = 'score-number ' + cibScoreClass;
+            cibBarEl.style.width = cibPercent + '%';
+            cibBarEl.className = 'score-bar-fill ' + cibScoreClass;
+        } else {
+            cibScoreEl.textContent = 'N/A';
+            cibScoreEl.className = 'score-number neutral';
+            cibBarEl.style.width = '0%';
+            cibBarEl.className = 'score-bar-fill neutral';
+        }
+        
+        document.getElementById('cibRecordsCount').innerHTML = 
+            `Total CIB Records Found: <strong style="color:var(--primary);">${app.cib_records_count ?? 0}</strong>`;
+
+        // CIB Verdict Banner
+        const cibVerdictEl = document.getElementById('cibVerdict');
+        const cibVerdictIconEl = document.getElementById('cibVerdictIcon');
+        const cibVerdictTitleEl = document.getElementById('cibVerdictTitle');
+        const cibVerdictReasonEl = document.getElementById('cibVerdictReason');
+        
+        let cibCls = 'info';
+        let cibIcon = `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#1E40AF;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+        let cibTitle = 'No CIB History';
+        let cibReason = 'First-time borrower with no history recorded in the Credit Information Bureau of Nepal.';
+        
+        if (app.is_blacklisted) {
+            cibCls = 'reject';
+            cibIcon = `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+            cibTitle = 'CIB Blacklisted';
+            cibReason = 'Applicant is currently blacklisted in the Credit Information Bureau database. Heavy penalty applied.';
+        } else if (app.max_dpd_bucket && app.max_dpd_bucket !== 'none') {
+            const bucketStr = app.max_dpd_bucket === 'dpd_90_plus' ? '90+ Days Past Due' 
+                            : app.max_dpd_bucket === 'dpd_60' ? '60 Days Past Due'
+                            : '30 Days Past Due';
+            cibCls = app.max_dpd_bucket === 'dpd_90_plus' ? 'reject' : 'refer';
+            cibIcon = app.max_dpd_bucket === 'dpd_90_plus' 
+                ? `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`
+                : `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+            cibTitle = 'Payment Defaults/Delays';
+            cibReason = `CIB records indicate payment delays. Max delay: ${bucketStr}.`;
+        } else if (cibScore !== null && cibScore !== undefined) {
+            if (cibScore >= 700) {
+                cibCls = 'recommend';
+                cibIcon = `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#065F46;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+                cibTitle = 'Excellent Credit Rating';
+                cibReason = `Clean payment history with a strong score of ${cibScore} / 960.`;
+            } else if (cibScore >= 500) {
+                cibCls = 'refer';
+                cibIcon = `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#854D0E;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+                cibTitle = 'Moderate Credit Rating';
+                cibReason = `CIB score is ${cibScore} / 960. Standard risk profile.`;
+            } else {
+                cibCls = 'reject';
+                cibIcon = `<svg style="width:22px;height:22px;flex-shrink:0;stroke:#991B1B;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+                cibTitle = 'Poor Credit Rating';
+                cibReason = `CIB score is low (${cibScore} / 960). High probability of repayment issues.`;
+            }
+        }
+        
+        cibVerdictEl.className = 'ai-verdict ' + cibCls;
+        cibVerdictIconEl.innerHTML = cibIcon;
+        cibVerdictTitleEl.textContent = cibTitle;
+        cibVerdictReasonEl.textContent = cibReason;
+
         // AI verdict
         const verdict    = app.final_decision || 'Refer';
         const verdictEl  = document.getElementById('aiVerdict');
@@ -869,9 +1000,6 @@
         document.getElementById('verdictTitle').textContent = v.title;
         document.getElementById('verdictReason').textContent =
             app.decision_reason || '';
-
-        document.getElementById('detailNepalScore').textContent =
-            app.nepal_credit_score ? `${app.nepal_credit_score} / 960` : 'No history — first-time borrower';
 
         // Compliance flags
         const flagList = document.getElementById('flagList');
