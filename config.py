@@ -21,6 +21,7 @@ class Settings(BaseSettings):               # Inheriting BaseSettings auto-reads
     REFER_THRESHOLD:       float = 0.40     # credit_score >= 0.40 → Refer (else Reject)
     MIN_KYC_CONFIDENCE:    float = 0.70     # OCR confidence below this → manual review
     MAX_LOAN_TO_ASSET:     float = 0.75     # NRB Unified Directive limit
+    MAX_VEHICLE_LOAN_TO_VALUE: float = 0.85
     AML_TXN_LIMIT_NPR:     float = 1_000_000  # Single transaction AML flag threshold
     AGRI_SECTOR_LIMIT_NPR: float = 500_000  # Agricultural sector exposure cap (NPR)
     OCR_TIMEOUT_SECONDS:   float = 10.0     # Hard timeout for OCR — protects 30s SLA

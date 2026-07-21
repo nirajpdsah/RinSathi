@@ -146,3 +146,13 @@ class SharedState(BaseModel):
     # Traditional Nepali CIB score, 60-960 scale, mirroring the real
     # convention used by Karja Suchana Kendra Limited — shown alongside
     # our own qualification_score for comparison in officer/client views.
+
+    loan_type:                   str            = "microfinance"
+    # "microfinance" (land-secured, default) or "vehicle" (vehicle-purchase loan)
+
+    vehicle_make_model:          Optional[str]  = None
+    vehicle_is_new:               Optional[bool] = None
+    vehicle_purchase_price_npr:  Optional[int]  = None
+    vehicle_value_npr:            Optional[int]  = None
+    # Estimated collateral value of the vehicle being purchased —
+    # either the dealer-quoted price directly, or our reference estimate.

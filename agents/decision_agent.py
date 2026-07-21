@@ -51,6 +51,8 @@ class DecisionAgent:
                     "SYSTEM_ERROR":          "Pipeline error — manual verification required",
                     "CIB_BLACKLISTED":            "the applicant is formally blacklisted with Nepal's Credit Information Bureau (CIB) for a prior serious default",
                     "SEVERE_DELINQUENCY_HISTORY": "the applicant has a history of severe payment delinquency (90+ days past due) with a prior lender",
+                    "NO_VERIFIED_VEHICLE_COLLATERAL": "no verified vehicle purchase price was provided to secure this loan",
+                    "VEHICLE_LOAN_TO_VALUE_BREACH":   "the requested loan exceeds the allowed percentage of the vehicle's purchase price",
                 }
                 reasons = [
                     flag_descriptions.get(flag, flag)
@@ -62,6 +64,8 @@ class DecisionAgent:
                     "LOAN_TO_ASSET_BREACH",
                     "NAME_MISMATCH",
                     "CIB_BLACKLISTED",
+                    "NO_VERIFIED_VEHICLE_COLLATERAL",
+                    "VEHICLE_LOAN_TO_VALUE_BREACH",
                 }
                 state.final_decision  = "Reject" if any(
                     flag in hard_reject_flags for flag in state.compliance_flags
@@ -98,11 +102,18 @@ class DecisionAgent:
             loan           = state.loan_amount_npr    or 0.0
             land_value     = state.total_land_value_npr or 0.0
 
+            asset_value_for_scoring = (
+                state.vehicle_value_npr if state.loan_type == "vehicle"
+                else state.total_land_value_npr
+            ) or 0.0
+
             asset_coverage_ratio = (
-                min(land_value / loan, 1.0) if loan > 0 else 0.0
+                min(asset_value_for_scoring / loan, 1.0) if loan > 0 else 0.0
             )
-            income_stability_score = state.income_confidence or 0.0
-            compliance_score = 1.0
+
+            income_stability_score = state.income_confidence or 0.0   # ← ADD THIS
+            compliance_score = 1.0                                     # ← ADD THIS
+            # We only reach here if compliance_flags was empty
 
             # ── Credit history score — from CIB check via IdentityAgent ────────
             if state.is_blacklisted:

@@ -56,6 +56,41 @@ CIB_URL     = getattr(settings, "CIB_URL",
 # If the government server doesn't respond in time, we degrade gracefully
 API_TIMEOUT = 10.0
 
+# ── Vehicle price reference ─────────────────────────────────────────────────
+# Approximate market prices for common vehicles in Nepal — used to estimate
+# loan collateral value for vehicle-purchase loans. Real production
+# deployment would source this from dealer price sheets or DoTM's published
+# valuation guide; this is a simplified but directionally realistic reference.
+VEHICLE_BASE_PRICE = {
+    "Hyundai Creta":      4200000,
+    "Toyota Corolla":      5500000,
+    "Suzuki Swift":        2800000,
+    "Hyundai i10":         2200000,
+    "Tata Nexon":          3400000,
+    "Honda City":          4600000,
+    "Mahindra Scorpio":    5800000,
+    "Kia Seltos":          4500000,
+    "Bajaj Pulsar 150":     350000,
+    "Honda CB Shine":       280000,
+    "TVS Apache":           380000,
+    "Yamaha FZ":            400000,
+}
+
+def estimate_vehicle_value(model: str, is_new: bool, age_years: int = 0) -> int:
+    """
+    Estimates vehicle purchase-loan collateral value.
+
+    New vehicle: full reference price.
+    Used vehicle: reference price depreciated exponentially — 12% value
+    loss per year, floored at 25% of original price, matching real-world
+    resale depreciation curves.
+    """
+    base_price = VEHICLE_BASE_PRICE.get(model, 1000000)
+    if is_new:
+        return base_price
+    factor = max(0.88 ** age_years, 0.25)
+    return round(base_price * factor)
+
 
 class IdentityAgent:
     """
@@ -139,7 +174,8 @@ class IdentityAgent:
             # ── Step 3: Query NeLIS for land assets ───────────────────────────
             # Uses citizenship_no as the bridge — not NIN
             # This accurately reflects real NeLIS query behavior
-            assets = await self._lookup_land(citizen["citizenship_no"])
+            if state.loan_type != "vehicle":
+                assets = await self._lookup_land(citizen["citizenship_no"])
 
             if assets is None:
                 # NeLIS query failed — this is not a KYC failure
@@ -184,6 +220,22 @@ class IdentityAgent:
                 state.active_loan_count  = cib_data["active_loan_count"]
                 state.cib_records_count  = cib_data["total_records"]
                 state.nepal_credit_score = cib_data["nepal_credit_score"]
+            
+            # ── Step 4b: Vehicle valuation — ONLY for vehicle-purchase loans ─────────
+            # Unlike land (NeLIS) or credit history (CIB), there is no government
+            # record to query — the applicant hasn't purchased the vehicle yet.
+            # We estimate collateral value directly from the vehicle they intend
+            # to buy, using a price reference table or a dealer-quoted price.
+            if state.loan_type == "vehicle" and state.vehicle_make_model:
+                is_new = bool(state.vehicle_is_new)
+
+                if state.vehicle_purchase_price_npr and state.vehicle_purchase_price_npr > 0:
+                    state.vehicle_value_npr = state.vehicle_purchase_price_npr
+                else:
+                    age = 0 if is_new else 3
+                    state.vehicle_value_npr = estimate_vehicle_value(
+                        state.vehicle_make_model, is_new, age
+                    )
 
             # ── Step 5: Mark verification as successful ───────────────────────
             # doc_confidence = 1.0 because government database is authoritative

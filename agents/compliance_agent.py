@@ -73,19 +73,43 @@ class ComplianceAgent:
             # intentional: an unsecured loan request should be flagged
             # for closer officer review, not silently approved.
             loan_amount    = state.loan_amount_npr or 0.0
-            land_value     = state.total_land_value_npr or 0.0
             monthly_income = state.monthly_income_npr or 0.0
 
+            if state.loan_type == "vehicle":
+                # Vehicle-purchase loans: the vehicle being bought is the collateral.
+                # NRB conventions generally permit higher LTV for vehicle financing
+                # than land-secured microfinance.
+                asset_value    = state.vehicle_value_npr or 0.0
+                max_ltv        = getattr(settings, "MAX_VEHICLE_LOAN_TO_VALUE", 0.85)
+                no_asset_flag  = "NO_VERIFIED_VEHICLE_COLLATERAL"
+                breach_flag    = "VEHICLE_LOAN_TO_VALUE_BREACH"
+            else:
+                # Microfinance: land-secured, unchanged from before.
+                asset_value    = state.total_land_value_npr or 0.0
+                max_ltv        = settings.MAX_LOAN_TO_ASSET
+                no_asset_flag  = "NO_VERIFIED_COLLATERAL"
+                breach_flag    = "LOAN_TO_ASSET_BREACH"
+
+
             if loan_amount > 0:
-                if land_value > 0:
-                    loan_to_asset = loan_amount / land_value
-                    if loan_to_asset > settings.MAX_LOAN_TO_ASSET:
-                        state.compliance_flags.append("LOAN_TO_ASSET_BREACH")
+                if asset_value > 0:
+                    loan_to_asset = loan_amount / asset_value
+                    if loan_to_asset > max_ltv:
+                        state.compliance_flags.append(breach_flag)
                 else:
-                    # No verified land asset at all — loan is effectively
-                    # unsecured. Flag distinctly so the officer understands
-                    # WHY, rather than lumping it with a normal breach.
-                    state.compliance_flags.append("NO_VERIFIED_COLLATERAL")
+                    state.compliance_flags.append(no_asset_flag)
+            
+            # Sector exposure check only applies to microfinance/business lending —
+            # skip entirely for vehicle-purchase loans, since "sector" isn't
+            # meaningful for a personal vehicle purchase.
+            if state.loan_type != "vehicle":
+                sector = (state.sector or "").lower()
+                is_agricultural = any(
+                    keyword in sector
+                    for keyword in ["agriculture", "farming", "agri", "crop", "livestock"]
+                )
+                if is_agricultural and loan_amount > settings.AGRI_SECTOR_LIMIT_NPR:
+                    state.compliance_flags.append("SECTOR_EXPOSURE_LIMIT")
 
             # ── Check 3b: CIB Blacklist status ──────────────────────────────────────
             # NRB requires mandatory CIB verification for loans NPR 1,000,000+.

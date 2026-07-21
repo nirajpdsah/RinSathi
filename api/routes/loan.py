@@ -105,6 +105,10 @@ async def apply_for_loan(
     nin:             str   = Form(..., description="National Identity Number e.g. NID-001"),
     loan_amount_npr: float = Form(..., description="Requested loan amount in NPR"),
     sector:          str   = Form(..., description="Business sector e.g. agriculture"),
+    loan_type:                  str            = Form("microfinance", description="microfinance or vehicle"),
+    vehicle_make_model:         Optional[str]  = Form(None, description="e.g. Hyundai Creta — required if loan_type is vehicle"),
+    vehicle_is_new:               Optional[bool] = Form(None, description="True if purchasing a new vehicle"),
+    vehicle_purchase_price_npr: Optional[float] = Form(None, description="Dealer-quoted price, if known"),
 
     # ── Income fields ──────────────────────────────────────────────────────────
     cashflow_name:          Optional[str]   = Form(None),
@@ -175,8 +179,12 @@ async def apply_for_loan(
     state = SharedState(
         applicant_id    = uuid.uuid4(),
         loan_amount_npr = loan_amount_npr,
-        sector          = sector.strip().lower(),
+        sector          = sector.strip().lower() if loan_type == "microfinance" else "vehicle_purchase",
         nin             = nin.strip().upper(),
+        loan_type       = loan_type,
+        vehicle_make_model         = vehicle_make_model.strip() if vehicle_make_model else None,
+        vehicle_is_new              = vehicle_is_new,
+        vehicle_purchase_price_npr = int(vehicle_purchase_price_npr) if vehicle_purchase_price_npr else None,
     )
 
     # ── Step 4: Prepare income data ───────────────────────────────────────────
