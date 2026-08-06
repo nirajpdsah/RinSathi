@@ -17,7 +17,9 @@ WORKDIR /app
 # this layer — if only your code changes (not dependencies), rebuilds are
 # much faster since this expensive step gets skipped.
 COPY requirements-docker.txt .
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements-docker.txt
+RUN pip uninstall -y nvidia-nccl-cu12 2>/dev/null || true
 
 # ── Copy the rest of the application code ─────────────────────────────────
 COPY . .

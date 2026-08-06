@@ -7,9 +7,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
 
-from db.session import create_tables
+from db.session import create_tables, engine
 from api.routes import income, loan
 from config import get_settings
 from agents.score_agent import ScoreAgent
@@ -23,8 +22,7 @@ from routers.client  import router as client_router
 
 settings = get_settings()
 
-# Serve HTML templates (Jinja2)
-templates = Jinja2Templates(directory="frontend")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -44,6 +42,7 @@ async def lifespan(app: FastAPI):
     yield   # Server runs here — code after yield runs on shutdown
 
     # ── SHUTDOWN ──────────────────────────────────────────────────────────────
+    await engine.dispose()
     print("ACLO API shutting down.")
 
 
@@ -78,28 +77,6 @@ app.include_router(client_router,  prefix="/api/v1")
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
 
-
-# ── FRONTEND CONTROLLERS ───────────────────────────────────────────────────
-
-@app.get("/", include_in_schema=False)
-async def root(request: Request):
-    # Serves login page at http://localhost:8000/
-    return templates.TemplateResponse(request=request, name="login.html")
-
-#@app.get("/apply", response_class=HTMLResponse, include_in_schema=False)
-#async def get_application_page(request: Request):
-    return templates.TemplateResponse(request=request, name="apply.html")
-
-#@app.get("/dashboard", response_class=HTMLResponse, tags=["Frontend UI"])
-#async def read_dashboard(request: Request):
-    """
-    Renders the beautiful, multi-agent underwriting dashboard 
-    directly from frontend/templates/dashboard.html
-    """
-    template_path = os.path.join("frontend", "templates", "dashboard.html")
-    with open(template_path, "r", encoding="utf-8") as f:
-        html_content = f.read()
-    return HTMLResponse(content=html_content, status_code=200)
 
 
 # ── CORE BACKEND & HEALTH CHECKS ───────────────────────────────────────────

@@ -70,6 +70,14 @@
             line-height:   1.6;
         }
 
+        .guide-link {
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .guide-link:hover { text-decoration: underline; }
+
         /* Form sections */
         .form-section {
             background:    white;
@@ -286,6 +294,7 @@
     <div class="page-desc">
         Enter your National Identity Number and loan details.
         Our AI pipeline will assess your application in seconds.
+        <a class="guide-link" href="/templates/client/loan-guide.html">Review the loan criteria first.</a>
     </div>
 
     <!-- Section 1: Identity -->
@@ -373,14 +382,14 @@
                 At least one is required.
             </div>
 
-            <!-- eSewa / Khalti -->
+            <!-- Digital Banking -->
             <div class="income-toggle"
                  onclick="toggleIncome('esewa')">
                 <div class="toggle-switch" id="toggleEsewa"></div>
                 <div>
-                    <div class="toggle-label">eSewa / Khalti</div>
+                    <div class="toggle-label">Digital Banking</div>
                     <div class="toggle-sublabel">
-                        Digital wallet monthly income
+                        Income received via digital banking 
                     </div>
                 </div>
             </div>

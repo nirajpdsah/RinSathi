@@ -128,6 +128,32 @@
             box-shadow:    0 4px 12px rgba(217, 119, 6, 0.2);
         }
 
+        .banner-actions {
+            display:        flex;
+            align-items:    center;
+            gap:            12px;
+            flex-shrink:    0;
+        }
+
+        .btn-guide {
+            background:    transparent;
+            color:         white;
+            border:        1.5px solid rgba(255, 255, 255, 0.18);
+            padding:       12px 18px;
+            border-radius: 12px;
+            font-weight:   600;
+            font-size:     14px;
+            cursor:        pointer;
+            white-space:   nowrap;
+            transition:    all 0.2s ease;
+            width:         auto;
+        }
+
+        .btn-guide:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.32);
+        }
+
         .btn-apply:hover {
             background: #B45309;
             transform: translateY(-1px);
@@ -260,6 +286,8 @@
 
         @media (max-width: 600px) {
             .welcome-banner { flex-direction: column; align-items: flex-start; padding: 24px; }
+            .banner-actions { width: 100%; flex-direction: column; }
+            .btn-guide { width: 100%; text-align: center; }
             .btn-apply { width: 100%; text-align: center; }
             .navbar { padding: 0 16px; }
             .page-body { padding: 32px 16px; }
@@ -289,10 +317,16 @@
             <h2>Your Loan Dashboard</h2>
             <p>Track your applications and view AI-assessed credit decisions.</p>
         </div>
-        <button class="btn-apply"
-                onclick="window.location.href='/templates/client/apply.html'">
-            + Apply for Loan
-        </button>
+        <div class="banner-actions">
+            <button class="btn-guide"
+                    onclick="window.location.href='/templates/client/loan-guide.html'">
+                Loan Criteria
+            </button>
+            <button class="btn-apply"
+                    onclick="window.location.href='/templates/client/apply.html'">
+                + Apply for Loan
+            </button>
+        </div>
     </div>
 
     <!-- Application list -->

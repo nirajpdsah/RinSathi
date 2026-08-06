@@ -30,6 +30,8 @@ engine = create_async_engine(
     ASYNC_URL,
     pool_size=5,        # Keep 5 connections open at all times
     max_overflow=10,    # Allow up to 10 extra connections during traffic spikes
+    pool_pre_ping=True, # Validate pooled connections before each checkout
+    pool_recycle=1800,  # Replace long-lived connections before Supabase closes them
     echo=False,         # Set True to print SQL in terminal during debugging
     connect_args={
         # Supabase requires SSL — this enforces encrypted connection

@@ -11,7 +11,7 @@
 // Every page loads this file first.
 // Guard pages (guard.js) depend on functions defined here.
 
-const API_BASE = "http://localhost:8000/api/v1";
+const API_BASE = `${window.location.origin}/api/v1`;
 
 // ── Token storage ─────────────────────────────────────────────────────────────
 // We use a named key so it's easy to find and clear
