@@ -140,6 +140,12 @@
             color:      #065F46;
         }
 
+        .nin-verify-badge.invalid {
+            display:    block;
+            background: #FEE2E2;
+            color:      #991B1B;
+        }
+
         /* Income source toggles */
         .income-toggle {
             display:       flex;
@@ -315,14 +321,15 @@
                            placeholder="e.g. NID-001"
                            style="padding-right: 90px;"
                            autocomplete="off"/>
-                    <span class="nin-verify-badge verified"
+                    <span class="nin-verify-badge"
                           id="ninBadge">
-                        <svg class="icon" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;display:inline-block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Valid NIN
+                        <svg class="icon" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;display:inline-block;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></svg>
+                        <span id="ninBadgeText">Enter NIN</span>
                     </span>
                 </div>
                 <div style="font-size:12px; color:var(--subtle); margin-top:6px;">
                     Your NIN will be verified against DoNIDCR.
-                    Enter your number exactly as it appears on your NID card.
+                    Spaces around the hyphen are accepted, and matching is case-insensitive.
                 </div>
             </div>
         </div>
@@ -504,6 +511,49 @@
 
     // ── Income toggle state ───────────────────────────────────────────────────
     const incomeToggles = { esewa: false, remittance: false, coop: false };
+    const ninInput       = document.getElementById('nin');
+    const ninBadge       = document.getElementById('ninBadge');
+    const ninBadgeText   = document.getElementById('ninBadgeText');
+
+    function normalizeNin(value) {
+        const compactValue = value.trim().toUpperCase().replace(/\s+/g, '');
+
+        if (/^NIN-\d{3}$/.test(compactValue)) {
+            return compactValue.replace(/^NIN-/, 'NID-');
+        }
+
+        return compactValue;
+    }
+
+    function isValidNinFormat(value) {
+        return /^NID-\d{3}$/.test(normalizeNin(value));
+    }
+
+    function updateNinBadge() {
+        const rawValue = ninInput.value;
+
+        ninBadge.classList.remove('verified', 'invalid');
+
+        if (!rawValue.trim()) {
+            ninBadge.style.display = 'none';
+            return;
+        }
+
+        ninBadge.style.display = 'block';
+
+        if (isValidNinFormat(rawValue)) {
+            ninBadge.classList.add('verified');
+            ninBadgeText.textContent = 'Valid NIN';
+        } else {
+            ninBadge.classList.add('invalid');
+            ninBadgeText.textContent = 'Invalid NIN';
+        }
+    }
+
+    ninInput.addEventListener('input', updateNinBadge);
+    ninInput.addEventListener('blur', updateNinBadge);
+
+    updateNinBadge();
 
     function toggleIncome(source) {
         incomeToggles[source] = !incomeToggles[source];
@@ -520,7 +570,7 @@
         errorEl.classList.remove('visible');
 
         // Collect values
-        const nin        = document.getElementById('nin').value.trim().toUpperCase();
+        const nin        = normalizeNin(ninInput.value);
         const loanAmount = document.getElementById('loanAmount').value;
         const sector     = document.getElementById('sector').value;
 
@@ -531,6 +581,9 @@
         // Validate
         if (!nin) {
             return showError('Please enter your National Identity Number.');
+        }
+        if (!isValidNinFormat(nin)) {
+            return showError('Please enter a valid NIN in the format NID-001.');
         }
         if (!loanAmount || parseFloat(loanAmount) <= 0) {
             return showError('Please enter a valid loan amount.');
